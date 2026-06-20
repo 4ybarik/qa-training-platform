@@ -27,6 +27,16 @@
 // environment.HOST_PROJECT_DIR = "${PWD}") — она прокинута в контейнер
 // Jenkins при его собственном старте и содержит реальный путь на хосте.
 //
+// Про Allure-результаты: контейнер allure (см. docker-compose.yml) слушает
+// ИМЕНОВАННЫЙ Docker volume "allure_results" — а не путь на файловой системе.
+// Имя volume, которое реально создаёт Compose, формируется как
+// "<имя_проекта>_allure_results", где имя проекта — это имя директории
+// репозитория по умолчанию (для обычного `docker compose up`, без -p).
+// Стадии тестов ниже подключаются к ЭТОМУ ЖЕ volume по полному имени —
+// специально, а не к изолированному volume CI-проекта qatp_ci, потому что
+// allure-сервис один на весь хост и должен видеть результаты любых прогонов.
+// Если вы переименуете директорию репозитория, обновите ALLURE_VOLUME ниже.
+//
 // Про порты: docker-compose.yml сам по себе НЕ пробрасывает порты db/app на
 // хост — это сделано в docker-compose.override.yml, который Docker Compose
 // подключает АВТОМАТИЧЕСКИ только при отсутствии явного -f (то есть при
@@ -59,6 +69,11 @@ pipeline {
     environment {
         COMPOSE_PROJECT_NAME = "qatp_ci"
         ALLURE_RESULTS_DIR = "allure-results"
+        // Полное имя volume основного проекта (см. блок комментариев выше про
+        // Allure-результаты). "qa-training-platform" — это имя директории
+        // репозитория, под которым Compose назвал volume при обычном
+        // `docker compose up` (project name по умолчанию = имя директории).
+        ALLURE_VOLUME = "qa-training-platform_allure_results"
         // Явный -f — гарантирует, что docker-compose.override.yml (с портами
         // для разработки) НЕ подключится автоматически. Без явного -f Compose
         // сам бы подмешал override и порты снова бы конфликтовали с хостом.
@@ -115,15 +130,18 @@ pipeline {
                     // весь Python-стек проекта. Сам контейнер app продолжает работать
                     // отдельно (это разовый одноразовый контейнер для прогона тестов).
                     //
-                    // ВАЖНО: используем $HOST_PROJECT_DIR (реальный путь на хосте),
-                    // а НЕ $(pwd)/. $(pwd) внутри контейнера Jenkins вернёт "/workspace" —
-                    // путь, существующий только внутри Jenkins. Демон Docker (которому
-                    // мы отдаём команду через проброшенный docker.sock) монтирует
-                    // volumes относительно файловой системы ХОСТА и про "/workspace"
-                    // ничего не знает — отсюда ошибка "is not shared from the host".
+                    // ВАЖНО: пишем результаты в ИМЕНОВАННЫЙ Docker volume
+                    // ALLURE_VOLUME (полное имя — см. environment{} выше), а НЕ на
+                    // путь файловой системы хоста. Контейнер allure (docker-compose.yml)
+                    // слушает именно этот volume, а не произвольную папку на диске —
+                    // см. подробное объяснение в комментариях в начале файла, блок
+                    // "Про Allure-результаты". Пишем в КОРЕНЬ volume (без подпапки
+                    // /api), плоско вместе с результатами E2E ниже — allure-docker-service
+                    // объединяет все файлы результатов из одной директории в общий отчёт;
+                    // вложенные поддиректории он не гарантированно сканирует.
                     sh '''
                         ${COMPOSE} run --rm \
-                          -v "${HOST_PROJECT_DIR}/${ALLURE_RESULTS_DIR}/api:/app/allure-results" \
+                          -v "${ALLURE_VOLUME}:/app/allure-results" \
                           --entrypoint sh app -c \
                           "pip install allure-pytest --break-system-packages --quiet && \
                            python -m pytest --alluredir=/app/allure-results"
@@ -140,19 +158,30 @@ pipeline {
                     // запускаем официальный образ Playwright вручную через
                     // docker run — это работает на голом agent any, нужен
                     // только docker.sock, который и так используется выше.
-                    // $HOST_PROJECT_DIR вместо $(pwd) — см. подробное объяснение
-                    // в стадии API tests выше (Docker-outside-of-Docker: путь
-                    // для volumes должен быть путём на хосте, не внутри Jenkins).
+                    //
+                    // Маунт исходного кода e2e/ — это путь на хосте (нужны
+                    // реальные файлы тестов), используем $HOST_PROJECT_DIR вместо
+                    // $(pwd) по той же причине, что и в стадии API tests выше
+                    // (Docker-outside-of-Docker: путь для volumes должен быть
+                    // путём на хосте, не внутри Jenkins-контейнера).
+                    //
+                    // Маунт результатов Allure — это ИМЕНОВАННЫЙ Docker volume
+                    // (ALLURE_VOLUME), не путь на диске — см. блок комментариев
+                    // про Allure-результаты в начале файла. Пишем в КОРЕНЬ volume,
+                    // плоско вместе с результатами API-тестов (та же логика, что
+                    // и в стадии API tests выше) — так не нужно полагаться на то,
+                    // сканирует ли конкретная версия allure-docker-service
+                    // вложенные поддиректории рекурсивно.
                     sh '''
                         docker run --rm \
                           --network ${COMPOSE_PROJECT_NAME}_default \
                           -v "${HOST_PROJECT_DIR}/e2e:/e2e" \
-                          -v "${HOST_PROJECT_DIR}/${ALLURE_RESULTS_DIR}:/allure-results" \
+                          -v "${ALLURE_VOLUME}:/allure-results" \
                           -w /e2e \
                           -e BASE_URL=http://app:8000 \
                           mcr.microsoft.com/playwright/python:v1.45.0-jammy \
                           sh -c "pip install -r requirements.txt --quiet && \
-                                 python -m pytest --alluredir=/allure-results/e2e"
+                                 python -m pytest --alluredir=/allure-results"
                     '''
                 }
             }
@@ -166,10 +195,20 @@ pipeline {
             // ReactorException/InvocationTargetException при установке).
             // Отчёты всё равно доступны без этого шага — через отдельный
             // контейнер allure из docker-compose.yml на http://localhost:5050,
-            // он подхватывает файлы из allure-results/ автоматически.
-            // Когда плагин установится без ошибок, раскомментируйте строку ниже,
-            // чтобы отчёт также появлялся прямо во вкладке сборки Jenkins:
-            // allure includeProperties: false, results: [[path: "${ALLURE_RESULTS_DIR}/api"], [path: "${ALLURE_RESULTS_DIR}/e2e"]]
+            // он подхватывает файлы из volume allure_results автоматически
+            // (см. ALLURE_VOLUME выше и блок комментариев про Allure-результаты
+            // в начале файла).
+            //
+            // ВАЖНО, если решите включить плагин: он сканирует файлы НА ДИСКЕ
+            // внутри самого контейнера Jenkins (а не Docker volume — плагин
+            // работает изнутри Jenkins-процесса, не через docker run). Сейчас
+            // стадии тестов пишут результаты прямо в Docker volume, минуя
+            // файловую систему Jenkins, поэтому простого пути для плагина нет
+            // "из коробки". Чтобы включить публикацию через плагин, сначала
+            // скопируйте результаты из volume на диск Jenkins, например:
+            //   docker run --rm -v ${ALLURE_VOLUME}:/src -v ${HOST_PROJECT_DIR}/${ALLURE_RESULTS_DIR}:/dst alpine cp -r /src/. /dst/
+            // и только потом раскомментируйте строку ниже:
+            // allure includeProperties: false, results: [[path: "${ALLURE_RESULTS_DIR}"]]
 
             dir('/workspace') {
                 sh '${COMPOSE} down'

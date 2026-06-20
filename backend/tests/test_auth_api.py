@@ -44,6 +44,37 @@ def test_me_requires_auth(client):
     assert client.get("/api/auth/me").status_code == 401
 
 
+def test_cookie_based_auth_can_be_cleared(client):
+    """Подтверждает механизм, на котором держится межтестовая изоляция:
+    client.cookies.clear() (то же самое, что делает autouse-фикстура
+    _clear_client_cookies в conftest.py перед каждым тестом) реально убирает
+    cookie-авторизацию. Самодостаточный тест — не зависит от порядка
+    выполнения соседних тестов, в отличие от проверки "протекла ли cookie
+    из предыдущего теста", которая зависела бы от того, что именно
+    выполнялось до него.
+    """
+    login = client.post("/api/auth/login",
+                        json={"email": "user@test.com", "password": "Password123!"})
+    assert login.status_code == 200
+    assert "access_token" in client.cookies
+
+    # Без заголовка, но с cookie — легитимно авторизован (это не баг,
+    # см. докстринг app/api/deps.py про два способа передачи токена).
+    assert client.get("/api/auth/me").status_code == 200
+
+    # Очищаем cookies тем же способом, что и autouse-фикстура между тестами.
+    client.cookies.clear()
+    assert "access_token" not in client.cookies
+
+    # После очистки запрос без заголовка должен снова требовать авторизацию.
+    assert client.get("/api/auth/me").status_code == 401
+
+
+def test_me_with_valid_token(client, user_token):
+    r = client.get("/api/auth/me", headers=auth(user_token))
+    assert r.status_code == 200
+
+
 def test_refresh_token(client):
     login = client.post("/api/auth/login",
                         json={"email": "user@test.com", "password": "Password123!"})

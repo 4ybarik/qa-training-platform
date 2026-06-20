@@ -114,15 +114,21 @@ DNS-именам docker-сети (`db:5432`, `app:8000`), не через `local
 дочерние контейнеры для тестов через проброшенный `/var/run/docker.sock`
 хоста — это значит, что демон Docker, который реально создаёт контейнеры,
 работает на **хосте**, а не внутри Jenkins. Поэтому любой volume-маунт для
-дочернего контейнера (например, чтобы вынести `allure-results/` наружу)
-должен указывать путь на **реальной файловой системе хоста**, а не путь,
-видимый изнутри самого контейнера Jenkins (`/workspace` — это путь только
-для Jenkins, демон Docker хоста про него не знает; такая попытка даст
-ошибку `is not shared from the host and is not known to Docker` на
-macOS/Windows). Решение — переменная `HOST_PROJECT_DIR` в `docker-compose.yml`
-(сервис `jenkins`, `environment.HOST_PROJECT_DIR: "${PWD}"`) автоматически
+дочернего контейнера, указывающий на путь файловой системы (например, чтобы
+дать контейнеру доступ к исходникам `e2e/`), должен указывать путь на
+**реальной файловой системе хоста**, а не путь, видимый изнутри самого
+контейнера Jenkins (`/workspace` — это путь только для Jenkins, демон Docker
+хоста про него не знает; такая попытка даст ошибку
+`is not shared from the host and is not known to Docker` на macOS/Windows).
+Решение — переменная `HOST_PROJECT_DIR` в `docker-compose.yml` (сервис
+`jenkins`, `environment.HOST_PROJECT_DIR: "${PWD}"`) автоматически
 подставляет реальный путь на хосте в момент `docker compose up`; `Jenkinsfile`
-использует именно её для всех `-v` в дочерних контейнерах.
+использует её для маунта исходников.
+
+Результаты Allure — это **отдельный** случай: они пишутся не на путь
+файловой системы, а в **именованный Docker volume** `allure_results` (тот
+же, что слушает контейнер `allure`) — см. переменную `ALLURE_VOLUME` в
+`Jenkinsfile` и раздел «Просмотр отчётов Allure» ниже.
 
 Если вы на **macOS** и Docker Desktop всё равно ругается на путь — откройте
 **Docker Desktop → Settings → Resources → File Sharing** и убедитесь, что
@@ -156,25 +162,53 @@ macOS/Windows). Решение — переменная `HOST_PROJECT_DIR` в `d
 - Через сам Jenkins: вкладка **Allure Report** на странице сборки (если
   установлен плагин).
 - Напрямую через сервис Allure: <http://localhost:5050/allure-docker-service/projects/default/reports/latest/index.html>
-  — он автоматически подхватывает результаты из общего volume
-  `allure_results`, в который пишут и pytest, и Playwright-тесты.
+  — он автоматически подхватывает результаты из именованного Docker volume
+  `allure_results` (полное имя — `qa-training-platform_allure_results`,
+  формируется Compose как `<имя_проекта>_<имя_volume>`), в который пишут
+  и pytest, и Playwright-тесты.
 
 ### Локальный запуск с Allure-результатами (без Jenkins)
+
+Если вы хотите быстро посмотреть отчёт сами, без публикации в постоянный
+Docker-сервис `:5050` — самый простой путь:
 
 ```bash
 cd backend
 pip install -r requirements.txt
-python -m pytest --alluredir=../allure-results/api
+pip install allure-pytest --break-system-packages
+python -m pytest --alluredir=/tmp/allure-results
 
-cd ../e2e
-pip install -r requirements.txt
-playwright install chromium
-BASE_URL=http://localhost:8000 python -m pytest --alluredir=../allure-results/e2e
+pip install allure-commandline --break-system-packages  # один раз
+allure serve /tmp/allure-results
 ```
 
-Результаты появятся в папке `allure-results/` в корне проекта — Allure-сервис
-из `docker-compose.yml` подхватит их автоматически (см. volume `allure_results`),
-если контейнер `allure` запущен.
+`allure serve` поднимает свой временный локальный сервер и сразу открывает
+отчёт в браузере — он никак не связан с Docker-сервисом `allure` из
+`docker-compose.yml`, это полностью отдельный, более лёгкий путь для
+быстрой проверки одного прогона.
+
+Если же вы хотите, чтобы результаты локального прогона попали именно в
+**постоянный** Docker-сервис на `:5050` (тот же, что использует Jenkins) —
+нужно писать их в тот же именованный Docker volume, а не в папку на диске
+(простой `--alluredir=../allure-results` физически не пересечётся с volume,
+который слушает контейнер `allure` — это тот же подвох, что и в
+Docker-outside-of-Docker сценарии Jenkins, см. выше). Сделать это можно так:
+
+```bash
+cd backend
+pip install -r requirements.txt allure-pytest --break-system-packages
+docker run --rm \
+  -v "$(pwd)/..:/repo" \
+  -v "qa-training-platform_allure_results:/allure-results" \
+  -w /repo/backend \
+  python:3.12-slim \
+  sh -c "pip install -r requirements.txt --break-system-packages --quiet && \
+         python -m pytest --alluredir=/allure-results"
+```
+
+Здесь `$(pwd)` выполняется в вашем обычном терминале на хосте (не внутри
+Jenkins), поэтому он и так уже даёт реальный путь на диске — в отличие от
+сценария внутри Jenkins-контейнера, тут никакой путаницы с путями нет.
 
 ### Важная оговорка
 

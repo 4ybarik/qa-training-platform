@@ -39,9 +39,13 @@ http://localhost:5050 — готовый отчёт, обновляется ав
 
 **Главный практический вывод**: чтобы тест попал в Allure, ему достаточно
 двух вещей — (а) быть собранным через `pytest` с подключённым плагином
-`allure-pytest`, и (б) результаты должны писаться в папку, которую видит
-контейнер `allure`. Обе вещи уже настроены в проекте для папок
-`backend/tests/` и `e2e/`.
+`allure-pytest`, и (б) результаты должны писаться в **тот же Docker volume**
+`allure_results`, который видит контейнер `allure` — не в произвольную папку
+на диске с похожим именем. Это разные вещи: команда `--alluredir=./allure-results`
+создаст обычную папку на диске, и если её не смонтировать как volume
+`allure_results` в дочерний контейнер явно, Allure её не увидит, отчёт
+останется пустым. Обе вещи уже настроены в `Jenkinsfile` для папок
+`backend/tests/` и `e2e/` — см. переменную `ALLURE_VOLUME`.
 
 ---
 
@@ -104,17 +108,21 @@ def test_enroll_in_course(client, user_token):
 ```bash
 cd backend
 pip install -r requirements.txt
-python -m pytest tests/test_my_feature.py -v --alluredir=../allure-results/api
+python -m pytest tests/test_my_feature.py -v --alluredir=/tmp/allure-results
 ```
 
-Если хотите сразу посмотреть отчёт локально, без Jenkins вообще:
+Чтобы сразу посмотреть отчёт локально, без Jenkins и без Docker вообще:
 
 ```bash
 pip install allure-commandline --break-system-packages  # один раз
-allure serve ../allure-results/api
+allure serve /tmp/allure-results
 ```
 
-Откроется браузер с тем же отчётом, что в итоге увидите на `:5050`.
+Откроется браузер с быстрым временным отчётом для одного прогона. **Это не
+тот же отчёт**, что будет на `:5050` — `allure serve` поднимает свой
+изолированный временный сервер и ничего не пишет в Docker volume `allure_results`,
+который слушает постоянный сервис `allure` из `docker-compose.yml`. Для
+быстрой проверки одного теста это и не нужно — `allure serve` достаточно.
 
 ### Шаг 4 — всё. Jenkins подхватит тест автоматически
 
@@ -179,8 +187,12 @@ def test_my_scenario(login, base_url, page):
 cd e2e
 pip install -r requirements.txt
 playwright install chromium
-BASE_URL=http://localhost:8000 python -m pytest test_my_scenario.py -v --alluredir=../allure-results/e2e
+BASE_URL=http://localhost:8000 python -m pytest test_my_scenario.py -v --alluredir=/tmp/allure-results
 ```
+
+Для просмотра — так же через `allure serve /tmp/allure-results` (см. раздел 2,
+шаг 3 — то же самое верно и для E2E-тестов: это быстрый локальный просмотр,
+не связанный с постоянным сервисом на `:5050`).
 
 ### Шаг 4 — всё. Jenkins подхватит тест автоматически
 
@@ -201,10 +213,13 @@ BASE_URL=http://localhost:8000 python -m pytest test_my_scenario.py -v --allured
    (если фреймворк на pytest) либо нативный Allure-адаптер для другого
    раннера (Allure поддерживает не только Python — есть адаптеры для JUnit,
    TestNG, NUnit, Cucumber, Robot Framework и других).
-3. Пишите результаты в **поддиректорию** общей папки allure-results,
-   например `--alluredir=../allure-results/load` — главное, чтобы все группы
-   результатов лежали внутри одного корня `allure-results/`, тогда Allure
-   объединит их в один отчёт автоматически (он сканирует всё дерево).
+3. Пишите результаты в общий именованный Docker volume `allure_results` —
+   используйте уже объявленную в `Jenkinsfile` переменную `ALLURE_VOLUME`
+   (полное имя volume, см. `environment{}` в начале файла), а не путь на
+   диске. Писать можно прямо в корень `/app/allure-results` внутри volume,
+   плоско вместе с результатами API/E2E-тестов — Allure объединит все файлы
+   в один отчёт автоматически (она различает прогоны по содержимому файлов,
+   не по структуре директорий).
 4. Добавьте новую стадию в `Jenkinsfile`, по образцу уже существующих.
    Например, для нагрузочных тестов на чистом Python:
 
@@ -214,7 +229,7 @@ stage('Load tests') {
         dir('/workspace') {
             sh '''
                 ${COMPOSE} run --rm \
-                  -v "$(pwd)/${ALLURE_RESULTS_DIR}/load:/app/allure-results" \
+                  -v "${ALLURE_VOLUME}:/app/allure-results" \
                   --entrypoint sh app -c \
                   "pip install -r load/requirements.txt --break-system-packages --quiet && \
                    python -m pytest load/ --alluredir=/app/allure-results"
@@ -226,6 +241,8 @@ stage('Load tests') {
 
 Вставьте этот блок внутрь `stages { ... }` в `Jenkinsfile`, рядом с уже
 существующими `stage('API tests (pytest)')` / `stage('E2E tests (Playwright)')`.
+Подробное объяснение, почему именно именованный volume, а не путь на диске —
+в блоке комментариев «Про Allure-результаты» в начале `Jenkinsfile`.
 
 ---
 
@@ -260,7 +277,8 @@ http://localhost:5050/allure-docker-service/projects/default/reports/latest/inde
 |-----------------------------------------------------|--------------------|
 | Тест не появился в Allure вообще                    | Файл не начинается с `test_`, либо функция не начинается с `test_` (см. `pytest.ini`: `python_files`/`python_functions`). Переименуйте. |
 | Тест есть в Allure, но без шагов/фич                 | Это нормально без аннотаций `@allure.feature`/`with allure.step(...)` — Allure покажет тест просто как пройденный/упавший, без подробностей. Добавьте аннотации (раздел 2, шаг 2). |
-| Отчёт на `:5050` не обновился после новой сборки     | Подождите 5-10 секунд (интервал сканирования) и обновите страницу. Если не помогло — проверьте, что Jenkins реально писал в `allure-results/` (см. Console Output сборки на наличие строк `Downloading`/`Successfully installed allure-pytest`). |
+| Отчёт на `:5050` совсем пустой, хотя тесты в Jenkins прошли | Почти всегда это значит, что результаты пишутся не в тот именованный Docker volume, который видит контейнер `allure` — например, через путь на диске (`-v $(pwd)/allure-results:...`) вместо `-v ${ALLURE_VOLUME}:...`. Проверьте, что в `Jenkinsfile` используется именно `${ALLURE_VOLUME}` (полное имя — `qa-training-platform_allure_results`), а не `$(pwd)`/`$HOST_PROJECT_DIR` для volume с результатами. |
+| Отчёт на `:5050` не обновился после новой сборки     | Подождите 5-10 секунд (интервал сканирования) и обновите страницу. Если не помогло — проверьте по Console Output сборки, что стадии тестов реально завершились без ошибок монтирования (`is not shared from the host` и подобные). |
 | `ModuleNotFoundError: No module named 'allure'`     | В контейнере, где гоняется ваш тест, не установлен `allure-pytest`. Для `backend/tests/` он уже в `requirements.txt`; для новой папки (раздел 4) — добавьте его в свой `requirements.txt` или `pip install` команду в стадии. |
 | Тесты из новой папки не запускаются в Jenkins        | Вы добавили новую папку (не `backend/tests/` и не `e2e/`), но не добавили для неё стадию в `Jenkinsfile` — см. раздел 4. |
 | E2E-тест падает в Jenkins, хотя локально работает    | Часто из-за `BASE_URL`: локально вы используете `http://localhost:8000`, а в Jenkins (внутри docker-сети) — `http://app:8000` (см. переменную `-e BASE_URL=http://app:8000` в стадии E2E `Jenkinsfile`). Не хардкодьте `localhost` внутри теста — используйте фикстуру `base_url`. |

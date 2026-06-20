@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }} — QA Training Platform{% endblock %}
+{% block page_id %}course-detail{% endblock %}
+{% block content %}
+<a href="/courses" class="back-link" data-testid="back-to-courses">← К каталогу</a>
+<h1 data-testid="course-detail-title">{{ course.title }}</h1>
+<p class="muted">{{ course.category }} · {{ course.price }} ₽ · статус: {{ course.status.value }}</p>
+
+{% if user.role.value == 'ADMIN' %}
+<div class="card" data-testid="course-admin-controls">
+  <a href="/courses/{{ course.id }}/edit" class="btn" data-testid="edit-course-button">Редактировать курс</a>
+  <form method="post" action="/web/courses/{{ course.id }}/delete" style="display:inline"
+        onsubmit="return confirm('Удалить курс безвозвратно?')">
+    <button type="submit" class="btn btn-ghost" data-testid="delete-course-button">Удалить курс</button>
+  </form>
+</div>
+{% endif %}
+
+<div class="progress" data-testid="progress-bar">
+  <div class="progress-fill" style="width: {{ 40 if enrolled else 0 }}%"></div>
+</div>
+
+{% if enrolled %}
+<span class="badge badge-ok" data-testid="enrolled-badge">Вы записаны</span>
+{% else %}
+<form method="post" action="/web/courses/{{ course.id }}/enroll" style="display:inline">
+  <button type="submit" class="btn btn-primary" data-testid="enroll-button">Записаться на курс</button>
+</form>
+{% endif %}
+
+<div class="tabs" data-testid="course-tabs">
+  <div class="tab-headers">
+    <button class="tab-btn active" data-testid="tab-description" onclick="QATP.selectTab(this,'tab-description-panel')">Описание</button>
+    <button class="tab-btn" data-testid="tab-exams" onclick="QATP.selectTab(this,'tab-exams-panel')">Экзамены</button>
+    <button class="tab-btn" data-testid="tab-reviews" onclick="QATP.selectTab(this,'tab-reviews-panel')">Отзывы</button>
+  </div>
+  <div class="tab-panel" id="tab-description-panel" data-testid="tab-description-panel">
+    <p>{{ course.description }}</p>
+  </div>
+  <div class="tab-panel" id="tab-exams-panel" data-testid="tab-exams-panel" hidden>
+    {% if user.role.value == 'ADMIN' %}
+    <a href="/courses/{{ course.id }}/exams/new" class="btn btn-primary" data-testid="create-exam-button">+ Добавить экзамен</a>
+    {% endif %}
+    <ul data-testid="course-exams-list">
+      {% for exam in exams %}
+      <li data-testid="exam-item-{{ exam.id }}">
+        <a href="/exams/{{ exam.id }}" data-testid="exam-open-{{ exam.id }}">{{ exam.title }}</a>
+        {% if user.role.value == 'ADMIN' %}
+        <form method="post" action="/web/exams/{{ exam.id }}/delete" style="display:inline"
+              onsubmit="return confirm('Удалить экзамен безвозвратно?')">
+          <button type="submit" class="btn btn-ghost" data-testid="delete-exam-{{ exam.id }}">Удалить</button>
+        </form>
+        {% endif %}
+      </li>
+      {% else %}
+      <li data-testid="course-exams-empty">Экзамены отсутствуют</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="tab-panel" id="tab-reviews-panel" data-testid="tab-reviews-panel" hidden>
+    <div class="review" data-testid="review-1">★★★★★ Отличный курс для практики.</div>
+    <div class="review" data-testid="review-2">★★★★☆ Полезные задания.</div>
+  </div>
+</div>
+{% endblock %}

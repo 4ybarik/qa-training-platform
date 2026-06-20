@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}QA Training Platform{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/app.css') }}">
+</head>
+<body data-testid="page-{% block page_id %}base{% endblock %}">
+  {% if user %}
+  <header class="app-header" data-testid="app-header">
+    <div class="brand" data-testid="brand">QA Training Platform</div>
+    <div class="header-right">
+      <span data-testid="current-user-email">{{ user.email }}</span>
+      <span class="badge" data-testid="current-user-role">{{ user.role.value }}</span>
+      <form method="post" action="/web/logout" style="display:inline">
+        <button type="submit" class="btn btn-ghost" data-testid="logout-button">Выйти</button>
+      </form>
+    </div>
+  </header>
+  <div class="app-body">
+    <nav class="sidebar" data-testid="sidebar">
+      <a href="/dashboard" data-testid="nav-dashboard">Дашборд</a>
+      <a href="/courses" data-testid="nav-courses">Курсы</a>
+      <a href="/notifications" data-testid="nav-notifications">Уведомления</a>
+      <a href="/profile" data-testid="nav-profile">Профиль</a>
+      <a href="/playground" data-testid="nav-playground">Testing Playground</a>
+      {% if user.role.value == 'ADMIN' %}
+      <a href="/admin" data-testid="nav-admin">Админ-панель</a>
+      {% endif %}
+    </nav>
+    <main class="content" data-testid="content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <footer class="app-footer" data-testid="app-footer">
+    QA Training Platform — учебный полигон автоматизации тестирования
+    · <span data-testid="app-version">v{{ app_version }}</span>
+  </footer>
+  {% else %}
+  <main class="auth-shell" data-testid="auth-shell">
+    {% block auth_content %}{% endblock %}
+    <div class="version-tag" data-testid="app-version-auth">v{{ app_version }}</div>
+  </main>
+  {% endif %}
+
+  <div id="toast-root" class="toast-root" data-testid="toast-root"></div>
+  <script src="{{ url_for('static', path='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

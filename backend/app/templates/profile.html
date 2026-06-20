@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Профиль — QA Training Platform{% endblock %}
+{% block page_id %}profile{% endblock %}
+{% block content %}
+<h1 data-testid="profile-title">Профиль</h1>
+{% if saved %}
+<div class="alert alert-ok" data-testid="profile-saved">Изменения сохранены</div>
+{% endif %}
+
+<form method="post" action="/web/profile" enctype="multipart/form-data" data-testid="profile-form">
+  <label>Аватар
+    <input type="file" name="avatar" accept="image/*" data-testid="avatar-upload">
+  </label>
+  <label>Телефон
+    <input type="text" name="phone" value="{{ profile.phone or '' }}" data-testid="phone-input">
+  </label>
+  <label>Адрес
+    <input type="text" name="address" value="{{ profile.address or '' }}" data-testid="address-input">
+  </label>
+  <label>Навыки (множественный выбор)
+    <select name="skills" multiple size="6" data-testid="skills-multiselect">
+      {% for s in ['Playwright','Selenium','Pytest','API','SQL','Kafka','Redis','Locust'] %}
+      <option value="{{ s }}" {% if s in skills %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button type="submit" class="btn btn-primary" data-testid="save-profile-button">Сохранить</button>
+</form>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Дашборд — QA Training Platform{% endblock %}
+{% block page_id %}dashboard{% endblock %}
+{% block content %}
+<h1 data-testid="dashboard-title">Дашборд</h1>
+
+<section class="cards" data-testid="stat-cards">
+  <div class="card stat" data-testid="stat-courses">
+    <div class="stat-value">{{ stats.courses }}</div>
+    <div class="stat-label">Курсов в каталоге</div>
+  </div>
+  <div class="card stat" data-testid="stat-enrollments">
+    <div class="stat-value">{{ stats.enrollments }}</div>
+    <div class="stat-label">Моих записей</div>
+  </div>
+  <div class="card stat" data-testid="stat-notifications">
+    <div class="stat-value">{{ stats.notifications }}</div>
+    <div class="stat-label">Новых уведомлений</div>
+  </div>
+</section>
+
+<div class="grid-2">
+  <section class="card" data-testid="recent-notifications">
+    <h2>Последние уведомления</h2>
+    <ul data-testid="recent-notifications-list">
+      {% for n in notifications %}
+      <li data-testid="recent-notification-{{ n.id }}">{{ n.message }}</li>
+      {% else %}
+      <li data-testid="recent-notifications-empty">Нет уведомлений</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="card" data-testid="events-feed">
+    <h2>Лента событий (WebSocket)</h2>
+    <ul id="ws-feed" data-testid="ws-feed"><li data-testid="ws-feed-placeholder">Ожидание событий…</li></ul>
+  </section>
+</div>
+
+<button class="btn" data-testid="open-modal-button" onclick="QATP.openModal('demo-modal')">Открыть модальное окно</button>
+<div class="tooltip-wrap">
+  <span class="btn btn-ghost" data-testid="tooltip-trigger" data-tooltip="Это всплывающая подсказка">Наведите для подсказки</span>
+</div>
+
+<div class="modal-overlay" id="demo-modal" data-testid="demo-modal" hidden>
+  <div class="modal">
+    <h3>Модальное окно</h3>
+    <p>Демонстрация модального окна для автотестов.</p>
+    <button class="btn" data-testid="modal-close-button" onclick="QATP.closeModal('demo-modal')">Закрыть</button>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script>QATP.connectNotifications();</script>{% endblock %}

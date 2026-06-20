@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Админ-панель — QA Training Platform{% endblock %}
+{% block page_id %}admin{% endblock %}
+{% block content %}
+<h1 data-testid="admin-title">Админ-панель</h1>
+
+<section class="card">
+  <h2>Пользователи и роли</h2>
+  <table class="data-grid" data-testid="users-table">
+    <thead><tr><th>ID</th><th>Email</th><th>Роль</th><th>Изменить роль</th><th>Статус</th><th></th></tr></thead>
+    <tbody>
+      {% for u in users %}
+      <tr data-testid="user-row-{{ u.id }}">
+        <td>{{ u.id }}</td>
+        <td data-testid="user-email-{{ u.id }}">{{ u.email }}</td>
+        <td data-testid="user-role-{{ u.id }}">{{ u.role.value }}</td>
+        <td>
+          <select data-testid="role-select-{{ u.id }}" onchange="QATP.changeRole({{ u.id }}, this.value)">
+            {% for r in roles %}
+            <option value="{{ r.value }}" {% if r == u.role %}selected{% endif %}>{{ r.value }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td>
+          <span class="badge {{ 'badge-ok' if u.is_active else '' }}" data-testid="user-active-{{ u.id }}">
+            {{ 'активен' if u.is_active else 'отключён' }}
+          </span>
+        </td>
+        <td>
+          <form method="post" action="/web/admin/users/{{ u.id }}/active" style="display:inline">
+            <input type="hidden" name="is_active" value="{{ 'false' if u.is_active else 'true' }}">
+            <button type="submit" class="btn btn-ghost" data-testid="toggle-active-{{ u.id }}"
+                    {% if u.id == user.id %}disabled title="Нельзя отключить себя"{% endif %}>
+              {{ 'Отключить' if u.is_active else 'Включить' }}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>Отправить уведомление</h2>
+  {% if notif_sent %}
+  <div class="alert alert-ok" data-testid="notification-sent">Уведомление отправлено</div>
+  {% elif notif_error %}
+  <div class="alert alert-error" data-testid="notification-error">{{ notif_error }}</div>
+  {% endif %}
+  <form method="post" action="/web/admin/notifications" data-testid="admin-notification-form">
+    <label>ID пользователя (пусто — отправить всем)
+      <input type="text" name="target_user_id" placeholder="например, 5" data-testid="notification-target-input">
+    </label>
+    <label>Текст уведомления
+      <textarea name="message" required rows="2" data-testid="notification-message-input"></textarea>
+    </label>
+    <button type="submit" class="btn btn-primary" data-testid="send-notification-button">Отправить</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Журнал аудита</h2>
+  <table class="data-grid" data-testid="audit-table">
+    <thead><tr><th>ID</th><th>Пользователь</th><th>Действие</th><th>Данные</th></tr></thead>
+    <tbody>
+      {% for log in audit %}
+      <tr data-testid="audit-row-{{ log.id }}">
+        <td>{{ log.id }}</td>
+        <td>{{ log.user_id }}</td>
+        <td data-testid="audit-action-{{ log.id }}">{{ log.action }}</td>
+        <td>{{ log.payload }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Курсы — QA Training Platform{% endblock %}
+{% block page_id %}courses{% endblock %}
+{% block content %}
+<h1 data-testid="courses-title">Курсы</h1>
+
+{% if user.role.value == 'ADMIN' %}
+<a href="/courses/new" class="btn btn-primary" data-testid="create-course-button">+ Создать курс</a>
+{% endif %}
+
+<form method="get" action="/courses" class="filters" data-testid="courses-filters">
+  <input type="text" name="q" value="{{ q }}" placeholder="Поиск по названию" data-testid="search-input">
+  <select name="category" data-testid="category-filter">
+    <option value="">Все категории</option>
+    {% for c in categories %}
+    <option value="{{ c }}" {% if c == category %}selected{% endif %}>{{ c }}</option>
+    {% endfor %}
+  </select>
+  <select name="sort" data-testid="sort-select">
+    <option value="id" {% if sort=='id' %}selected{% endif %}>По умолчанию</option>
+    <option value="title" {% if sort=='title' %}selected{% endif %}>По названию</option>
+    <option value="price" {% if sort=='price' %}selected{% endif %}>По цене</option>
+  </select>
+  <select name="order" data-testid="order-select">
+    <option value="asc" {% if order=='asc' %}selected{% endif %}>По возрастанию</option>
+    <option value="desc" {% if order=='desc' %}selected{% endif %}>По убыванию</option>
+  </select>
+  <button type="submit" class="btn btn-primary" data-testid="apply-filters-button">Применить</button>
+</form>
+
+<div class="view-toggle">
+  <button class="btn btn-ghost" data-testid="view-table-button" onclick="QATP.setView('table')">Таблица</button>
+  <button class="btn btn-ghost" data-testid="view-cards-button" onclick="QATP.setView('cards')">Карточки</button>
+</div>
+
+<p data-testid="results-total">Найдено: {{ total }}</p>
+
+<table class="data-grid" id="courses-table" data-testid="course-table">
+  <thead>
+    <tr><th>ID</th><th>Название</th><th>Категория</th><th>Цена</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for course in courses %}
+    <tr data-testid="course-row-{{ course.id }}">
+      <td>{{ course.id }}</td>
+      <td data-testid="course-title-{{ course.id }}">{{ course.title }}</td>
+      <td>{{ course.category }}</td>
+      <td>{{ course.price }}</td>
+      <td><a class="btn btn-ghost" href="/courses/{{ course.id }}" data-testid="course-open-{{ course.id }}">Открыть</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" data-testid="courses-empty">Курсы не найдены</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="cards" id="courses-cards" data-testid="course-cards" hidden>
+  {% for course in courses %}
+  <div class="card" data-testid="course-card-{{ course.id }}">
+    <h3>{{ course.title }}</h3>
+    <p>{{ course.category }} · {{ course.price }} ₽</p>
+    <a class="btn btn-primary" href="/courses/{{ course.id }}" data-testid="course-card-open-{{ course.id }}">Открыть</a>
+  </div>
+  {% endfor %}
+</div>
+
+<nav class="pagination" data-testid="pagination">
+  {% set prev = page - 1 if page > 1 else 1 %}
+  {% set next = page + 1 if page < pages else pages %}
+  <a class="btn btn-ghost" data-testid="page-prev"
+     href="/courses?q={{ q | urlencode }}&category={{ category | urlencode }}&sort={{ sort }}&order={{ order }}&page={{ prev }}">←</a>
+  <span data-testid="page-current">Стр. {{ page }} из {{ pages }}</span>
+  <a class="btn btn-ghost" data-testid="page-next"
+     href="/courses?q={{ q | urlencode }}&category={{ category | urlencode }}&sort={{ sort }}&order={{ order }}&page={{ next }}">→</a>
+</nav>
+{% endblock %}

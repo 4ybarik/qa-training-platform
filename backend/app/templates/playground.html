@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Testing Playground{% endblock %}
+{% block page_id %}playground{% endblock %}
+{% block content %}
+<h1 data-testid="playground-title">Testing Playground</h1>
+<p>Режим имитации нестабильного поведения: задержки, случайные ошибки 500, динамические элементы.</p>
+
+<div class="card">
+  <label class="checkbox">
+    <input type="checkbox" id="pg-enabled" data-testid="playground-enabled"> Включить хаос
+  </label>
+  <label>Задержка, мс
+    <input type="number" id="pg-latency" value="800" data-testid="playground-latency">
+  </label>
+  <label>Доля ошибок 500 (0–1)
+    <input type="number" id="pg-error" step="0.1" min="0" max="1" value="0.2" data-testid="playground-error-rate">
+  </label>
+  <button class="btn btn-primary" data-testid="playground-apply" onclick="QATP.applyPlayground()">Применить</button>
+  <span id="pg-status" data-testid="playground-status"></span>
+</div>
+
+<div class="card">
+  <h2>Динамический элемент</h2>
+  <button class="btn" data-testid="spawn-dynamic" onclick="QATP.spawnDynamic()">Показать элемент через 2 c</button>
+  <div id="dynamic-area" data-testid="dynamic-area"></div>
+</div>
+{% endblock %}
+{% block scripts %}<script>QATP.initPlayground();</script>{% endblock %}

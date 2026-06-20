@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ exam.title }} — QA Training Platform{% endblock %}
+{% block page_id %}exam{% endblock %}
+{% block content %}
+<h1 data-testid="exam-title">{{ exam.title }}</h1>
+
+{% if result %}
+<div class="alert {{ 'alert-ok' if result.passed else 'alert-error' }}" data-testid="exam-result">
+  Результат: <span data-testid="exam-score">{{ result.score }}</span>% —
+  {% if result.passed %}<span data-testid="exam-passed">сдано</span>{% else %}<span data-testid="exam-failed">не сдано</span>{% endif %}
+  ({{ result.correct }}/{{ result.total }})
+  {% if result.certificate_url %}
+  <a href="{{ result.certificate_url }}" data-testid="certificate-link">Сертификат</a>
+  {% endif %}
+</div>
+<a href="/exams/{{ exam.id }}" class="btn" data-testid="retake-button">Пройти заново</a>
+{% else %}
+
+<div class="exam-bar">
+  <div class="timer" data-testid="countdown-timer" data-minutes="{{ exam.duration_minutes }}">--:--</div>
+  <div class="progress" data-testid="exam-progress"><div class="progress-fill" id="exam-progress-fill"></div></div>
+</div>
+
+<form method="post" action="/web/exams/{{ exam.id }}/submit" data-testid="exam-form">
+  {% for q in exam.questions %}
+  <fieldset class="question" data-testid="question-{{ q.id }}">
+    <legend>{{ loop.index }}. {{ q.question }}</legend>
+
+    {% if q.type.value == 'SINGLE' %}
+      {% for a in q.answers %}
+      <label class="checkbox">
+        <input type="radio" name="q_{{ q.id }}" value="{{ a.id }}" data-testid="answer-{{ a.id }}"> {{ a.answer }}
+      </label>
+      {% endfor %}
+
+    {% elif q.type.value == 'MULTI' %}
+      {% for a in q.answers %}
+      <label class="checkbox">
+        <input type="checkbox" name="q_{{ q.id }}" value="{{ a.id }}" data-testid="answer-{{ a.id }}"> {{ a.answer }}
+      </label>
+      {% endfor %}
+
+    {% elif q.type.value == 'TEXT' %}
+      <textarea name="text_{{ q.id }}" rows="2" data-testid="answer-text-{{ q.id }}"></textarea>
+
+    {% elif q.type.value == 'DND' %}
+      <div class="dnd" data-testid="dnd-{{ q.id }}">
+        <div class="dnd-source" data-testid="dnd-source-{{ q.id }}">
+          {% for a in q.answers %}
+          <div class="dnd-item" draggable="true" data-id="{{ a.id }}" data-testid="dnd-item-{{ a.id }}">{{ a.answer }}</div>
+          {% endfor %}
+        </div>
+        <div class="dnd-target" data-testid="dnd-target-{{ q.id }}" data-question="{{ q.id }}">
+          Перетащите сюда по порядку
+        </div>
+      </div>
+    {% endif %}
+  </fieldset>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary" data-testid="exam-submit-button">Завершить экзамен</button>
+</form>
+{% endif %}
+{% endblock %}
+{% block scripts %}<script>QATP.initExam();</script>{% endblock %}

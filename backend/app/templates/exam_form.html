@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Новый экзамен — QA Training Platform{% endblock %}
+{% block page_id %}exam-form{% endblock %}
+{% block content %}
+<a href="/courses/{{ course.id }}" class="back-link" data-testid="back-to-course">← К курсу «{{ course.title }}»</a>
+<h1 data-testid="exam-form-title">Новый экзамен</h1>
+
+{% if error %}
+<div class="alert alert-error" data-testid="exam-form-error">{{ error }}</div>
+{% endif %}
+
+<form method="post" action="/web/courses/{{ course.id }}/exams/new" class="card" data-testid="exam-form-admin">
+  <label>Название экзамена
+    <input type="text" name="title" required maxlength="200" data-testid="exam-title-input">
+  </label>
+  <label>Длительность, мин
+    <input type="number" name="duration_minutes" value="15" min="1" max="240" data-testid="exam-duration-input">
+  </label>
+
+  <h2>Вопросы</h2>
+  <div id="questions-container" data-testid="questions-container"></div>
+  <button type="button" class="btn" data-testid="add-question-button" onclick="QATPAdmin.addQuestion()">+ Добавить вопрос</button>
+
+  <div style="margin-top:16px">
+    <button type="submit" class="btn btn-primary" data-testid="exam-form-submit">Создать экзамен</button>
+  </div>
+</form>
+
+<div id="question-types-data" data-testid="question-types-data" hidden>{{ question_types | join(",") }}</div>
+{% endblock %}
+{% block scripts %}
+<script>
+window.QATPAdmin = (function () {
+  let questionCount = 0;
+  const questionTypes = document.getElementById("question-types-data").textContent.split(",");
+
+  function fieldName(prefix, qIndex, aIndex) {
+    return aIndex === undefined ? `${prefix}_${qIndex}` : `${prefix}_${qIndex}_${aIndex}`;
+  }
+
+  function addQuestion() {
+    questionCount++;
+    const qi = questionCount;
+
+    const fieldset = document.createElement("fieldset");
+    fieldset.className = "question";
+    fieldset.setAttribute("data-testid", `question-block-${qi}`);
+
+    const legend = document.createElement("legend");
+    legend.textContent = `Вопрос ${qi} `;
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "btn btn-ghost";
+    removeBtn.setAttribute("data-testid", `remove-question-${qi}`);
+    removeBtn.textContent = "Удалить вопрос";
+    removeBtn.onclick = () => fieldset.remove();
+    legend.appendChild(removeBtn);
+    fieldset.appendChild(legend);
+
+    const textLabel = document.createElement("label");
+    textLabel.textContent = "Текст вопроса";
+    const textInput = document.createElement("input");
+    textInput.type = "text";
+    textInput.name = fieldName("question", qi);
+    textInput.required = true;
+    textInput.setAttribute("data-testid", `question-text-${qi}`);
+    textLabel.appendChild(document.createElement("br"));
+    textLabel.appendChild(textInput);
+    fieldset.appendChild(textLabel);
+
+    const typeLabel = document.createElement("label");
+    typeLabel.textContent = "Тип вопроса";
+    const typeSelect = document.createElement("select");
+    typeSelect.name = fieldName("qtype", qi);
+    typeSelect.setAttribute("data-testid", `question-type-${qi}`);
+    questionTypes.forEach((t) => {
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = t;
+      typeSelect.appendChild(opt);
+    });
+    typeLabel.appendChild(document.createElement("br"));
+    typeLabel.appendChild(typeSelect);
+    fieldset.appendChild(typeLabel);
+
+    const answersContainer = document.createElement("div");
+    answersContainer.className = "answers-container";
+    answersContainer.setAttribute("data-testid", `answers-container-${qi}`);
+    fieldset.appendChild(answersContainer);
+
+    const addAnswerBtn = document.createElement("button");
+    addAnswerBtn.type = "button";
+    addAnswerBtn.className = "btn btn-ghost";
+    addAnswerBtn.setAttribute("data-testid", `add-answer-${qi}`);
+    addAnswerBtn.textContent = "+ Добавить вариант ответа";
+    addAnswerBtn.onclick = () => addAnswer(qi);
+    fieldset.appendChild(addAnswerBtn);
+
+    document.getElementById("questions-container").appendChild(fieldset);
+
+    addAnswer(qi);
+    addAnswer(qi);
+  }
+
+  function addAnswer(qIndex) {
+    const container = document.querySelector(`[data-testid="answers-container-${qIndex}"]`);
+    if (!container) return;
+    const ai = container.children.length + 1;
+
+    const row = document.createElement("div");
+    row.className = "checkbox";
+    row.setAttribute("data-testid", `answer-row-${qIndex}-${ai}`);
+
+    const textInput = document.createElement("input");
+    textInput.type = "text";
+    textInput.name = fieldName("answer", qIndex, ai);
+    textInput.placeholder = "Текст варианта ответа";
+    textInput.setAttribute("data-testid", `answer-text-${qIndex}-${ai}`);
+    row.appendChild(textInput);
+
+    const correctLabel = document.createElement("label");
+    correctLabel.className = "checkbox";
+    const correctInput = document.createElement("input");
+    correctInput.type = "checkbox";
+    correctInput.name = fieldName("correct", qIndex, ai);
+    correctInput.setAttribute("data-testid", `answer-correct-${qIndex}-${ai}`);
+    correctLabel.appendChild(correctInput);
+    correctLabel.appendChild(document.createTextNode(" правильный"));
+    row.appendChild(correctLabel);
+
+    container.appendChild(row);
+  }
+
+  document.addEventListener("DOMContentLoaded", addQuestion);
+
+  return { addQuestion, addAnswer };
+})();
+</script>
+{% endblock %}

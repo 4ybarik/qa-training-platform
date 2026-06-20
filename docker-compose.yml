@@ -1,0 +1,91 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: qatp
+      POSTGRES_PASSWORD: qatp
+      POSTGRES_DB: qatp
+    # Порты на хост НЕ пробрасываются здесь намеренно — см. docker-compose.override.yml.
+    # Compose подключает override-файл автоматически при обычном `docker compose up`
+    # (без явного -f), поэтому для повседневной разработки порты всё равно будут
+    # доступны на localhost. А Jenkinsfile явно указывает -f docker-compose.yml,
+    # из-за чего override НЕ подключается, и CI-копия db не конфликтует портом
+    # с уже запущенным локально основным стеком.
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qatp"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build:
+      context: ./backend
+      args:
+        # ${APP_VERSION:-...} — если переменная APP_VERSION не задана в шелле
+        # перед запуском docker compose, используется дефолт "0.0.0-dev".
+        # Чтобы версия реально подставлялась из Git, экспортируйте переменную
+        # перед сборкой, например:
+        #   export APP_VERSION=$(git describe --tags --always --dirty)
+        #   docker compose up -d --build
+        # Или одной строкой: APP_VERSION=$(git describe --tags --always --dirty) docker compose up -d --build
+        APP_VERSION: ${APP_VERSION:-0.0.0-dev}
+    environment:
+      DATABASE_URL: postgresql+psycopg://qatp:qatp@db:5432/qatp
+      ENVIRONMENT: development        # запускает seed на старте
+      SECRET_KEY: dev-secret-change-me
+    # Порты на хост — см. комментарий у db выше, та же логика.
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ---------- CI/CD: Jenkins + Allure ----------
+  # Jenkins оркестрирует пайплайн (см. Jenkinsfile в корне репозитория):
+  # checkout -> сборка app -> pytest (API) -> Playwright (E2E) -> allure-результаты
+  # -> публикация в Allure-сервис ниже.
+  jenkins:
+    # Собирается из ./jenkins/Dockerfile — это официальный образ Jenkins
+    # ПЛЮС предустановленный Docker CLI (docker compose, docker run).
+    # Без этого доступ к docker.sock есть, а самой программы `docker` внутри
+    # контейнера нет — пайплайн падает с "docker: not found".
+    build: ./jenkins
+    user: root  # упрощает доступ к docker.sock независимо от GID хостовой группы docker
+    ports:
+      - "8080:8080"   # веб-интерфейс Jenkins
+      - "50000:50000"  # порт для агентов Jenkins (не используется при одном узле)
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock  # доступ к Docker хоста (Docker-outside-of-Docker)
+      - ./:/workspace  # репозиторий проекта виден джобе для checkout без git-сервера
+      - allure_results:/workspace/allure-results
+    environment:
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      # ВАЖНО для Docker-outside-of-Docker: путь /workspace существует только
+      # ВНУТРИ контейнера Jenkins. Когда Jenkins запускает ДОЧЕРНИЙ контейнер
+      # через docker run/docker compose run (используя проброшенный docker.sock
+      # хоста), демон Docker монтирует volumes относительно РЕАЛЬНОЙ файловой
+      # системы хоста — он понятия не имеет, что такое "/workspace". Поэтому
+      # для volumes в дочерних контейнерах нужен путь на хосте, а не внутри
+      # Jenkins. ${PWD} — это абсолютный путь на хосте в момент запуска
+      # `docker compose up` (подставляется самим Compose при чтении файла).
+      HOST_PROJECT_DIR: "${PWD}"
+
+  # Принимает allure-results (JSON от pytest/Playwright) и рендерит HTML-отчёт.
+  # Документация образа: https://github.com/fescobar/allure-docker-service
+  allure:
+    image: frankescobar/allure-docker-service:2.27.0
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: "5"
+      KEEP_HISTORY: "20"
+    ports:
+      - "5050:5050"   # Allure REST API + веб-отчёт
+    volumes:
+      - allure_results:/app/allure-results
+      - allure_reports:/app/default-reports
+
+volumes:
+  pgdata:
+  jenkins_home:
+  allure_results:
+  allure_reports:

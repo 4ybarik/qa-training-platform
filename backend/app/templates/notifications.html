@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Уведомления — QA Training Platform{% endblock %}
+{% block page_id %}notifications{% endblock %}
+{% block content %}
+<h1 data-testid="notifications-title">Уведомления</h1>
+
+<div class="filters" data-testid="notifications-filters">
+  <button class="btn btn-ghost" data-testid="filter-all" onclick="QATP.filterNotifications('ALL')">Все</button>
+  <button class="btn btn-ghost" data-testid="filter-unread" onclick="QATP.filterNotifications('UNREAD')">Непрочитанные</button>
+  <button class="btn btn-ghost" data-testid="filter-read" onclick="QATP.filterNotifications('READ')">Прочитанные</button>
+</div>
+
+<ul class="notif-list" id="notif-list" data-testid="notifications-list">
+  {% for n in notifications %}
+  <li class="notif-item" data-testid="notification-{{ n.id }}" data-status="{{ n.status.value }}">
+    <span class="notif-message">{{ n.message }}</span>
+    <span class="badge" data-testid="notification-status-{{ n.id }}">{{ n.status.value }}</span>
+    <button class="btn btn-ghost" data-testid="mark-read-{{ n.id }}" onclick="QATP.markRead({{ n.id }}, this)">Прочитать</button>
+    <button class="btn btn-ghost" data-testid="delete-{{ n.id }}" onclick="QATP.deleteNotification({{ n.id }}, this)">Удалить</button>
+  </li>
+  {% else %}
+  <li data-testid="notifications-empty">Нет уведомлений</li>
+  {% endfor %}
+</ul>
+<div id="infinite-sentinel" data-testid="infinite-sentinel"></div>
+{% endblock %}
+{% block scripts %}<script>QATP.initInfiniteScroll();</script>{% endblock %}

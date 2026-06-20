@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Вход — QA Training Platform{% endblock %}
+{% block auth_content %}
+<div class="auth-card" data-testid="login-card">
+  <h1>Вход в систему</h1>
+  {% if error %}
+  <div class="alert alert-error" data-testid="login-error">{{ error }}</div>
+  {% endif %}
+  <form method="post" action="/web/login" data-testid="login-form">
+    <label>Email
+      <input type="email" name="email" required data-testid="email-input" autocomplete="username">
+    </label>
+    <label>Пароль
+      <input type="password" name="password" required data-testid="password-input" autocomplete="current-password">
+    </label>
+    <label class="checkbox">
+      <input type="checkbox" name="remember" data-testid="remember-me-checkbox"> Запомнить меня
+    </label>
+    <button type="submit" class="btn btn-primary" data-testid="login-button">Войти</button>
+  </form>
+  <div class="auth-links">
+    <a href="/register" data-testid="register-link">Регистрация</a>
+    <a href="#" data-testid="forgot-password-link">Забыли пароль?</a>
+  </div>
+  <p class="hint" data-testid="demo-hint">Демо: admin@test.com / Password123!</p>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Доступ запрещён{% endblock %}
+{% block page_id %}forbidden{% endblock %}
+{% block content %}
+<h1 data-testid="forbidden-title">403 — Доступ запрещён</h1>
+<p data-testid="forbidden-message">У вашей роли нет прав на этот раздел.</p>
+<a href="/dashboard" class="btn" data-testid="back-to-dashboard">На дашборд</a>
+{% endblock %}

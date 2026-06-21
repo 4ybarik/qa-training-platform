@@ -9,7 +9,7 @@ import pytest
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8000")
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def base_url() -> str:
     return BASE_URL
 

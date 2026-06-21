@@ -8,3 +8,5 @@ venv/
 node_modules/
 .playwright/
 test-results/
+.DS_Store
+.DS_Store

@@ -179,7 +179,7 @@ pipeline {
                           -v "${ALLURE_VOLUME}:/allure-results" \
                           -w /e2e \
                           -e BASE_URL=http://app:8000 \
-                          mcr.microsoft.com/playwright/python:v1.45.0-jammy \
+                          mcr.microsoft.com/playwright/python:v1.60.0-jammy \
                           sh -c "pip install -r requirements.txt --quiet && \
                                  python -m pytest --alluredir=/allure-results"
                     '''

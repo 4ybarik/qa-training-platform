@@ -120,8 +120,13 @@ services:
       # Скрипт задаёт Jenkins URL и включает локальную аутентификацию, если
       # JENKINS_ADMIN_PASSWORD задан во внешнем .env.
       - ./jenkins/init.groovy.d/01-local-security.groovy:/var/jenkins_home/init.groovy.d/01-local-security.groovy:ro
+      - ./jenkins/init.groovy.d/02-locale-timezone.groovy:/var/jenkins_home/init.groovy.d/02-locale-timezone.groovy:ro
     environment:
-      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      # Keep Jenkins UI and build timestamps aligned with the user's Moscow
+      # environment. Locale plugin settings below additionally force Russian
+      # UI instead of depending on the browser Accept-Language header.
+      TZ: "${TZ:-Europe/Moscow}"
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false -Duser.timezone=${TZ:-Europe/Moscow} -Duser.language=ru -Duser.country=RU"
       JENKINS_URL: "${JENKINS_URL:-http://127.0.0.1:8080/}"
       JENKINS_ADMIN_ID: "${JENKINS_ADMIN_ID:-admin}"
       JENKINS_ADMIN_PASSWORD: "${JENKINS_ADMIN_PASSWORD:-}"

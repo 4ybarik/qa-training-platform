@@ -33,6 +33,7 @@ RUN apt-get update && \
 # reproducible setup step).
 RUN jenkins-plugin-cli --plugins \
       git:5.10.1 \
+      locale:641.v84f22d75fd8b_ \
       junit:1416.vd753e036de5e \
       timestamper:1.30
 

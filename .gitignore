@@ -8,5 +8,8 @@ venv/
 node_modules/
 .playwright/
 test-results/
+ci-artifacts/
+allure-results/
+quality-history/
 .DS_Store
 .DS_Store

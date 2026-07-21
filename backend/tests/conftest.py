@@ -12,14 +12,17 @@ _TEST_DB = pathlib.Path(__file__).resolve().parent / "test.db"
 
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{_TEST_DB}")
 os.environ.setdefault("ENVIRONMENT", "development")  # включает seed на старте
-os.environ.setdefault("SECRET_KEY", "test-secret")
+os.environ["SECRET_KEY"] = "test-secret-at-least-32-bytes-long!"
+os.environ["ALLOW_TEST_MUTATIONS"] = "true"
 
 # Чистим БД до старта сессии тестов.
 if _TEST_DB.exists():
     _TEST_DB.unlink()
 
 from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy.orm import Session  # noqa: E402
 
+from app.core.database import engine, get_db  # noqa: E402
 from app.main import app  # noqa: E402
 
 
@@ -48,6 +51,32 @@ def _clear_client_cookies(client):
     client.cookies.clear()
     yield
     client.cookies.clear()
+
+
+@pytest.fixture(autouse=True)
+def _rollback_database_after_test(client):
+    """Каждый тест получает транзакцию, которая всегда откатывается.
+
+    Приложение внутри теста может вызывать ``commit``: сессия привязана к уже
+    открытой транзакции соединения, поэтому данные видны в текущем тесте, но не
+    протекают в следующий. Seed остаётся за пределами этой транзакции.
+    """
+    connection = engine.connect()
+    transaction = connection.begin()
+    session = Session(bind=connection, expire_on_commit=False)
+
+    def override_get_db():
+        yield session
+
+    app.dependency_overrides[get_db] = override_get_db
+    try:
+        yield
+    finally:
+        app.dependency_overrides.pop(get_db, None)
+        session.close()
+        if transaction.is_active:
+            transaction.rollback()
+        connection.close()
 
 
 @pytest.fixture

@@ -1,5 +1,5 @@
 """API профиля, уведомлений, администрирования и проверки состояния."""
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -12,6 +12,7 @@ from app.domain.schemas import (
     AuditLogOut, ErrorResponse, MessageResponse, NotificationCreate, NotificationOut,
     ProfileOut, ProfileUpdate, RoleUpdate, UserActiveUpdate, UserOut,
 )
+from app.practice.mutations import is_active
 from app.services.admin import AdminService, NotificationService, ProfileService
 
 # ---------- Профиль ----------
@@ -108,8 +109,9 @@ health_router = APIRouter(tags=["health"])
 
 
 @health_router.get("/health")
-def health() -> dict:
-    return {"status": "ok", "version": get_settings().app_version}
+def health(request: Request) -> dict:
+    status_value = "degraded" if is_active(request, "health-status") else "ok"
+    return {"status": status_value, "version": get_settings().app_version}
 
 
 @health_router.get("/liveness")

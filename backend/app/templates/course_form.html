@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}{{ 'Новый курс' if mode == 'create' else 'Редактирование курса' }} — QA Training Platform{% endblock %}
+{% block title %}{{ t('new_course') if mode == 'create' else t('editing_course') }} — QA Training Platform{% endblock %}
 {% block page_id %}course-form{% endblock %}
 {% block content %}
-<a href="/courses" class="back-link" data-testid="back-to-courses">← К каталогу</a>
-<h1 data-testid="course-form-title">{{ 'Новый курс' if mode == 'create' else 'Редактирование курса' }}</h1>
+<a href="/courses" class="back-link" data-testid="back-to-courses">{{ t('back_to_catalog') }}</a>
+<h1 data-testid="course-form-title">{{ t('new_course') if mode == 'create' else t('editing_course') }}</h1>
 
 {% if error %}
 <div class="alert alert-error" data-testid="course-form-error">{{ error }}</div>
@@ -12,22 +12,22 @@
 <form method="post"
       action="{{ '/web/courses/new' if mode == 'create' else '/web/courses/' ~ course.id ~ '/edit' }}"
       class="card" data-testid="course-form">
-  <label>Название
+  <label>{{ t('title') }}
     <input type="text" name="title" required maxlength="200"
            value="{{ course.title if course else '' }}" data-testid="course-title-input">
   </label>
-  <label>Описание
+  <label>{{ t('description') }}
     <textarea name="description" rows="4" data-testid="course-description-input">{{ course.description if course else '' }}</textarea>
   </label>
-  <label>Цена
+  <label>{{ t('price') }}
     <input type="number" name="price" step="0.01" min="0"
            value="{{ course.price if course else 0 }}" data-testid="course-price-input">
   </label>
-  <label>Категория
+  <label>{{ t('category') }}
     <input type="text" name="category" maxlength="100"
            value="{{ course.category if course else 'general' }}" data-testid="course-category-input">
   </label>
-  <label>Статус
+  <label>{{ t('status') }}
     <select name="status" data-testid="course-status-select">
       {% for s in ['DRAFT', 'PUBLISHED', 'ARCHIVED'] %}
       <option value="{{ s }}" {% if course and course.status.value == s %}selected{% elif not course and s == 'PUBLISHED' %}selected{% endif %}>{{ s }}</option>
@@ -35,7 +35,7 @@
     </select>
   </label>
   <button type="submit" class="btn btn-primary" data-testid="course-form-submit">
-    {{ 'Создать курс' if mode == 'create' else 'Сохранить изменения' }}
+    {{ t('create_course') if mode == 'create' else t('save_changes') }}
   </button>
 </form>
 {% endblock %}

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Уведомления — QA Training Platform{% endblock %}
+{% block title %}{{ t('notifications') }} — QA Training Platform{% endblock %}
 {% block page_id %}notifications{% endblock %}
 {% block content %}
-<h1 data-testid="notifications-title">Уведомления</h1>
+<h1 data-testid="notifications-title">{{ t('notifications') }}</h1>
 
 <div class="filters" data-testid="notifications-filters">
-  <button class="btn btn-ghost" data-testid="filter-all" onclick="QATP.filterNotifications('ALL')">Все</button>
-  <button class="btn btn-ghost" data-testid="filter-unread" onclick="QATP.filterNotifications('UNREAD')">Непрочитанные</button>
-  <button class="btn btn-ghost" data-testid="filter-read" onclick="QATP.filterNotifications('READ')">Прочитанные</button>
+  <button class="btn btn-ghost" data-testid="filter-all" onclick="QATP.filterNotifications('ALL')">{{ t('all') }}</button>
+  <button class="btn btn-ghost" data-testid="filter-unread" onclick="QATP.filterNotifications('UNREAD')">{{ t('unread_plural') }}</button>
+  <button class="btn btn-ghost" data-testid="filter-read" onclick="QATP.filterNotifications('READ')">{{ t('read_plural') }}</button>
 </div>
 
 <ul class="notif-list" id="notif-list" data-testid="notifications-list">
@@ -15,13 +15,15 @@
   <li class="notif-item" data-testid="notification-{{ n.id }}" data-status="{{ n.status.value }}">
     <span class="notif-message">{{ n.message }}</span>
     <span class="badge" data-testid="notification-status-{{ n.id }}">{{ n.status.value }}</span>
-    <button class="btn btn-ghost" data-testid="mark-read-{{ n.id }}" onclick="QATP.markRead({{ n.id }}, this)">Прочитать</button>
-    <button class="btn btn-ghost" data-testid="delete-{{ n.id }}" onclick="QATP.deleteNotification({{ n.id }}, this)">Удалить</button>
+    <button class="btn btn-ghost" data-testid="mark-read-{{ n.id }}" onclick="QATP.markRead({{ n.id }}, this)">{{ t('mark_read') }}</button>
+    <button class="btn btn-ghost" data-testid="delete-{{ n.id }}" onclick="QATP.deleteNotification({{ n.id }}, this)">{{ t('delete') }}</button>
   </li>
   {% else %}
-  <li data-testid="notifications-empty">Нет уведомлений</li>
+  <li data-testid="notifications-empty">{{ t('no_notifications') }}</li>
   {% endfor %}
 </ul>
-<div id="infinite-sentinel" data-testid="infinite-sentinel"></div>
+<div id="infinite-sentinel" data-testid="infinite-sentinel"
+     data-offset="{{ notification_offset }}"
+     data-has-more="{{ 'true' if notifications_has_more else 'false' }}"></div>
 {% endblock %}
 {% block scripts %}<script>QATP.initInfiniteScroll();</script>{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ t('practice_title') }} — QA Training Platform{% endblock %}
+{% block page_id %}practice{% endblock %}
+{% block content %}
+<section class="practice-hero" data-testid="practice-hero">
+  <div>
+    <p class="eyebrow">IDE → GIT → JENKINS → ALLURE</p>
+    <h1 data-testid="practice-title">{{ t('practice_title') }}</h1>
+    <p>{{ t('practice_intro') }}</p>
+  </div>
+  <div class="practice-summary" data-testid="practice-summary">
+    <strong>{{ total }} {{ t('practice_tasks_count') }}</strong>
+    <code>student_tests/**/test_*.py</code>
+    <a class="btn" href="/docs" target="_blank">OpenAPI</a>
+  </div>
+</section>
+
+<form class="filters card" method="get" action="/practice" data-testid="practice-filters">
+  <label>{{ t('practice_track') }}
+    <select name="track" data-testid="practice-track-filter">
+      <option value="">{{ t('practice_all_tracks') }}</option>
+      {% for item in all_tracks %}<option value="{{ item.slug }}" {% if selected_track == item.slug %}selected{% endif %}>{{ item.title }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>{{ t('practice_difficulty') }}
+    <select name="difficulty" data-testid="practice-difficulty-filter">
+      <option value="">{{ t('practice_all_levels') }}</option>
+      <option value="basic" {% if selected_difficulty == 'basic' %}selected{% endif %}>Basic</option>
+      <option value="intermediate" {% if selected_difficulty == 'intermediate' %}selected{% endif %}>Intermediate</option>
+      <option value="advanced" {% if selected_difficulty == 'advanced' %}selected{% endif %}>Advanced</option>
+    </select>
+  </label>
+  <button class="btn btn-primary" type="submit" data-testid="practice-filter-apply">{{ t('apply') }}</button>
+  <a class="btn btn-ghost" href="/practice">{{ t('reset') }}</a>
+</form>
+
+<div class="practice-tracks" data-testid="practice-tracks">
+{% for track in tracks %}
+  <section class="practice-track" data-testid="practice-track-{{ track.slug }}">
+    <header><h2>{{ track.title }}</h2><p>{{ track.description }}</p></header>
+    <div class="practice-grid">
+    {% for challenge in track.challenges %}
+      <article class="challenge-card" data-testid="challenge-{{ challenge.slug }}">
+        <div class="challenge-meta"><span class="badge">{{ challenge.difficulty }}</span>{% for marker in challenge.markers %}<code>@{{ marker }}</code>{% endfor %}</div>
+        <h3>{{ challenge.title }}</h3>
+        <p>{{ challenge.task }}</p>
+        <code class="target">{{ challenge.target }}</code>
+        <a class="btn" href="/practice/challenges/{{ challenge.slug }}" data-testid="open-challenge-{{ challenge.slug }}">{{ t('practice_open_task') }}</a>
+      </article>
+    {% endfor %}
+    </div>
+  </section>
+{% else %}
+  <div class="card" data-testid="practice-empty">{{ t('practice_no_tasks') }}</div>
+{% endfor %}
+</div>
+{% endblock %}

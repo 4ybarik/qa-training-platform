@@ -19,6 +19,26 @@ services:
       timeout: 3s
       retries: 10
 
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  wiremock:
+    image: wiremock/wiremock:3.13.2
+    command: ["--global-response-templating", "--verbose"]
+    volumes:
+      # При запуске из Jenkins Docker CLI обращается к демону хоста через
+      # docker.sock. Поэтому относительный ./wiremock превращается в
+      # /workspace/wiremock (путь только внутри контейнера Jenkins) и
+      # Docker Desktop отклоняет такой mount. HOST_PROJECT_DIR задаётся
+      # docker-compose для Jenkins; локально сохраняется fallback на .
+      - ${HOST_PROJECT_DIR:-.}/wiremock:/home/wiremock:ro
+
   app:
     build:
       context: ./backend
@@ -35,9 +55,43 @@ services:
       DATABASE_URL: postgresql+psycopg://qatp:qatp@db:5432/qatp
       ENVIRONMENT: development        # запускает seed на старте
       SECRET_KEY: dev-secret-change-me
+      TEST_SUPPORT_KEY: ${TEST_SUPPORT_KEY:-local-test-support-key}
+      ALLOW_TEST_MUTATIONS: "true"
+      REDIS_URL: redis://redis:6379/0
+      EXTERNAL_SERVICE_URL: http://wiremock:8080
     # Порты на хост — см. комментарий у db выше, та же логика.
     depends_on:
       db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      wiremock:
+        condition: service_started
+    volumes:
+      # Аватары не теряются при пересоздании контейнера приложения.
+      - avatar_uploads:/app/app/static/uploads/avatars
+      - quality_history:/app/quality-history
+    networks:
+      default:
+        # Dotted host is accepted consistently by Firefox/WebKit for
+        # host-only cookies; the single-label service name is still retained
+        # for API clients and backwards compatibility.
+        aliases:
+          - app.test
+
+  worker:
+    build:
+      context: ./backend
+      args:
+        APP_VERSION: ${APP_VERSION:-0.0.0-dev}
+    command: ["rq", "worker", "qa-training", "--url", "redis://redis:6379/0"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://qatp:qatp@db:5432/qatp
+      ENVIRONMENT: development
+      SECRET_KEY: dev-secret-change-me
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
         condition: service_healthy
 
   # ---------- CI/CD: Jenkins + Allure ----------
@@ -50,17 +104,27 @@ services:
     # Без этого доступ к docker.sock есть, а самой программы `docker` внутри
     # контейнера нет — пайплайн падает с "docker: not found".
     build: ./jenkins
+    # Установка плагинов завершает JVM через safe-restart. Без политики
+    # рестарта контейнер остаётся остановленным и Jenkins недоступен.
+    restart: unless-stopped
     user: root  # упрощает доступ к docker.sock независимо от GID хостовой группы docker
     ports:
-      - "8080:8080"   # веб-интерфейс Jenkins
-      - "50000:50000"  # порт для агентов Jenkins (не используется при одном узле)
+      - "127.0.0.1:8080:8080"   # веб-интерфейс Jenkins, только локальный доступ
+      - "127.0.0.1:50000:50000"  # агентский порт, только локальный доступ
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock  # доступ к Docker хоста (Docker-outside-of-Docker)
       - ./:/workspace  # репозиторий проекта виден джобе для checkout без git-сервера
       - allure_results:/workspace/allure-results
+      - quality_history:/quality-history
+      # Скрипт задаёт Jenkins URL и включает локальную аутентификацию, если
+      # JENKINS_ADMIN_PASSWORD задан во внешнем .env.
+      - ./jenkins/init.groovy.d/01-local-security.groovy:/var/jenkins_home/init.groovy.d/01-local-security.groovy:ro
     environment:
       JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      JENKINS_URL: "${JENKINS_URL:-http://127.0.0.1:8080/}"
+      JENKINS_ADMIN_ID: "${JENKINS_ADMIN_ID:-admin}"
+      JENKINS_ADMIN_PASSWORD: "${JENKINS_ADMIN_PASSWORD:-}"
       # ВАЖНО для Docker-outside-of-Docker: путь /workspace существует только
       # ВНУТРИ контейнера Jenkins. Когда Jenkins запускает ДОЧЕРНИЙ контейнер
       # через docker run/docker compose run (используя проброшенный docker.sock
@@ -86,6 +150,13 @@ services:
 
 volumes:
   pgdata:
+  avatar_uploads:
   jenkins_home:
   allure_results:
   allure_reports:
+  quality_history:
+    # История качества должна переживать пересоздание CI-стека. Jenkins
+    # использует уникальное имя Compose-проекта на каждую сборку, поэтому
+    # без фиксированного имени каждая сборка получила бы собственную пустую
+    # историю.
+    name: qa-training-platform_quality_history

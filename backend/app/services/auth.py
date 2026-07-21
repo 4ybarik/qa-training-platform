@@ -14,6 +14,10 @@ settings = get_settings()
 
 # Единый лимитер на процесс (для учебного полигона достаточно).
 login_limiter = RateLimiter(settings.rate_limit_login_max, settings.rate_limit_window_seconds)
+password_reset_limiter = RateLimiter(
+    settings.rate_limit_login_max,
+    settings.rate_limit_window_seconds,
+)
 
 
 class AuthService:
@@ -52,6 +56,36 @@ class AuthService:
         self.db.add(AuditLog(user_id=user.id, action="user_logged_in", payload=email))
         self.users.save()
         return self._issue(user)
+
+    def reset_password(
+        self,
+        email: str,
+        new_password: str,
+        *,
+        client_key: str = "global",
+    ) -> User:
+        """Меняет пароль напрямую — только для локального учебного стенда.
+
+        Доступность HTTP-формы ограничивается ``ENVIRONMENT=development`` в
+        web-слое. Лимитер защищает даже учебный сценарий от бесконечных попыток.
+        """
+        normalized_email = email.strip()
+        if not password_reset_limiter.hit(f"password-reset:{client_key}:{normalized_email}"):
+            raise RateLimitError("Слишком много попыток сброса пароля. Повторите позже.")
+        user = self.users.get_by_email(normalized_email)
+        if not user:
+            raise AuthError("Пользователь с таким email не найден")
+        user.password_hash = security.hash_password(new_password)
+        self.db.add(
+            AuditLog(
+                user_id=user.id,
+                action="password_reset",
+                payload=normalized_email,
+            )
+        )
+        self.users.save()
+        password_reset_limiter.reset(f"password-reset:{client_key}:{normalized_email}")
+        return user
 
     def refresh(self, refresh_token: str) -> tuple[str, str, User]:
         try:

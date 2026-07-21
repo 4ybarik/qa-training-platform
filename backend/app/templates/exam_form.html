@@ -1,28 +1,28 @@
 {% extends "base.html" %}
-{% block title %}Новый экзамен — QA Training Platform{% endblock %}
+{% block title %}{{ t('new_exam') }} — QA Training Platform{% endblock %}
 {% block page_id %}exam-form{% endblock %}
 {% block content %}
-<a href="/courses/{{ course.id }}" class="back-link" data-testid="back-to-course">← К курсу «{{ course.title }}»</a>
-<h1 data-testid="exam-form-title">Новый экзамен</h1>
+<a href="/courses/{{ course.id }}" class="back-link" data-testid="back-to-course">{{ t('back_to_course', title=course.title) }}</a>
+<h1 data-testid="exam-form-title">{{ t('new_exam') }}</h1>
 
 {% if error %}
 <div class="alert alert-error" data-testid="exam-form-error">{{ error }}</div>
 {% endif %}
 
 <form method="post" action="/web/courses/{{ course.id }}/exams/new" class="card" data-testid="exam-form-admin">
-  <label>Название экзамена
+  <label>{{ t('exam_title') }}
     <input type="text" name="title" required maxlength="200" data-testid="exam-title-input">
   </label>
-  <label>Длительность, мин
+  <label>{{ t('duration_minutes') }}
     <input type="number" name="duration_minutes" value="15" min="1" max="240" data-testid="exam-duration-input">
   </label>
 
-  <h2>Вопросы</h2>
+  <h2>{{ t('questions') }}</h2>
   <div id="questions-container" data-testid="questions-container"></div>
-  <button type="button" class="btn" data-testid="add-question-button" onclick="QATPAdmin.addQuestion()">+ Добавить вопрос</button>
+  <button type="button" class="btn" data-testid="add-question-button" onclick="QATPAdmin.addQuestion()">{{ t('add_question') }}</button>
 
   <div style="margin-top:16px">
-    <button type="submit" class="btn btn-primary" data-testid="exam-form-submit">Создать экзамен</button>
+    <button type="submit" class="btn btn-primary" data-testid="exam-form-submit">{{ t('create_exam') }}</button>
   </div>
 </form>
 
@@ -47,18 +47,18 @@ window.QATPAdmin = (function () {
     fieldset.setAttribute("data-testid", `question-block-${qi}`);
 
     const legend = document.createElement("legend");
-    legend.textContent = `Вопрос ${qi} `;
+    legend.textContent = QATP.t("question_number", { number: qi });
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
     removeBtn.className = "btn btn-ghost";
     removeBtn.setAttribute("data-testid", `remove-question-${qi}`);
-    removeBtn.textContent = "Удалить вопрос";
+    removeBtn.textContent = QATP.t("remove_question");
     removeBtn.onclick = () => fieldset.remove();
     legend.appendChild(removeBtn);
     fieldset.appendChild(legend);
 
     const textLabel = document.createElement("label");
-    textLabel.textContent = "Текст вопроса";
+    textLabel.textContent = QATP.t("question_text");
     const textInput = document.createElement("input");
     textInput.type = "text";
     textInput.name = fieldName("question", qi);
@@ -69,7 +69,7 @@ window.QATPAdmin = (function () {
     fieldset.appendChild(textLabel);
 
     const typeLabel = document.createElement("label");
-    typeLabel.textContent = "Тип вопроса";
+    typeLabel.textContent = QATP.t("question_type");
     const typeSelect = document.createElement("select");
     typeSelect.name = fieldName("qtype", qi);
     typeSelect.setAttribute("data-testid", `question-type-${qi}`);
@@ -92,7 +92,7 @@ window.QATPAdmin = (function () {
     addAnswerBtn.type = "button";
     addAnswerBtn.className = "btn btn-ghost";
     addAnswerBtn.setAttribute("data-testid", `add-answer-${qi}`);
-    addAnswerBtn.textContent = "+ Добавить вариант ответа";
+    addAnswerBtn.textContent = QATP.t("add_answer");
     addAnswerBtn.onclick = () => addAnswer(qi);
     fieldset.appendChild(addAnswerBtn);
 
@@ -114,7 +114,7 @@ window.QATPAdmin = (function () {
     const textInput = document.createElement("input");
     textInput.type = "text";
     textInput.name = fieldName("answer", qIndex, ai);
-    textInput.placeholder = "Текст варианта ответа";
+    textInput.placeholder = QATP.t("answer_text");
     textInput.setAttribute("data-testid", `answer-text-${qIndex}-${ai}`);
     row.appendChild(textInput);
 
@@ -125,7 +125,7 @@ window.QATPAdmin = (function () {
     correctInput.name = fieldName("correct", qIndex, ai);
     correctInput.setAttribute("data-testid", `answer-correct-${qIndex}-${ai}`);
     correctLabel.appendChild(correctInput);
-    correctLabel.appendChild(document.createTextNode(" правильный"));
+    correctLabel.appendChild(document.createTextNode(QATP.t("correct")));
     row.appendChild(correctLabel);
 
     container.appendChild(row);

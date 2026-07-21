@@ -1,0 +1,17 @@
+{
+  "minimum_score": 1.0,
+  "mutations": [
+    {
+      "id": "health-status",
+      "tests": ["student_tests/api/test_health_smoke.py"]
+    },
+    {
+      "id": "practice-list-phantom",
+      "tests": ["student_tests/api/test_practice_state_smoke.py"]
+    },
+    {
+      "id": "login-redirect",
+      "tests": ["student_tests/ui/test_login_smoke.py"]
+    }
+  ]
+}

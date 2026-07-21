@@ -1,5 +1,6 @@
 """Бизнес-логика курсов и записи на курс."""
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.domain.errors import ConflictError, NotFoundError
 from app.domain.models import AuditLog, Course, Enrollment, Notification
@@ -60,7 +61,14 @@ class CourseService:
         self.enrollments.add(enrollment)
         self.db.add(Notification(user_id=user_id, message=f"Вы записаны на курс «{course.title}»"))
         self.db.add(AuditLog(user_id=user_id, action="course_enrolled", payload=str(course_id)))
-        self.db.commit()
+        try:
+            self.db.commit()
+        except IntegrityError as exc:
+            # Two requests can pass the read check concurrently. The database
+            # constraint is the final arbiter, and the public contract remains
+            # the same deterministic conflict instead of a 500.
+            self.db.rollback()
+            raise ConflictError("Вы уже записаны на этот курс") from exc
         self.db.refresh(enrollment)
         return enrollment
 

@@ -1,9 +1,12 @@
 # QA Training Platform
 
-Учебная веб-платформа для практики **автоматизации тестирования**. Содержит
-реалистичный backend (REST API + серверный веб-интерфейс), базу данных,
-ролевую модель доступа, режим имитации нестабильности (*Testing Playground*) и
-готовые примеры тестов на **pytest** (API) и **Playwright** (UI/E2E).
+Практический полигон для **автоматизации тестирования**. Человек пишет код в
+локальной IDE, помещает тесты в `student_tests/`, отправляет их в проект, после
+чего Jenkins автоматически запускает новый код и публикует результат в Allure.
+В приложении нет уроков, теории и браузерного редактора решений — только каталог
+практических проверок и реальные мишени: REST API, серверный UI, PostgreSQL,
+роли, файлы, WebSocket, асинхронные операции и управляемая нестабильность.
+Полный список задач: [`AUTOMATION_PRACTICE_CATALOG.md`](./AUTOMATION_PRACTICE_CATALOG.md).
 
 Проект сознательно собран как **модульный монолит** с чистым разделением слоёв
 (api → service → repository → domain). Это сохраняет архитектурные принципы
@@ -30,6 +33,10 @@ docker compose up -d --build
 - Проверка состояния: <http://localhost:8000/health>
 - Jenkins (CI): <http://localhost:8080> — первичная настройка описана в разделе «CI/CD: Jenkins + Allure»
 - Allure-отчёты: <http://localhost:5050> — появятся после первого прогона тестов
+
+Прямой сброс пароля без отправки письма доступен на `/forgot-password` только
+при `ENVIRONMENT=development`. Это специальная функция локального учебного
+стенда; в production такой сценарий намеренно отключён.
 
 На первом запуске автоматически создаётся схема БД и загружаются демо-данные
 (50 курсов, ~100 экзаменов, ~500 вопросов, пользователи и уведомления).
@@ -71,6 +78,12 @@ cd backend
 python -m pytest
 ```
 
+Статические проверки и тот же coverage gate, что используется в CI:
+
+```bash
+make test-quality
+```
+
 ### E2E-тесты (Playwright, требуется запущенный сервер на :8000)
 
 ```bash
@@ -80,16 +93,29 @@ playwright install chromium
 BASE_URL=http://localhost:8000 python -m pytest
 ```
 
+### Пользовательские решения из `student_tests`
+
+```bash
+python -m pip install -r student_tests/requirements.txt
+make student-api
+make student-ui
+```
+
+Пошаговый процесс IDE → Git → Jenkins → Allure описан в
+[`ADDING_TESTS.md`](./ADDING_TESTS.md).
+
 ---
 
 ## CI/CD: Jenkins + Allure
 
 `docker compose up -d --build` поднимает не только `app`+`db`, но и **Jenkins**
-(порт `:8080`) и **Allure-сервис** (порт `:5050`) для просмотра результатов
+(локальный порт `127.0.0.1:8080`) и **Allure-сервис** (порт `:5050`) для просмотра результатов
 автотестов.
 
 Jenkins собирается из `./jenkins/Dockerfile` — это официальный образ
-`jenkins/jenkins` с доустановленным **Docker CLI**. Без этого доступ к
+`jenkins/jenkins:2.574-jdk21` с доустановленным **Docker CLI**. Версия Jenkins
+закреплена, чтобы плагины Pipeline не обновлялись до версий, требующих более
+новое ядро, чем установлено в контроллере. Без Docker CLI доступ к
 `/var/run/docker.sock` есть (канал к демону хоста), а самой команды `docker`
 внутри контейнера нет — пайплайн упадёт с `docker: not found`. Поскольку
 установка Docker CLI идёт через `apt-get`/`curl` из официального репозитория
@@ -104,7 +130,7 @@ Compose подключает **автоматически**, но только �
 Поэтому при обычной разработке (`docker compose up -d --build`, без `-f`)
 порты доступны на `localhost` как обычно. А `Jenkinsfile` запускает команды
 с явным `-f docker-compose.yml` — из-за этого override **не** подключается,
-и CI-копия стека (другое имя проекта compose — `qatp_ci`) поднимается без
+и CI-копия стека (уникальное имя проекта Compose вида `qatp_ci_<build>`) поднимается без
 портов на хост, не конкурируя за порты `5432`/`8000` с уже запущенным
 локально основным стеком (иначе была бы ошибка `port is already allocated`).
 Тестам проброс портов и не нужен — все обращения идут по внутренним
@@ -142,20 +168,28 @@ DNS-именам docker-сети (`db:5432`, `app:8000`), не через `local
    ```bash
    docker compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
    ```
-3. Установите рекомендуемые плагины. Плагин **Allure Jenkins Plugin**
+3. Jenkins автоматически задаёт URL `http://127.0.0.1:8080/`. Контроллер
+   публикуется только на loopback-интерфейсе. Для включения аутентификации
+   задайте во внешнем `.env` (не коммитьте его) `JENKINS_ADMIN_ID` и длинный
+   случайный `JENKINS_ADMIN_PASSWORD`, затем выполните:
+   ```bash
+   docker compose up -d --build --force-recreate jenkins
+   ```
+   Если пароль не задан, режим остаётся без аутентификации только для
+   локальной разработки. Для общего или удалённого хоста пароль обязателен.
+4. Установите рекомендуемые плагины. Плагин **Allure Jenkins Plugin**
    (Manage Jenkins → Plugins → Available) можно поставить дополнительно, но
    у некоторых версий Jenkins он ставится нестабильно — это не блокирует
    остальной пайплайн (см. примечание про Allure ниже).
-4. Создайте джобу: **New Item → Pipeline** (не "Freestyle project" — пункта
-   "Pipeline" не будет в списке, если не установлен плагин **Pipeline**,
-   входящий в набор "Suggested plugins"). В настройках джобы, в разделе
-   **Pipeline**, поле **Definition** переключите на **"Pipeline script"**
-   (не "Pipeline script from SCM" — этот вариант требует настроенный Git и
-   без него падает с ошибкой `Jenkinsfile not found`). В появившееся поле
-   **Script** вставьте содержимое корневого `Jenkinsfile` целиком.
-5. Запустите сборку (Build Now). Пайплайн соберёт `app`, прогонит API-тесты
-   (pytest) и E2E-тесты (Playwright через временный контейнер, без
-   зависимости от плагина Docker Pipeline), затем опубликует Allure-отчёт.
+5. Создайте джобу: **New Item → Pipeline** и выберите
+   **Definition → Pipeline script from SCM**, SCM **Git**, URL репозитория,
+   ветку и путь `Jenkinsfile`. Каждый push теперь сначала делает настоящий
+   `checkout scm`, а затем запускает тесты из того же commit.
+6. Настройте webhook Git-провайдера на Jenkins (polling `H/5 * * * *` остаётся
+   резервным вариантом) и запустите первую сборку через **Build Now**. Пайплайн
+   создаст изолированный Compose-стек с PostgreSQL, Redis, RQ и WireMock,
+   прогонит эталонные и пользовательские тесты в Chromium/Firefox/WebKit,
+   axe-core, mutation score и Locust p95.
 
 ### Просмотр отчётов Allure
 
@@ -230,6 +264,7 @@ qa-training-platform/
 ├── Jenkinsfile                # CI-пайплайн: build -> pytest -> Playwright -> Allure
 ├── ARCHITECTURE.md            # как расширять проект (БД, слои, RBAC, новые сервисы)
 ├── ADDING_TESTS.md            # как добавлять автотесты, чтобы они шли в Jenkins + Allure
+├── AUTOMATION_PRACTICE_CATALOG.md # каталог задач без уроков и теории
 ├── CHANGELOG.md                # история изменений по версиям (Keep a Changelog)
 ├── Makefile                   # ярлыки: up/down/test/e2e/seed
 ├── jenkins/
@@ -250,7 +285,8 @@ qa-training-platform/
 │       ├── seed.py            # демо-данные
 │       └── main.py            # сборка приложения
 │   └── tests/                 # API-тесты (pytest + TestClient, вкл. RBAC/admin)
-└── e2e/                       # примеры Playwright-тестов
+├── e2e/                       # эталонные Playwright-тесты самого полигона
+└── student_tests/             # решения ученика: api/contract/integration/ui
 ```
 
 **Поток запроса:** `api (роутер)` принимает HTTP, проверяет права через
@@ -283,6 +319,9 @@ qa-training-platform/
 | Навык                         | Где практиковать                                   |
 |-------------------------------|----------------------------------------------------|
 | Формы, все типы полей         | `/register` (text, password, date, select, radio, checkbox) |
+| Каталог практических задач    | `/practice`: мишени, критерии и путь файла теста    |
+| Специальные UI-компоненты     | `/practice/components`: iframe, Shadow DOM, динамика, dialog |
+| RU/EN и локализация           | явный переключатель языка на каждой странице        |
 | Аутентификация и сессии       | `/login`, cookie `access_token`, `/api/auth/*`     |
 | Таблицы, поиск, фильтры, сортировка, пагинация | `/courses`                       |
 | Переключение представлений    | таблица ↔ карточки на `/courses`                   |
@@ -294,14 +333,19 @@ qa-training-platform/
 | Бесконечная прокрутка         | `/notifications`                                   |
 | AJAX-действия (fetch)         | прочтение/удаление уведомлений, смена роли         |
 | Ролевой доступ (RBAC)         | `/admin` и админ-CRUD (курсы/экзамены/уведомления/пользователи) видны и доступны только ADMIN; USER может только просматривать |
-| Нестабильность (flaky)        | `/playground`: задержки и случайные ошибки 500     |
+| Нестабильность (flaky)        | `/playground`: детерминированные slow/fail/fail-first/malformed-json |
 | API-тестирование             | Swagger `/docs`, эндпоинты `/api/*`                |
+| Контракты и идемпотентность  | `/api/practice/schema/*`, `/api/practice/resources`|
+| Файлы и async polling        | `/api/practice/files`, `/api/practice/jobs`        |
+| Redirects, cookies, webhooks | `/api/practice/redirect/*`, `cookies/*`, `webhooks`|
 
 ### Testing Playground
 
-На странице `/playground` (или заголовком `X-Playground: on` к запросам `/api`)
-включается имитация нестабильного бэкенда: искусственные задержки и случайные
-ответы `500`. Это полигон для отработки ожиданий, таймаутов и ретраев.
+На странице `/playground` описаны воспроизводимые сценарии, включаемые заголовком
+`X-Playground-Scenario`: `slow`, `fail`, `fail-first` и `malformed-json`.
+Для `fail-first` обязателен уникальный `X-Playground-Run`, а задержка задаётся
+`X-Playground-Latency-Ms`. Вероятностный режим `X-Playground: on` сохранён как
+отдельное упражнение; глобально его может менять только `ADMIN`.
 
 ---
 
@@ -324,6 +368,15 @@ qa-training-platform/
 | PUT   | `/api/exams/{id}`                      | изменить экзамен (**ADMIN**)     |
 | DELETE| `/api/exams/{id}`                      | удалить экзамен (**ADMIN**)      |
 | POST  | `/api/exams/{id}/submit`               | отправка ответов, результат      |
+| GET   | `/api/practice/catalog`                | каталог практических задач       |
+| GET/POST | `/api/practice/echo`                | query/header/body echo           |
+| GET   | `/api/practice/status/{code}`          | детерминированные HTTP-статусы   |
+| GET   | `/api/practice/schema/{variant}`       | варианты контрактной схемы       |
+| CRUD  | `/api/practice/resources`              | CRUD, пагинация, ETag, идемпотентность |
+| POST/GET | `/api/practice/jobs`                | асинхронная задача и polling     |
+| POST/GET | `/api/practice/files`               | загрузка и скачивание файлов     |
+| POST/GET/DELETE | `/api/practice/webhooks`      | изолированный регистратор событий|
+| DELETE| `/api/practice/state`                   | адресный teardown namespace      |
 | GET   | `/api/notifications`                   | мои уведомления                  |
 | POST  | `/api/admin/notifications`             | отправить уведомление: одному или всем (**ADMIN**) |
 | GET   | `/api/admin/users`                     | список пользователей (**ADMIN**) |

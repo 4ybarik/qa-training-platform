@@ -1,29 +1,34 @@
 {% extends "base.html" %}
-{% block title %}Профиль — QA Training Platform{% endblock %}
+{% block title %}{{ t('profile') }} — QA Training Platform{% endblock %}
 {% block page_id %}profile{% endblock %}
 {% block content %}
-<h1 data-testid="profile-title">Профиль</h1>
+<h1 data-testid="profile-title">{{ t('profile') }}</h1>
 {% if saved %}
-<div class="alert alert-ok" data-testid="profile-saved">Изменения сохранены</div>
+<div class="alert alert-ok" data-testid="profile-saved">{{ t('changes_saved') }}</div>
+{% endif %}
+{% if profile_error %}
+<div class="alert alert-error" data-testid="profile-error">{{ profile_error }}</div>
 {% endif %}
 
 <form method="post" action="/web/profile" enctype="multipart/form-data" data-testid="profile-form">
-  <label>Аватар
-    <input type="file" name="avatar" accept="image/*" data-testid="avatar-upload">
+  <label>{{ t('avatar') }}
+    {% if profile.avatar_url %}<img class="avatar-preview" src="{{ profile.avatar_url }}" alt="{{ t('avatar') }}" data-testid="avatar-preview">{% endif %}
+    <input type="file" name="avatar" accept="image/png,image/jpeg,image/webp" data-testid="avatar-upload">
+    <small class="muted">{{ t('avatar_help') }}</small>
   </label>
-  <label>Телефон
+  <label>{{ t('phone') }}
     <input type="text" name="phone" value="{{ profile.phone or '' }}" data-testid="phone-input">
   </label>
-  <label>Адрес
+  <label>{{ t('address') }}
     <input type="text" name="address" value="{{ profile.address or '' }}" data-testid="address-input">
   </label>
-  <label>Навыки (множественный выбор)
+  <label>{{ t('skills_multiple') }}
     <select name="skills" multiple size="6" data-testid="skills-multiselect">
       {% for s in ['Playwright','Selenium','Pytest','API','SQL','Kafka','Redis','Locust'] %}
       <option value="{{ s }}" {% if s in skills %}selected{% endif %}>{{ s }}</option>
       {% endfor %}
     </select>
   </label>
-  <button type="submit" class="btn btn-primary" data-testid="save-profile-button">Сохранить</button>
+  <button type="submit" class="btn btn-primary" data-testid="save-profile-button">{{ t('save') }}</button>
 </form>
 {% endblock %}

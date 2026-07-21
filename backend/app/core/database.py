@@ -5,7 +5,7 @@
 """
 from collections.abc import Iterator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import get_settings
@@ -46,3 +46,11 @@ def init_db() -> None:
     from app.domain import models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
+    # ``create_all`` does not alter tables that already exist. Keep the local
+    # training database compatible with the concurrency contract as well as
+    # freshly-created CI databases.
+    with engine.begin() as connection:
+        connection.execute(text(
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_enrollment_user_course "
+            "ON enrollments (user_id, course_id)"
+        ))

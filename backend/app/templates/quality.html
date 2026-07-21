@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ t('quality_history') }} — QA Training Platform{% endblock %}
+{% block page_id %}quality{% endblock %}
+{% block content %}
+<h1 data-testid="quality-title">{{ t('quality_history') }}</h1>
+<p class="muted">{{ t('quality_history_intro') }}</p>
+<div class="card table-wrap">
+  <table class="data-grid" data-testid="quality-table">
+    <thead><tr>
+      <th>Build</th><th>Branch</th><th>Commit</th><th>Tests</th>
+      <th>{{ t('detected_defects') }}</th><th>Mutation score</th><th>p95, ms</th><th>s</th>
+    </tr></thead>
+    <tbody>
+    {% for item in quality_runs %}
+      <tr data-testid="quality-row-{{ loop.index }}">
+        <td>{{ item.build }}</td><td>{{ item.branch }}</td><td><code>{{ item.commit[:12] }}</code></td>
+        <td>{{ item.tests.tests }}</td>
+        <td>{{ item.tests.failures + item.tests.errors }}</td>
+        <td>{% if item.mutation.score is not none %}{{ (item.mutation.score * 100) | round(1) }}%{% else %}—{% endif %}</td>
+        <td>{{ item.performance.p95_ms or '—' }}</td><td>{{ item.duration_seconds }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8" data-testid="quality-empty">{{ t('quality_history_empty') }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

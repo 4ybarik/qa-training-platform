@@ -7,6 +7,7 @@ from datetime import date, datetime, timezone
 
 from sqlalchemy import (
     Boolean, Date, DateTime, Enum, Float, ForeignKey, Integer, String, Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -35,6 +36,9 @@ class User(Base):
     profile: Mapped["Profile"] = relationship(back_populates="user", uselist=False, cascade="all, delete-orphan")
     enrollments: Mapped[list["Enrollment"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     notifications: Mapped[list["Notification"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    exam_attempts: Mapped[list["ExamAttempt"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class Profile(Base):
@@ -68,6 +72,9 @@ class Course(Base):
 
 class Enrollment(Base):
     __tablename__ = "enrollments"
+    __table_args__ = (
+        UniqueConstraint("user_id", "course_id", name="uq_enrollment_user_course"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
@@ -89,6 +96,9 @@ class Exam(Base):
 
     course: Mapped["Course"] = relationship(back_populates="exams")
     questions: Mapped[list["Question"]] = relationship(back_populates="exam", cascade="all, delete-orphan")
+    attempts: Mapped[list["ExamAttempt"]] = relationship(
+        back_populates="exam", cascade="all, delete-orphan"
+    )
 
 
 class Question(Base):
@@ -133,4 +143,39 @@ class AuditLog(Base):
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     action: Mapped[str] = mapped_column(String(100), nullable=False)
     payload: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+class ExamAttempt(Base):
+    """История результатов нужна для прогресса и проверяемого сертификата."""
+
+    __tablename__ = "exam_attempts"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    exam_id: Mapped[int] = mapped_column(ForeignKey("exams.id"), nullable=False, index=True)
+    score: Mapped[int] = mapped_column(Integer, nullable=False)
+    passed: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+    user: Mapped["User"] = relationship(back_populates="exam_attempts")
+    exam: Mapped["Exam"] = relationship(back_populates="attempts")
+
+
+class TestRunEntity(Base):
+    """Связывает созданные через Test Data API сущности с тестовым запуском.
+
+    Таблица намеренно не использует внешние ключи: один реестр обслуживает
+    разные типы сущностей, а удаление выполняется сервисом в безопасном порядке.
+    """
+
+    __tablename__ = "test_run_entities"
+    __table_args__ = (
+        UniqueConstraint("run_id", "entity_type", "entity_id", name="uq_test_run_entity"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    entity_type: Mapped[str] = mapped_column(String(32), nullable=False)
+    entity_id: Mapped[int] = mapped_column(Integer, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)

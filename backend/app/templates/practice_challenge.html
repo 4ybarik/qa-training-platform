@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ challenge.title }} — QA Training Platform{% endblock %}
+{% block page_id %}practice-challenge{% endblock %}
+{% block content %}
+<a href="/practice" class="back-link">{{ t('back_to_practice') }}</a>
+<article class="challenge-page" data-testid="challenge-details">
+  <header>
+    <div class="challenge-meta"><span class="badge">{{ challenge.difficulty }}</span>{% for marker in challenge.markers %}<code>@{{ marker }}</code>{% endfor %}</div>
+    <h1 data-testid="challenge-title">{{ challenge.title }}</h1>
+    <p>{{ challenge.task }}</p>
+  </header>
+  <section class="card">
+    <h2>{{ t('practice_target') }}</h2>
+    <code data-testid="challenge-target">{{ challenge.target }}</code>
+  </section>
+  <section class="card">
+    <h2>{{ t('practice_acceptance') }}</h2>
+    <ul>{% for criterion in challenge.criteria %}<li>{{ criterion }}</li>{% endfor %}</ul>
+  </section>
+  <section class="card">
+    <h2>{{ t('practice_test_location') }}</h2>
+    <code data-testid="challenge-test-path">{{ challenge.test_path }}</code>
+    <pre><code>python -m pytest {{ challenge.test_path }} -v</code></pre>
+  </section>
+  <div class="alert alert-ok" data-testid="challenge-workflow">{{ t('practice_workflow_note') }}</div>
+</article>
+{% endblock %}

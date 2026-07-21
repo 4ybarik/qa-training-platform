@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ t('certificate') }} — QA Training Platform{% endblock %}
+{% block page_id %}certificate{% endblock %}
+{% block content %}
+<article class="certificate-card" data-testid="certificate">
+  <p class="eyebrow">QA TRAINING PLATFORM</p>
+  <h1>{{ t('certificate_of_completion') }}</h1>
+  <p>{{ t('certificate_confirms') }}</p>
+  <h2 data-testid="certificate-user">{{ user.first_name }} {{ user.last_name }}</h2>
+  <p>{{ t('certificate_exam') }}</p>
+  <h2 data-testid="certificate-exam">{{ exam.title }}</h2>
+  <div class="certificate-score" data-testid="certificate-score">{{ attempt.score }}%</div>
+  <p>{{ t('certificate_date') }}: {{ attempt.created_at.strftime('%Y-%m-%d') }}</p>
+  <p class="muted">ID: QATP-{{ exam.id }}-{{ user.id }}-{{ attempt.id }}</p>
+  <button class="btn btn-primary no-print" type="button" onclick="window.print()">{{ t('print_certificate') }}</button>
+</article>
+{% endblock %}

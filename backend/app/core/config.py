@@ -43,6 +43,16 @@ class Settings(BaseSettings):
     # Seed
     seed_password: str = "Password123!"
 
+    # Учебная инфраструктура. Test Data API и контролируемые мутации доступны
+    # только в development/test, но даже там требуют явный ключ/флаг.
+    test_support_key: str = "local-test-support-key"
+    allow_test_mutations: bool = False
+
+    # Интеграционные мишени.
+    redis_url: str = "redis://redis:6379/0"
+    external_service_url: str = "http://wiremock:8080"
+    quality_history_dir: str = "/app/quality-history"
+
 
 @lru_cache
 def get_settings() -> Settings:

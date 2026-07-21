@@ -1,9 +1,12 @@
 """Бизнес-логика экзаменов: получение, создание/редактирование и проверка ответов."""
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.domain.enums import QuestionType
 from app.domain.errors import NotFoundError
-from app.domain.models import Answer, AuditLog, Exam, Notification, Question
+from app.domain.models import (
+    Answer, AuditLog, Enrollment, Exam, ExamAttempt, Notification, Question,
+)
 from app.domain.schemas import ExamCreate, ExamResult, ExamSubmission, ExamUpdate
 from app.repositories.courses import CourseRepository
 from app.repositories.exams import ExamRepository
@@ -73,7 +76,7 @@ class ExamService:
 
         score = round(correct / total * 100) if total else 0
         passed = score >= PASS_THRESHOLD
-        certificate_url = f"/certificates/exam-{exam_id}-user-{user_id}.pdf" if passed else None
+        certificate_url = f"/certificates/exams/{exam_id}" if passed else None
 
         msg = (
             f"Экзамен «{exam.title}» сдан, результат {score}%."
@@ -82,6 +85,13 @@ class ExamService:
         )
         self.db.add(Notification(user_id=user_id, message=msg))
         self.db.add(AuditLog(user_id=user_id, action="exam_completed", payload=f"{exam_id}:{score}"))
+        self.db.add(ExamAttempt(user_id=user_id, exam_id=exam_id, score=score, passed=passed))
+        enrollment = self.db.scalar(select(Enrollment).where(
+            Enrollment.user_id == user_id,
+            Enrollment.course_id == exam.course_id,
+        ))
+        if enrollment is not None:
+            enrollment.progress = max(enrollment.progress or 0, 100 if passed else score)
         self.db.commit()
 
         return ExamResult(
@@ -92,9 +102,27 @@ class ExamService:
     @staticmethod
     def _is_correct(question, ans) -> bool:
         correct_ids = {a.id for a in question.answers if a.is_correct}
-        if question.type in (QuestionType.SINGLE, QuestionType.MULTI, QuestionType.DND):
+        if question.type in (QuestionType.SINGLE, QuestionType.MULTI):
             return set(ans.answer_ids) == correct_ids
+        if question.type == QuestionType.DND:
+            expected_order = [a.id for a in question.answers if a.is_correct]
+            return ans.answer_ids == expected_order
         if question.type == QuestionType.TEXT:
             expected = {a.answer.strip().lower() for a in question.answers if a.is_correct}
             return bool(ans.text) and ans.text.strip().lower() in expected
         return False
+
+    def latest_passed_attempt(self, user_id: int, exam_id: int) -> ExamAttempt:
+        attempt = self.db.scalars(
+            select(ExamAttempt)
+            .where(
+                ExamAttempt.user_id == user_id,
+                ExamAttempt.exam_id == exam_id,
+                ExamAttempt.passed.is_(True),
+            )
+            .order_by(ExamAttempt.created_at.desc(), ExamAttempt.id.desc())
+            .limit(1)
+        ).first()
+        if attempt is None:
+            raise NotFoundError("Сертификат не найден")
+        return attempt

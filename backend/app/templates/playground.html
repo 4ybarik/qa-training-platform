@@ -3,26 +3,47 @@
 {% block page_id %}playground{% endblock %}
 {% block content %}
 <h1 data-testid="playground-title">Testing Playground</h1>
-<p>Режим имитации нестабильного поведения: задержки, случайные ошибки 500, динамические элементы.</p>
+<p>{{ t('playground_description') }}</p>
 
-<div class="card">
+<div class="card" {% if user.role.value != 'ADMIN' %}hidden{% endif %}>
   <label class="checkbox">
-    <input type="checkbox" id="pg-enabled" data-testid="playground-enabled"> Включить хаос
+    <input type="checkbox" id="pg-enabled" data-testid="playground-enabled"> {{ t('enable_chaos') }}
   </label>
-  <label>Задержка, мс
+  <label>{{ t('latency_ms') }}
     <input type="number" id="pg-latency" value="800" data-testid="playground-latency">
   </label>
-  <label>Доля ошибок 500 (0–1)
+  <label>{{ t('error_rate') }}
     <input type="number" id="pg-error" step="0.1" min="0" max="1" value="0.2" data-testid="playground-error-rate">
   </label>
-  <button class="btn btn-primary" data-testid="playground-apply" onclick="QATP.applyPlayground()">Применить</button>
+  <button class="btn btn-primary" data-testid="playground-apply" onclick="QATP.applyPlayground()">{{ t('apply') }}</button>
   <span id="pg-status" data-testid="playground-status"></span>
 </div>
 
+{% if user.role.value != 'ADMIN' %}
+<div class="card alert alert-ok" data-testid="playground-admin-note">{{ t('playground_admin_only') }}</div>
+{% endif %}
+
+<div class="card" data-testid="playground-scenarios">
+  <h2>{{ t('deterministic_scenarios') }}</h2>
+  <p>{{ t('deterministic_description') }}</p>
+  <table class="data-grid">
+    <thead><tr><th>{{ t('scenario') }}</th><th>{{ t('behavior') }}</th></tr></thead>
+    <tbody>
+      <tr><td><code>slow</code></td><td>{{ t('scenario_slow') }}</td></tr>
+      <tr><td><code>fail</code></td><td>{{ t('scenario_fail') }}</td></tr>
+      <tr><td><code>fail-first</code></td><td>{{ t('scenario_fail_first') }}</td></tr>
+      <tr><td><code>malformed-json</code></td><td>{{ t('scenario_malformed') }}</td></tr>
+    </tbody>
+  </table>
+  <pre><code>curl -H 'X-Playground-Scenario: fail-first' \
+  -H 'X-Playground-Run: lesson-01' \
+  http://localhost:8000/api/courses</code></pre>
+</div>
+
 <div class="card">
-  <h2>Динамический элемент</h2>
-  <button class="btn" data-testid="spawn-dynamic" onclick="QATP.spawnDynamic()">Показать элемент через 2 c</button>
+  <h2>{{ t('dynamic_element') }}</h2>
+  <button class="btn" data-testid="spawn-dynamic" onclick="QATP.spawnDynamic()">{{ t('show_after_two_seconds') }}</button>
   <div id="dynamic-area" data-testid="dynamic-area"></div>
 </div>
 {% endblock %}
-{% block scripts %}<script>QATP.initPlayground();</script>{% endblock %}
+{% block scripts %}{% if user.role.value == 'ADMIN' %}<script>QATP.initPlayground();</script>{% endif %}{% endblock %}

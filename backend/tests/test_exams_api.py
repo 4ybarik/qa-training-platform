@@ -33,6 +33,69 @@ def test_submit_exam_all_correct(client, user_token):
     assert isinstance(result["passed"], bool)
 
 
+def _all_correct_seed_answers(exam: dict) -> list[dict]:
+    answers = []
+    for question in exam["questions"]:
+        ids: list[int] = []
+        text = None
+        if question["type"] == "SINGLE":
+            ids = [question["answers"][0]["id"]]
+        elif question["type"] == "MULTI":
+            ids = [answer["id"] for answer in question["answers"][:2]]
+        elif question["type"] == "DND":
+            ids = [answer["id"] for answer in question["answers"]]
+        elif question["type"] == "TEXT":
+            text = "data-testid"
+        answers.append({"question_id": question["id"], "answer_ids": ids, "text": text})
+    return answers
+
+
+def test_passed_exam_updates_progress_and_creates_certificate(client, user_token):
+    headers = auth(user_token)
+    assert client.post("/api/courses/1/enroll", headers=headers).status_code == 200
+    exam = client.get("/api/exams/1").json()
+
+    result = client.post(
+        "/api/exams/1/submit",
+        headers=headers,
+        json={"answers": _all_correct_seed_answers(exam)},
+    )
+
+    assert result.status_code == 200
+    assert result.json()["score"] == 100
+    assert result.json()["certificate_url"] == "/certificates/exams/1"
+    certificate = client.get(result.json()["certificate_url"], headers=headers)
+    assert certificate.status_code == 200
+    assert 'data-testid="certificate-score">100%' in certificate.text
+
+    course = client.get("/courses/1", headers=headers)
+    assert 'style="width: 100%"' in course.text
+
+
+def test_dnd_answer_requires_correct_order(client, user_token):
+    exam = client.get("/api/exams/1").json()
+    dnd = next(question for question in exam["questions"] if question["type"] == "DND")
+    correct_order = [answer["id"] for answer in dnd["answers"]]
+
+    wrong = client.post(
+        "/api/exams/1/submit",
+        headers=auth(user_token),
+        json={"answers": [{
+            "question_id": dnd["id"], "answer_ids": list(reversed(correct_order)), "text": None,
+        }]},
+    )
+    right = client.post(
+        "/api/exams/1/submit",
+        headers=auth(user_token),
+        json={"answers": [{
+            "question_id": dnd["id"], "answer_ids": correct_order, "text": None,
+        }]},
+    )
+
+    assert wrong.json()["correct"] == 0
+    assert right.json()["correct"] == 1
+
+
 def test_submit_requires_auth(client):
     assert client.post("/api/exams/1/submit", json={"answers": []}).status_code == 401
 

@@ -1,5 +1,20 @@
+{% macro language_switcher(css_class='') -%}
+<form method="post" action="/web/language" class="language-switcher {{ css_class }}" data-testid="language-switcher">
+  <input type="hidden" name="next_url"
+         value="{{ request.url.path }}{% if request.url.query %}?{{ request.url.query }}{% endif %}">
+  <span class="sr-only">{{ t('language') }}</span>
+  <div class="language-toggle" role="group" aria-label="{{ t('language') }}">
+    {% for code, label in language_options %}
+    <button type="submit" name="language" value="{{ code }}"
+            class="language-option {% if code == lang %}active{% endif %}"
+            aria-label="{{ label }}" aria-pressed="{% if code == lang %}true{% else %}false{% endif %}"
+            data-testid="language-{{ code }}">{{ code | upper }}</button>
+    {% endfor %}
+  </div>
+</form>
+{%- endmacro %}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ lang }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,22 +26,25 @@
   <header class="app-header" data-testid="app-header">
     <div class="brand" data-testid="brand">QA Training Platform</div>
     <div class="header-right">
+      {{ language_switcher() }}
       <span data-testid="current-user-email">{{ user.email }}</span>
       <span class="badge" data-testid="current-user-role">{{ user.role.value }}</span>
       <form method="post" action="/web/logout" style="display:inline">
-        <button type="submit" class="btn btn-ghost" data-testid="logout-button">Выйти</button>
+        <button type="submit" class="btn btn-ghost" data-testid="logout-button">{{ t('logout') }}</button>
       </form>
     </div>
   </header>
   <div class="app-body">
     <nav class="sidebar" data-testid="sidebar">
-      <a href="/dashboard" data-testid="nav-dashboard">Дашборд</a>
-      <a href="/courses" data-testid="nav-courses">Курсы</a>
-      <a href="/notifications" data-testid="nav-notifications">Уведомления</a>
-      <a href="/profile" data-testid="nav-profile">Профиль</a>
-      <a href="/playground" data-testid="nav-playground">Testing Playground</a>
+      <a href="/dashboard" data-testid="nav-dashboard">{{ t('nav_dashboard') }}</a>
+      <a href="/practice" data-testid="nav-practice">{{ t('nav_practice') }}</a>
+      <a href="/courses" data-testid="nav-courses">{{ t('nav_courses') }}</a>
+      <a href="/notifications" data-testid="nav-notifications">{{ t('nav_notifications') }}</a>
+      <a href="/profile" data-testid="nav-profile">{{ t('nav_profile') }}</a>
+      <a href="/playground" data-testid="nav-playground">{{ t('nav_playground') }}</a>
+      <a href="/quality" data-testid="nav-quality">{{ t('nav_quality') }}</a>
       {% if user.role.value == 'ADMIN' %}
-      <a href="/admin" data-testid="nav-admin">Админ-панель</a>
+      <a href="/admin" data-testid="nav-admin">{{ t('nav_admin') }}</a>
       {% endif %}
     </nav>
     <main class="content" data-testid="content">
@@ -34,7 +52,7 @@
     </main>
   </div>
   <footer class="app-footer" data-testid="app-footer">
-    QA Training Platform — учебный полигон автоматизации тестирования
+    QA Training Platform — {{ t('footer_description') }}
     · <span data-testid="app-version">v{{ app_version }}</span>
   </footer>
   {% else %}
@@ -45,6 +63,7 @@
   {% endif %}
 
   <div id="toast-root" class="toast-root" data-testid="toast-root"></div>
+  <script>window.QATP_MESSAGES = {{ js_messages | tojson }};</script>
   <script src="{{ url_for('static', path='js/app.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>

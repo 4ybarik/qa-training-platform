@@ -3,6 +3,16 @@
 window.QATP = (function () {
   "use strict";
 
+  const messages = window.QATP_MESSAGES || {};
+
+  function t(key, values) {
+    const template = messages[key] || key;
+    if (!values) return template;
+    return template.replace(/\{(\w+)\}/g, (match, name) =>
+      Object.prototype.hasOwnProperty.call(values, name) ? String(values[name]) : match
+    );
+  }
+
   function toast(message) {
     const root = document.getElementById("toast-root");
     if (!root) return;
@@ -122,7 +132,8 @@ window.QATP = (function () {
             // (повторный drop уже перемещённого элемента не должен дублировать поле).
             const existing = target.querySelector(`input[type="hidden"][value="${id}"]`);
             if (existing) existing.remove();
-            // Сервер сверяет набор id без учёта порядка — см. ExamService._is_correct.
+            // Порядок hidden-полей совпадает с порядком drop; сервер проверяет
+            // именно последовательность для вопросов типа DND.
             const hidden = document.createElement("input");
             hidden.type = "hidden";
             hidden.name = `q_${qid}`;
@@ -151,10 +162,10 @@ window.QATP = (function () {
         if (li) li.dataset.status = "READ";
         const badge = document.querySelector(`[data-testid="notification-status-${id}"]`);
         if (badge) badge.textContent = "READ";
-        toast("Отмечено как прочитанное");
+        toast(t("notification_marked_read"));
       }
     } catch (e) {
-      toast("Ошибка сети");
+      toast(t("network_error"));
     }
   }
 
@@ -164,10 +175,10 @@ window.QATP = (function () {
       if (r.ok) {
         const li = btn.closest(".notif-item");
         if (li) li.remove();
-        toast("Удалено");
+        toast(t("deleted"));
       }
     } catch (e) {
-      toast("Ошибка сети");
+      toast(t("network_error"));
     }
   }
 
@@ -176,21 +187,51 @@ window.QATP = (function () {
     const sentinel = document.getElementById("infinite-sentinel");
     const list = document.getElementById("notif-list");
     if (!sentinel || !list || !("IntersectionObserver" in window)) return;
-    let batch = 0;
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting && batch < 3) {
-          batch++;
-          for (let i = 0; i < 5; i++) {
-            const li = document.createElement("li");
-            li.className = "notif-item";
-            li.dataset.status = "READ";
-            li.setAttribute("data-testid", `notification-extra-${batch}-${i}`);
-            li.textContent = `Подгруженное уведомление (партия ${batch})`;
-            list.appendChild(li);
-          }
-        }
-      });
+    let offset = parseInt(sentinel.dataset.offset || "0", 10);
+    let hasMore = sentinel.dataset.hasMore === "true";
+    let loading = false;
+    const observer = new IntersectionObserver(async (entries) => {
+      if (!entries.some((entry) => entry.isIntersecting) || loading || !hasMore) return;
+      loading = true;
+      try {
+        const response = await fetch(`/api/notifications?offset=${offset}&limit=20`);
+        if (!response.ok) throw new Error("notification page failed");
+        const items = await response.json();
+        items.forEach((item) => {
+          const li = document.createElement("li");
+          li.className = "notif-item";
+          li.dataset.status = item.status;
+          li.setAttribute("data-testid", `notification-${item.id}`);
+
+          const message = document.createElement("span");
+          message.className = "notif-message";
+          message.textContent = item.message;
+          const badge = document.createElement("span");
+          badge.className = "badge";
+          badge.setAttribute("data-testid", `notification-status-${item.id}`);
+          badge.textContent = item.status;
+          const readButton = document.createElement("button");
+          readButton.className = "btn btn-ghost";
+          readButton.setAttribute("data-testid", `mark-read-${item.id}`);
+          readButton.textContent = t("mark_read");
+          readButton.onclick = () => markRead(item.id, readButton);
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "btn btn-ghost";
+          deleteButton.setAttribute("data-testid", `delete-${item.id}`);
+          deleteButton.textContent = t("delete");
+          deleteButton.onclick = () => deleteNotification(item.id, deleteButton);
+          li.append(message, badge, readButton, deleteButton);
+          list.appendChild(li);
+        });
+        offset += items.length;
+        hasMore = items.length === 20;
+        sentinel.dataset.offset = String(offset);
+        sentinel.dataset.hasMore = String(hasMore);
+      } catch (e) {
+        toast(t("network_error"));
+      } finally {
+        loading = false;
+      }
     });
     observer.observe(sentinel);
   }
@@ -206,12 +247,12 @@ window.QATP = (function () {
       if (r.ok) {
         const cell = document.querySelector(`[data-testid="user-role-${userId}"]`);
         if (cell) cell.textContent = role;
-        toast("Роль обновлена");
+        toast(t("role_updated"));
       } else {
-        toast("Не удалось обновить роль");
+        toast(t("role_update_failed"));
       }
     } catch (e) {
-      toast("Ошибка сети");
+      toast(t("network_error"));
     }
   }
 
@@ -242,25 +283,28 @@ window.QATP = (function () {
         body: JSON.stringify(body),
       });
       const status = document.getElementById("pg-status");
-      if (r.ok && status) status.textContent = "Применено";
-      toast("Настройки Playground применены");
+      if (r.ok && status) status.textContent = t("applied");
+      toast(t("playground_applied"));
     } catch (e) {
-      toast("Ошибка сети");
+      toast(t("network_error"));
     }
   }
 
   function spawnDynamic() {
     const area = document.getElementById("dynamic-area");
     if (!area) return;
-    area.textContent = "Загрузка…";
+    area.textContent = t("loading");
     setTimeout(() => {
-      area.innerHTML =
-        '<div class="badge badge-ok" data-testid="dynamic-element">Элемент появился</div>';
+      const element = document.createElement("div");
+      element.className = "badge badge-ok";
+      element.setAttribute("data-testid", "dynamic-element");
+      element.textContent = t("dynamic_element_appeared");
+      area.replaceChildren(element);
     }, 2000);
   }
 
   return {
-    toast, openModal, closeModal, setView, selectTab, connectNotifications,
+    t, toast, openModal, closeModal, setView, selectTab, connectNotifications,
     initExam, filterNotifications, markRead, deleteNotification,
     initInfiniteScroll, changeRole, initPlayground, applyPlayground, spawnDynamic,
   };

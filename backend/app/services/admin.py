@@ -35,6 +35,13 @@ class ProfileService:
         self.db.refresh(profile)
         return profile
 
+    def set_avatar_url(self, user_id: int, avatar_url: str) -> Profile:
+        profile = self.get(user_id)
+        profile.avatar_url = avatar_url
+        self.db.commit()
+        self.db.refresh(profile)
+        return profile
+
     @staticmethod
     def skills_list(profile: Profile) -> list[str]:
         return [s for s in (profile.skills or "").split(",") if s]

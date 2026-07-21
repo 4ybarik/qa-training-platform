@@ -1,121 +1,117 @@
-// Jenkinsfile — пайплайн CI для QA Training Platform.
+// CI/CD pipeline: Git -> isolated Docker Compose stack -> tests -> reports.
 //
-// ВАЖНО: этот Jenkinsfile — рабочая отправная точка, а не «прогнанный на проде»
-// готовый пайплайн. Реальные Jenkins-окружения отличаются версией Docker,
-// установленными плагинами и сетевыми настройками, поэтому перед первым
-// запуском проверьте: 1) у пользователя Jenkins есть доступ к docker.sock
-// (см. volume в docker-compose.yml), 2) сетевое имя "qatp_ci_default" в стадии
-// E2E соответствует реально созданной docker compose сетью (проверьте через
-// `docker network ls` после первого `docker compose up`), 3) шаг allure() в
-// post{} закомментирован по умолчанию — Allure Jenkins Plugin у некоторых
-// версий Jenkins ставится нестабильно; раскомментируйте строку в post{},
-// когда плагин установится без ошибок. До этого отчёты доступны через
-// отдельный контейнер allure на http://localhost:5050 — без участия плагина.
-//
-// Эту джобу нужно создавать как Pipeline с типом "Pipeline script" (текст
-// Jenkinsfile вставляется прямо в поле Script), а НЕ "Pipeline script from
-// SCM" — последний требует настроенный источник (Git и т.п.) и без него
-// падает с ошибкой "Jenkinsfile not found".
-//
-// Про Docker-outside-of-Docker и пути для volumes: Jenkins запускает ДОЧЕРНИЕ
-// контейнеры (для тестов) через проброшенный docker.sock хоста, а не через
-// собственный Docker-движок. Это значит, что любой volume-маунт для дочернего
-// контейнера должен указывать РЕАЛЬНЫЙ путь на хосте, а не путь, видимый
-// изнутри самого Jenkins-контейнера ("/workspace" — это путь только для
-// Jenkins, демон Docker хоста его не знает). Поэтому используется переменная
-// окружения HOST_PROJECT_DIR (см. docker-compose.yml, сервис jenkins,
-// environment.HOST_PROJECT_DIR = "${PWD}") — она прокинута в контейнер
-// Jenkins при его собственном старте и содержит реальный путь на хосте.
-//
-// Про Allure-результаты: контейнер allure (см. docker-compose.yml) слушает
-// ИМЕНОВАННЫЙ Docker volume "allure_results" — а не путь на файловой системе.
-// Имя volume, которое реально создаёт Compose, формируется как
-// "<имя_проекта>_allure_results", где имя проекта — это имя директории
-// репозитория по умолчанию (для обычного `docker compose up`, без -p).
-// Стадии тестов ниже подключаются к ЭТОМУ ЖЕ volume по полному имени —
-// специально, а не к изолированному volume CI-проекта qatp_ci, потому что
-// allure-сервис один на весь хост и должен видеть результаты любых прогонов.
-// Если вы переименуете директорию репозитория, обновите ALLURE_VOLUME ниже.
-//
-// Про порты: docker-compose.yml сам по себе НЕ пробрасывает порты db/app на
-// хост — это сделано в docker-compose.override.yml, который Docker Compose
-// подключает АВТОМАТИЧЕСКИ только при отсутствии явного -f (то есть при
-// обычном `docker compose up` для разработки). Команды в этом Jenkinsfile
-// используют явный `-f docker-compose.yml` — из-за этого override НЕ
-// подключается, и CI-копия стека (другое имя проекта — qatp_ci) поднимается
-// без портов на хост, не конкурируя с уже запущенным локально основным
-// стеком за порты 5432/8000 ("port is already allocated" больше не возникает).
-// Тестам проброс портов не нужен — все обращения идут по внутренним DNS-именам
-// docker-сети (db:5432, app:8000), без выхода на localhost хоста.
-//
-// Что делает пайплайн:
-//   1. Checkout кода (Jenkins уже видит репозиторий через volume ./:/workspace,
-//      поэтому здесь просто используется рабочая директория).
-//   2. Поднимает app + db через docker compose (полный стек проекта, без
-//      проброса портов наружу — см. примечание про порты выше).
-//   3. Прогоняет API-тесты (pytest) внутри контейнера app.
-//   4. Прогоняет E2E-тесты (Playwright) через временный контейнер с готовым
-//      образом Playwright (без отдельного Jenkins-плагина).
-//   5. Собирает allure-результаты в общую папку allure-results/, откуда их
-//      забирает контейнер allure (см. docker-compose.yml) и автоматически
-//      рендерит HTML-отчёт на http://localhost:5050.
-//   6. Публикация отчёта прямо во вкладке сборки Jenkins (через шаг allure())
-//      закомментирована по умолчанию — включите её, когда поставите плагин
-//      Allure Jenkins Plugin без ошибок (см. пункт 3 выше).
+// The job is intended to be configured as "Pipeline script from SCM" with this
+// repository as its SCM source. A polling trigger is included as a portable
+// fallback; a Git provider webhook can be used instead for faster feedback.
+// Jenkins uses Docker-outside-of-Docker, therefore HOST_PROJECT_DIR must be the
+// real host path (docker-compose.yml supplies it when the Jenkins container is
+// started). The compose project name is unique per build, so PostgreSQL,
+// Redis, RQ and WireMock are isolated from other builds.
 
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '20'))
+        timeout(time: 60, unit: 'MINUTES')
+    }
+
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+
+    parameters {
+        booleanParam(
+            name: 'RUN_MUTATIONS',
+            defaultValue: true,
+            description: 'Запустить контролируемые мутации и проверить mutation score'
+        )
+        booleanParam(
+            name: 'RUN_PERFORMANCE',
+            defaultValue: true,
+            description: 'Запустить короткий Locust smoke с порогом p95'
+        )
+    }
+
     environment {
-        COMPOSE_PROJECT_NAME = "qatp_ci"
-        ALLURE_RESULTS_DIR = "allure-results"
-        // Полное имя volume основного проекта (см. блок комментариев выше про
-        // Allure-результаты). "qa-training-platform" — это имя директории
-        // репозитория, под которым Compose назвал volume при обычном
-        // `docker compose up` (project name по умолчанию = имя директории).
-        ALLURE_VOLUME = "qa-training-platform_allure_results"
-        // Явный -f — гарантирует, что docker-compose.override.yml (с портами
-        // для разработки) НЕ подключится автоматически. Без явного -f Compose
-        // сам бы подмешал override и порты снова бы конфликтовали с хостом.
-        COMPOSE = "docker compose -f docker-compose.yml"
+        // BUILD_NUMBER делает Compose project name уникальным для каждой сборки.
+        COMPOSE_PROJECT_NAME = "qatp_ci_${BUILD_NUMBER}"
+        COMPOSE = "docker compose -p qatp_ci_${BUILD_NUMBER} -f docker-compose.yml"
+        ALLURE_VOLUME = 'qa-training-platform_allure_results'
+        ALLURE_RESULTS_DIR = 'allure-results'
+        TEST_SUPPORT_KEY = 'ci-test-support-key'
+        ALLOW_TEST_MUTATIONS = 'true'
+        PERF_P95_LIMIT_MS = '750'
+        PERF_FAILURE_RATIO = '0.01'
+        PERF_MIN_REQUESTS = '20'
     }
 
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
                 dir('/workspace') {
-                    // APP_VERSION подставляется из Git так же, как при локальной
-                    // сборке через `make up` — единый источник правды (см. config.py).
-                    // git config safe.directory нужен, потому что /workspace смонтирован
-                    // как volume с хоста — Git защищается от такого сценария по
-                    // умолчанию ("detected dubious ownership"), это снимает защиту
-                    // для этой конкретной директории.
+                    script {
+                        // The preferred mode is Pipeline script from SCM. The
+                        // local training job may still be an inline Pipeline,
+                        // where Jenkins exposes no `scm` object; in that mode
+                        // use the repository mounted by docker-compose. Never
+                        // hide a checkout failure when neither source exists.
+                        try {
+                            checkout scm
+                        } catch (Exception checkoutError) {
+                            if (sh(script: 'test -d .git', returnStatus: true) != 0) {
+                                throw checkoutError
+                            }
+                            echo 'SCM checkout is unavailable for inline job; using mounted /workspace repository'
+                        }
+                        env.APP_VERSION = sh(
+                            script: "git describe --tags --always --dirty 2>/dev/null || echo 0.0.0-dev",
+                            returnStdout: true
+                        ).trim()
+                        env.CI_STARTED_AT = sh(script: 'date +%s', returnStdout: true).trim()
+                    }
                     sh '''
                         git config --global --add safe.directory /workspace
-                        export APP_VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo 0.0.0-dev)
-                        echo "Собираем версию: ${APP_VERSION}"
-                        ${COMPOSE} build app
+                        mkdir -p ci-artifacts allure-results e2e/test-results student_tests/test-results
+                        find ci-artifacts -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
+                        find allure-results -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
+                        find e2e/test-results -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
+                        find student_tests/test-results -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
+                        docker run --rm -v "${ALLURE_VOLUME}:/results" alpine:3.20 \
+                          sh -c 'find /results -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +'
+                        echo "commit=$(git rev-parse HEAD) version=${APP_VERSION} project=${COMPOSE_PROJECT_NAME}"
                     '''
                 }
             }
         }
 
-        stage('Up (app + db)') {
+        stage('Build application') {
             steps {
                 dir('/workspace') {
-                    sh '${COMPOSE} up -d db app'
-                    // Порты наружу не пробрасываются (override.yml не подключён
-                    // из-за явного -f выше), поэтому проверяем готовность app
-                    // изнутри той же docker-сети, по имени "app:8000", а не localhost.
                     sh '''
-                        for i in $(seq 1 30); do
-                          if docker run --rm --network ${COMPOSE_PROJECT_NAME}_default curlimages/curl:latest \
-                             -sf http://app:8000/health > /dev/null 2>&1; then
-                            echo "app готов"; exit 0
+                        export APP_VERSION="${APP_VERSION}"
+                        ${COMPOSE} build app worker
+                    '''
+                }
+            }
+        }
+
+        stage('Start isolated stack') {
+            steps {
+                dir('/workspace') {
+                    sh '''
+                        ${COMPOSE} up -d db redis wiremock app worker
+                        for i in $(seq 1 60); do
+                          if ${COMPOSE} exec -T app python -c \
+                            "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=1)" \
+                            >/dev/null 2>&1; then
+                            echo 'app готов'; exit 0
                           fi
                           sleep 2
                         done
-                        echo "app не поднялся за отведённое время"
+                        ${COMPOSE} ps
                         ${COMPOSE} logs app
                         exit 1
                     '''
@@ -123,65 +119,159 @@ pipeline {
             }
         }
 
-        stage('API tests (pytest)') {
+        stage('Static quality gates') {
             steps {
                 dir('/workspace') {
-                    // Выполняем тесты внутри уже собранного образа app — там есть
-                    // весь Python-стек проекта. Сам контейнер app продолжает работать
-                    // отдельно (это разовый одноразовый контейнер для прогона тестов).
-                    //
-                    // ВАЖНО: пишем результаты в ИМЕНОВАННЫЙ Docker volume
-                    // ALLURE_VOLUME (полное имя — см. environment{} выше), а НЕ на
-                    // путь файловой системы хоста. Контейнер allure (docker-compose.yml)
-                    // слушает именно этот volume, а не произвольную папку на диске —
-                    // см. подробное объяснение в комментариях в начале файла, блок
-                    // "Про Allure-результаты". Пишем в КОРЕНЬ volume (без подпапки
-                    // /api), плоско вместе с результатами E2E ниже — allure-docker-service
-                    // объединяет все файлы результатов из одной директории в общий отчёт;
-                    // вложенные поддиректории он не гарантированно сканирует.
                     sh '''
                         ${COMPOSE} run --rm \
-                          -v "${ALLURE_VOLUME}:/app/allure-results" \
-                          --entrypoint sh app -c \
-                          "pip install allure-pytest --break-system-packages --quiet && \
-                           python -m pytest --alluredir=/app/allure-results"
+                          -v "${HOST_PROJECT_DIR}:/workspace" \
+                          app sh -c "python -m compileall -q app tests && ruff check app tests && \
+                                     python /workspace/tools/test_policy.py /workspace/student_tests \
+                                       --output /workspace/ci-artifacts/test-policy.json"
                     '''
                 }
             }
         }
 
-        stage('E2E tests (Playwright)') {
+        stage('Reference API tests') {
             steps {
                 dir('/workspace') {
-                    // Вместо agent { docker {...} } (требует отдельный плагин
-                    // "Docker Pipeline", который может быть не установлен)
-                    // запускаем официальный образ Playwright вручную через
-                    // docker run — это работает на голом agent any, нужен
-                    // только docker.sock, который и так используется выше.
-                    //
-                    // Маунт исходного кода e2e/ — это путь на хосте (нужны
-                    // реальные файлы тестов), используем $HOST_PROJECT_DIR вместо
-                    // $(pwd) по той же причине, что и в стадии API tests выше
-                    // (Docker-outside-of-Docker: путь для volumes должен быть
-                    // путём на хосте, не внутри Jenkins-контейнера).
-                    //
-                    // Маунт результатов Allure — это ИМЕНОВАННЫЙ Docker volume
-                    // (ALLURE_VOLUME), не путь на диске — см. блок комментариев
-                    // про Allure-результаты в начале файла. Пишем в КОРЕНЬ volume,
-                    // плоско вместе с результатами API-тестов (та же логика, что
-                    // и в стадии API tests выше) — так не нужно полагаться на то,
-                    // сканирует ли конкретная версия allure-docker-service
-                    // вложенные поддиректории рекурсивно.
                     sh '''
-                        docker run --rm \
-                          --network ${COMPOSE_PROJECT_NAME}_default \
-                          -v "${HOST_PROJECT_DIR}/e2e:/e2e" \
+                        ${COMPOSE} run --rm \
+                          -e DATABASE_URL=sqlite:////tmp/qa-reference.db \
+                          -e ENVIRONMENT=development \
+                          -e SECRET_KEY=test-secret-at-least-32-bytes-long! \
+                          -e ALLOW_TEST_MUTATIONS=${ALLOW_TEST_MUTATIONS} \
+                          -v "${HOST_PROJECT_DIR}/ci-artifacts:/ci-artifacts" \
                           -v "${ALLURE_VOLUME}:/allure-results" \
-                          -w /e2e \
-                          -e BASE_URL=http://app:8000 \
-                          mcr.microsoft.com/playwright/python:v1.60.0-jammy \
+                          app python -m pytest tests \
+                            --alluredir=/allure-results \
+                            --junitxml=/ci-artifacts/reference-api-junit.xml \
+                            --cov=app --cov-report=term-missing \
+                            --cov-report=xml:/ci-artifacts/reference-coverage.xml \
+                            --cov-fail-under=70
+                    '''
+                }
+            }
+        }
+
+        stage('Student API and integration tests') {
+            steps {
+                dir('/workspace') {
+                    sh '''
+                        docker run --rm --init \
+                          --network ${COMPOSE_PROJECT_NAME}_default \
+                          -v "${HOST_PROJECT_DIR}:/workspace" \
+                          -v "${ALLURE_VOLUME}:/allure-results" \
+                          -w /workspace \
+                          -e BASE_URL=http://app.test:8000 \
+                          -e STUDENT_DATABASE_URL=postgresql://qatp:qatp@db:5432/qatp \
+                          -e TEST_USER_EMAIL=user@test.com \
+                          -e TEST_USER_PASSWORD=Password123! \
+                          -e TEST_SUPPORT_KEY=${TEST_SUPPORT_KEY} \
+                          -e ALLOW_TEST_MUTATIONS=${ALLOW_TEST_MUTATIONS} \
+                          python:3.12-slim sh -c "pip install -r student_tests/requirements.txt --quiet && \
+                            python -m pytest student_tests/api student_tests/contract student_tests/integration \
+                              --alluredir=/allure-results \
+                              --junitxml=/workspace/ci-artifacts/student-api-junit.xml"
+                    '''
+                }
+            }
+        }
+
+        stage('Reference E2E: Chromium, Firefox, WebKit + axe') {
+            steps {
+                dir('/workspace') {
+                    sh '''
+                        docker run --rm --init --ipc=host \
+                          --network ${COMPOSE_PROJECT_NAME}_default \
+                          -v "${HOST_PROJECT_DIR}:/workspace" \
+                          -v "${ALLURE_VOLUME}:/allure-results" \
+                          -w /workspace/e2e \
+                          -e BASE_URL=http://app.test:8000 \
+                          mcr.microsoft.com/playwright/python:v1.61.0-noble \
                           sh -c "pip install -r requirements.txt --quiet && \
-                                 python -m pytest --alluredir=/allure-results"
+                            python -m pytest --browser chromium --browser firefox --browser webkit \
+                              --alluredir=/allure-results \
+                              --junitxml=/workspace/ci-artifacts/reference-e2e-junit.xml \
+                              --tracing=retain-on-failure --screenshot=only-on-failure \
+                              --video=retain-on-failure --output=/workspace/e2e/test-results"
+                    '''
+                }
+            }
+        }
+
+        stage('Student UI: Chromium, Firefox, WebKit + axe') {
+            steps {
+                dir('/workspace') {
+                    sh '''
+                        docker run --rm --init --ipc=host \
+                          --network ${COMPOSE_PROJECT_NAME}_default \
+                          -v "${HOST_PROJECT_DIR}:/workspace" \
+                          -v "${ALLURE_VOLUME}:/allure-results" \
+                          -w /workspace \
+                          -e BASE_URL=http://app.test:8000 \
+                          -e TEST_USER_EMAIL=user@test.com \
+                          -e TEST_USER_PASSWORD=Password123! \
+                          -e TEST_SUPPORT_KEY=${TEST_SUPPORT_KEY} \
+                          mcr.microsoft.com/playwright/python:v1.61.0-noble \
+                          sh -c "pip install -r student_tests/requirements.txt --quiet && \
+                            python -m pytest student_tests/ui \
+                              --browser chromium --browser firefox --browser webkit \
+                              --alluredir=/allure-results \
+                              --junitxml=/workspace/ci-artifacts/student-ui-junit.xml \
+                              --tracing=retain-on-failure --screenshot=only-on-failure \
+                              --video=retain-on-failure --output=/workspace/student_tests/test-results"
+                    '''
+                }
+            }
+        }
+
+        stage('Mutation score') {
+            when {
+                expression { params.RUN_MUTATIONS }
+            }
+            steps {
+                dir('/workspace') {
+                    sh '''
+                        docker run --rm --init --ipc=host \
+                          --network ${COMPOSE_PROJECT_NAME}_default \
+                          -v "${HOST_PROJECT_DIR}:/workspace" \
+                          -w /workspace \
+                          -e BASE_URL=http://app.test:8000 \
+                          -e TEST_USER_EMAIL=user@test.com \
+                          -e TEST_USER_PASSWORD=Password123! \
+                          -e TEST_SUPPORT_KEY=${TEST_SUPPORT_KEY} \
+                          -e ALLOW_TEST_MUTATIONS=${ALLOW_TEST_MUTATIONS} \
+                          mcr.microsoft.com/playwright/python:v1.61.0-noble \
+                          sh -c "pip install -r student_tests/requirements.txt --quiet && \
+                            python tools/mutation_score.py \
+                              --config student_tests/mutations.json \
+                              --output ci-artifacts/mutation-score.json"
+                    '''
+                }
+            }
+        }
+
+        stage('Performance p95 gate') {
+            when {
+                expression { params.RUN_PERFORMANCE }
+            }
+            steps {
+                dir('/workspace') {
+                    sh '''
+                        docker run --rm --init \
+                          --network ${COMPOSE_PROJECT_NAME}_default \
+                          -v "${HOST_PROJECT_DIR}/performance:/performance:ro" \
+                          -v "${HOST_PROJECT_DIR}/ci-artifacts:/ci-artifacts" \
+                          -w /performance \
+                          -e PERF_P95_LIMIT_MS=${PERF_P95_LIMIT_MS} \
+                          -e PERF_FAILURE_RATIO=${PERF_FAILURE_RATIO} \
+                          -e PERF_MIN_REQUESTS=${PERF_MIN_REQUESTS} \
+                          locustio/locust:2.46.0 \
+                          -f locustfile.py --headless --host http://app.test:8000 \
+                          -u 5 -r 5 -t 20s --csv=/ci-artifacts/performance \
+                          --html=/ci-artifacts/performance.html --only-summary
                     '''
                 }
             }
@@ -190,28 +280,36 @@ pipeline {
 
     post {
         always {
-            // Шаг allure() закомментирован: плагин Allure Jenkins Plugin может
-            // ставиться нестабильно в некоторых версиях Jenkins (известная
-            // ReactorException/InvocationTargetException при установке).
-            // Отчёты всё равно доступны без этого шага — через отдельный
-            // контейнер allure из docker-compose.yml на http://localhost:5050,
-            // он подхватывает файлы из volume allure_results автоматически
-            // (см. ALLURE_VOLUME выше и блок комментариев про Allure-результаты
-            // в начале файла).
-            //
-            // ВАЖНО, если решите включить плагин: он сканирует файлы НА ДИСКЕ
-            // внутри самого контейнера Jenkins (а не Docker volume — плагин
-            // работает изнутри Jenkins-процесса, не через docker run). Сейчас
-            // стадии тестов пишут результаты прямо в Docker volume, минуя
-            // файловую систему Jenkins, поэтому простого пути для плагина нет
-            // "из коробки". Чтобы включить публикацию через плагин, сначала
-            // скопируйте результаты из volume на диск Jenkins, например:
-            //   docker run --rm -v ${ALLURE_VOLUME}:/src -v ${HOST_PROJECT_DIR}/${ALLURE_RESULTS_DIR}:/dst alpine cp -r /src/. /dst/
-            // и только потом раскомментируйте строку ниже:
-            // allure includeProperties: false, results: [[path: "${ALLURE_RESULTS_DIR}"]]
-
             dir('/workspace') {
-                sh '${COMPOSE} down'
+                // Summary is generated even when a test stage fails. This
+                // keeps the defect list and partial metrics visible in history.
+                sh(returnStatus: true, script: '''
+                    mkdir -p "${HOST_PROJECT_DIR}/${ALLURE_RESULTS_DIR}"
+                    docker run --rm \
+                      -v "${ALLURE_VOLUME}:/src:ro" \
+                      -v "${HOST_PROJECT_DIR}/${ALLURE_RESULTS_DIR}:/dst" \
+                      alpine:3.20 sh -c 'cp -a /src/. /dst/ 2>/dev/null || true'
+                    ${COMPOSE} run --rm \
+                      -v "${HOST_PROJECT_DIR}:/workspace" \
+                      -e BUILD_NUMBER=${BUILD_NUMBER} \
+                      -e BRANCH_NAME=${BRANCH_NAME} \
+                      -e GIT_COMMIT=${GIT_COMMIT} \
+                      -e CI_STARTED_AT=${CI_STARTED_AT} \
+                      app python /workspace/tools/build_quality_summary.py \
+                        --artifacts /workspace/ci-artifacts \
+                        --history /app/quality-history
+                ''')
+                junit testResults: 'ci-artifacts/**/*junit*.xml', allowEmptyResults: true
+                archiveArtifacts artifacts: 'ci-artifacts/**,allure-results/**,e2e/test-results/**,student_tests/test-results/**',
+                    allowEmptyArchive: true, fingerprint: true
+                sh(returnStatus: true, script: '''
+                    ${COMPOSE} down --remove-orphans
+                    docker volume rm \
+                      "${COMPOSE_PROJECT_NAME}_pgdata" \
+                      "${COMPOSE_PROJECT_NAME}_avatar_uploads" \
+                      "${COMPOSE_PROJECT_NAME}_allure_results" \
+                      "${COMPOSE_PROJECT_NAME}_allure_reports" >/dev/null 2>&1 || true
+                ''')
             }
         }
     }

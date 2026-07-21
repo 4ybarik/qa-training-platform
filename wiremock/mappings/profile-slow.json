@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/profiles/slow"
+  },
+  "response": {
+    "status": 200,
+    "fixedDelayMilliseconds": 1500,
+    "headers": {"Content-Type": "application/json"},
+    "jsonBody": {"id": 99, "name": "Slow Profile", "tier": "basic"}
+  }
+}

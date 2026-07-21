@@ -1,31 +1,32 @@
 {% extends "base.html" %}
-{% block title %}Регистрация — QA Training Platform{% endblock %}
+{% block title %}{{ t('registration') }} — QA Training Platform{% endblock %}
 {% block auth_content %}
 <div class="auth-card" data-testid="register-card">
-  <h1>Регистрация</h1>
+  {{ language_switcher('language-switcher-auth') }}
+  <h1>{{ t('registration') }}</h1>
   {% if error %}
   <div class="alert alert-error" data-testid="register-error">{{ error }}</div>
   {% endif %}
   <form method="post" action="/web/register" data-testid="register-form">
-    <label>Имя
+    <label>{{ t('first_name') }}
       <input type="text" name="first_name" data-testid="first-name-input">
     </label>
-    <label>Фамилия
+    <label>{{ t('last_name') }}
       <input type="text" name="last_name" data-testid="last-name-input">
     </label>
     <label>Email
       <input type="email" name="email" required data-testid="email-input">
     </label>
-    <label>Пароль
+    <label>{{ t('password') }}
       <input type="password" name="password" required minlength="8" data-testid="password-input">
     </label>
-    <label>Подтверждение пароля
+    <label>{{ t('confirm_password') }}
       <input type="password" name="confirm" required minlength="8" data-testid="confirm-password-input">
     </label>
-    <label>Дата рождения
+    <label>{{ t('birthday') }}
       <input type="date" name="birthday" data-testid="birthday-input">
     </label>
-    <label>Направление
+    <label>{{ t('track') }}
       <select name="track" data-testid="track-select">
         <option value="ui">UI Automation</option>
         <option value="api">API Testing</option>
@@ -33,18 +34,18 @@
       </select>
     </label>
     <fieldset data-testid="experience-group">
-      <legend>Опыт</legend>
+      <legend>{{ t('experience') }}</legend>
       <label class="checkbox"><input type="radio" name="experience" value="junior" data-testid="experience-junior"> Junior</label>
       <label class="checkbox"><input type="radio" name="experience" value="middle" data-testid="experience-middle"> Middle</label>
       <label class="checkbox"><input type="radio" name="experience" value="senior" data-testid="experience-senior"> Senior</label>
     </fieldset>
     <label class="checkbox">
-      <input type="checkbox" name="agree" required data-testid="agree-checkbox"> Принимаю условия
+      <input type="checkbox" name="agree" required data-testid="agree-checkbox"> {{ t('accept_terms') }}
     </label>
-    <button type="submit" class="btn btn-primary" data-testid="submit-button">Зарегистрироваться</button>
+    <button type="submit" class="btn btn-primary" data-testid="submit-button">{{ t('register') }}</button>
   </form>
   <div class="auth-links">
-    <a href="/login" data-testid="login-link">Уже есть аккаунт? Войти</a>
+    <a href="/login" data-testid="login-link">{{ t('already_registered') }}</a>
   </div>
 </div>
 {% endblock %}

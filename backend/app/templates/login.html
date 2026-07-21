@@ -1,8 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Вход — QA Training Platform{% endblock %}
+{% block title %}{{ t('login') }} — QA Training Platform{% endblock %}
 {% block auth_content %}
 <div class="auth-card" data-testid="login-card">
-  <h1>Вход в систему</h1>
+  {{ language_switcher('language-switcher-auth') }}
+  <h1>{{ t('sign_in') }}</h1>
+  {% if password_reset %}
+  <div class="alert alert-ok" data-testid="password-reset-success">{{ t('password_reset_success') }}</div>
+  {% endif %}
   {% if error %}
   <div class="alert alert-error" data-testid="login-error">{{ error }}</div>
   {% endif %}
@@ -10,18 +14,18 @@
     <label>Email
       <input type="email" name="email" required data-testid="email-input" autocomplete="username">
     </label>
-    <label>Пароль
+    <label>{{ t('password') }}
       <input type="password" name="password" required data-testid="password-input" autocomplete="current-password">
     </label>
     <label class="checkbox">
-      <input type="checkbox" name="remember" data-testid="remember-me-checkbox"> Запомнить меня
+      <input type="checkbox" name="remember" data-testid="remember-me-checkbox"> {{ t('remember_me') }}
     </label>
-    <button type="submit" class="btn btn-primary" data-testid="login-button">Войти</button>
+    <button type="submit" class="btn btn-primary" data-testid="login-button">{{ t('sign_in_button') }}</button>
   </form>
   <div class="auth-links">
-    <a href="/register" data-testid="register-link">Регистрация</a>
-    <a href="#" data-testid="forgot-password-link">Забыли пароль?</a>
+    <a href="/register" data-testid="register-link">{{ t('registration') }}</a>
+    <a href="/forgot-password" data-testid="forgot-password-link">{{ t('forgot_password') }}</a>
   </div>
-  <p class="hint" data-testid="demo-hint">Демо: admin@test.com / Password123!</p>
+  <p class="hint" data-testid="demo-hint">{{ t('demo_credentials') }}</p>
 </div>
 {% endblock %}

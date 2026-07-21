@@ -5,7 +5,10 @@
 # самого CLI внутри контейнера команда `docker` не существует физически
 # ("docker: not found" в выводе пайплайна). Этот Dockerfile решает именно
 # это: добавляет docker-ce-cli и compose plugin поверх официального образа.
-FROM jenkins/jenkins:lts-jdk21
+# Pin the patched Jenkins core instead of using the mutable `lts` tag. The
+# controller warning identifies 2.574 as the available security update, and
+# this version is also newer than the Pipeline plugin compatibility floor.
+FROM jenkins/jenkins:2.574-jdk21
 
 USER root
 
@@ -23,6 +26,15 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y --no-install-recommends docker-ce-cli docker-compose-plugin && \
     rm -rf /var/lib/apt/lists/*
+
+# Pipeline post-actions publish JUnit XML through the `junit` step. Keep the
+# required plugins in the image so a fresh Jenkins volume behaves exactly like
+# the already-initialized local controller (manual plugin installation is not a
+# reproducible setup step).
+RUN jenkins-plugin-cli --plugins \
+      git:5.10.1 \
+      junit:1416.vd753e036de5e \
+      timestamper:1.30
 
 # Пользователь jenkins должен входить в группу docker, чтобы иметь права
 # на сокет /var/run/docker.sock (он создаётся снаружи с GID хостовой группы

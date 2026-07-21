@@ -6,14 +6,14 @@
 
 {% if result %}
 <div class="alert {{ 'alert-ok' if result.passed else 'alert-error' }}" data-testid="exam-result">
-  Результат: <span data-testid="exam-score">{{ result.score }}</span>% —
-  {% if result.passed %}<span data-testid="exam-passed">сдано</span>{% else %}<span data-testid="exam-failed">не сдано</span>{% endif %}
+  {{ t('result') }}: <span data-testid="exam-score">{{ result.score }}</span>% —
+  {% if result.passed %}<span data-testid="exam-passed">{{ t('passed') }}</span>{% else %}<span data-testid="exam-failed">{{ t('failed') }}</span>{% endif %}
   ({{ result.correct }}/{{ result.total }})
   {% if result.certificate_url %}
-  <a href="{{ result.certificate_url }}" data-testid="certificate-link">Сертификат</a>
+  <a href="{{ result.certificate_url }}" data-testid="certificate-link">{{ t('certificate') }}</a>
   {% endif %}
 </div>
-<a href="/exams/{{ exam.id }}" class="btn" data-testid="retake-button">Пройти заново</a>
+<a href="/exams/{{ exam.id }}" class="btn" data-testid="retake-button">{{ t('retake') }}</a>
 {% else %}
 
 <div class="exam-bar">
@@ -51,13 +51,13 @@
           {% endfor %}
         </div>
         <div class="dnd-target" data-testid="dnd-target-{{ q.id }}" data-question="{{ q.id }}">
-          Перетащите сюда по порядку
+          {{ t('drop_here') }}
         </div>
       </div>
     {% endif %}
   </fieldset>
   {% endfor %}
-  <button type="submit" class="btn btn-primary" data-testid="exam-submit-button">Завершить экзамен</button>
+  <button type="submit" class="btn btn-primary" data-testid="exam-submit-button">{{ t('finish_exam') }}</button>
 </form>
 {% endif %}
 {% endblock %}

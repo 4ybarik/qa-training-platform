@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}UI Test Target — QA Training Platform{% endblock %}
+{% block page_id %}practice-components{% endblock %}
+{% block content %}
+<a href="/practice" class="back-link">{{ t('back_to_practice') }}</a>
+<h1 data-testid="components-title">UI Test Target</h1>
+<p>{{ t('components_intro') }}</p>
+
+<section class="card" data-testid="semantic-form-section">
+  <h2>Semantic form</h2>
+  <form id="practice-form" data-testid="practice-form">
+    <label for="practice-name">Full name</label>
+    <input id="practice-name" name="full_name" type="text" required maxlength="80" data-testid="practice-name">
+    <label for="practice-plan">Plan</label>
+    <select id="practice-plan" name="plan" data-testid="practice-plan"><option>Basic</option><option>Pro</option></select>
+    <label class="checkbox"><input type="checkbox" name="updates" data-testid="practice-updates"> Receive updates</label>
+    <label for="practice-notes">Notes</label>
+    <textarea id="practice-notes" name="notes" maxlength="200" data-testid="practice-notes"></textarea>
+    <button class="btn btn-primary" type="submit" data-testid="practice-form-submit">Save form</button>
+  </form>
+  <output id="practice-form-result" data-testid="practice-form-result" aria-live="polite"></output>
+</section>
+
+<section class="card" data-testid="scoped-locators-section">
+  <h2>Scoped locators</h2>
+  <div class="cards">
+    {% for item in [('alpha', 'Alpha account'), ('beta', 'Beta account'), ('gamma', 'Gamma account')] %}
+    <article class="card practice-item" data-testid="account-card-{{ item[0] }}">
+      <h3>{{ item[1] }}</h3><span class="badge">active</span>
+      <button class="btn" type="button" data-action="select-account" data-account="{{ item[0] }}">Select</button>
+    </article>
+    {% endfor %}
+  </div>
+  <output id="selected-account" data-testid="selected-account">none</output>
+</section>
+
+<section class="card" data-testid="dynamic-section">
+  <h2>Dynamic DOM</h2>
+  <button class="btn" type="button" onclick="QATP.spawnDynamic()" data-testid="spawn-dynamic">Create delayed element</button>
+  <button class="btn" type="button" id="remove-transient" data-testid="remove-transient">Remove transient element</button>
+  <span id="transient-element" data-testid="transient-element">transient</span>
+  <div id="dynamic-area" data-testid="dynamic-area"></div>
+</section>
+
+<section class="card" data-testid="browser-contexts-section">
+  <h2>Browser contexts</h2>
+  <iframe title="Practice frame" src="/practice/iframe-content" data-testid="practice-iframe"></iframe>
+  <practice-shadow data-testid="practice-shadow"></practice-shadow>
+  <a class="btn" href="/practice/new-tab" target="_blank" data-testid="open-new-tab">Open new tab</a>
+</section>
+
+<dialog id="practice-dialog" data-testid="practice-dialog">
+  <p>Deterministic dialog</p>
+  <button class="btn" type="button" onclick="document.getElementById('practice-dialog').close()" data-testid="close-dialog">Close</button>
+</dialog>
+<button class="btn" type="button" onclick="document.getElementById('practice-dialog').showModal()" data-testid="open-dialog">Open dialog</button>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.getElementById("practice-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    document.getElementById("practice-form-result").textContent = JSON.stringify({
+      full_name: data.get("full_name"), plan: data.get("plan"), updates: data.has("updates"), notes: data.get("notes")
+    });
+  });
+  document.querySelectorAll('[data-action="select-account"]').forEach((button) => {
+    button.addEventListener("click", () => { document.getElementById("selected-account").textContent = button.dataset.account; });
+  });
+  document.getElementById("remove-transient").addEventListener("click", () => document.getElementById("transient-element")?.remove());
+  customElements.define("practice-shadow", class extends HTMLElement {
+    connectedCallback() {
+      const root = this.attachShadow({mode: "open"});
+      root.innerHTML = '<label>Shadow value <input aria-label="Shadow value"></label><button type="button">Save shadow</button><output></output>';
+      root.querySelector("button").addEventListener("click", () => { root.querySelector("output").textContent = root.querySelector("input").value; });
+    }
+  });
+</script>
+{% endblock %}

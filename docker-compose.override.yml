@@ -17,3 +17,9 @@ services:
   app:
     ports:
       - "8000:8000"
+  redis:
+    ports:
+      - "6379:6379"
+  wiremock:
+    ports:
+      - "9090:8080"

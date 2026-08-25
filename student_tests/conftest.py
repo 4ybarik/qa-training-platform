@@ -9,7 +9,11 @@ import uuid
 
 import httpx
 import pytest
-from axe_playwright_python.sync_playwright import Axe
+
+try:  # axe нужен только для accessibility-задач; в некоторых окружениях его нет
+    from axe_playwright_python.sync_playwright import Axe
+except ImportError:  # фикстура axe ниже тогда будет пропускать тесты
+    Axe = None
 
 
 @pytest.fixture(scope="session")
@@ -152,4 +156,6 @@ def login(page, base_url: str, credentials: dict[str, str]):
 @pytest.fixture(scope="session")
 def axe() -> Axe:
     """axe-core scanner для автоматических WCAG-проверок."""
+    if Axe is None:
+        pytest.skip("axe-playwright-python не установлен в этом окружении")
     return Axe()

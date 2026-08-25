@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}IDE — QA Training Platform{% endblock %}
+{% block page_id %}ide{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+<link rel="stylesheet" href="{{ url_for('static', path='css/ide.css') }}">
+{% endblock %}
+{% block content %}
+<section class="ide-shell" data-testid="ide-shell">
+  <aside class="ide-panel ide-files">
+    <h2 class="ide-panel-title">Файлы решений</h2>
+    <div id="ide-file-list" class="ide-file-list" data-testid="ide-file-list"></div>
+    <p class="ide-hint">Каталог student_tests/. Новые файлы создавайте
+      с именем test_&lt;задача&gt;.py — Jenkins подхватит их автоматически.</p>
+  </aside>
+
+  <section class="ide-panel ide-center">
+    <div class="ide-toolbar">
+      <span id="ide-current-file" class="ide-current-file" data-testid="ide-current-file">файл не выбран</span>
+      <button type="button" class="btn btn-primary" id="ide-save-btn"
+              data-testid="ide-save" disabled>Сохранить (Ctrl+S)</button>
+      <button type="button" class="btn" id="ide-run-btn"
+              data-testid="ide-run" disabled>▶ Запустить</button>
+    </div>
+    <textarea id="ide-editor" data-testid="ide-editor"
+              placeholder="Выберите файл слева или начните писать тест…"
+              spellcheck="false"></textarea>
+    <pre id="ide-output" class="ide-output" data-testid="ide-output" hidden></pre>
+  </section>
+
+  <aside class="ide-panel ide-locators">
+    <h2 class="ide-panel-title">Поиск локаторов</h2>
+    <form id="ide-locator-form" class="ide-locator-form" data-testid="ide-locator-form">
+      <input type="text" id="ide-locator-url" name="url" value="/login"
+             placeholder="/login, /practice, /courses…" autocomplete="off"
+             data-testid="ide-locator-url">
+      <button type="submit" class="btn btn-primary" data-testid="ide-locator-search">Найти</button>
+    </form>
+    <div id="ide-locator-status" class="ide-hint" data-testid="ide-locator-status"></div>
+    <ul id="ide-locator-results" class="ide-locator-results" data-testid="ide-locator-results"></ul>
+
+    <h2 class="ide-panel-title">Предпросмотр</h2>
+    <iframe id="ide-preview" data-testid="ide-preview" title="Предпросмотр страницы"></iframe>
+  </aside>
+</section>
+
+<div id="ide-toast" class="ide-toast" data-testid="ide-toast" hidden></div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/python/python.min.js"></script>
+<script src="{{ url_for('static', path='js/ide.js') }}"></script>
+{% endblock %}

@@ -47,6 +47,13 @@
   Chromium для UI-тестов, Testing-панель, дебаггер и watch-режим. Сервис
   объявлен в docker-compose.override.yml и поднимается только локально;
   Jenkins-сборки его не затрагивает.
+- Страница IDE в интерфейсе приложения (/ide): редактор кода для
+  student_tests с сохранением, кнопкой запуска тестов и поиском локаторов —
+  все data-testid выбранной страницы с копированием готовых селекторов
+  `page.get_by_test_id(...)` и живым предпросмотром. Доступна в
+  development/test окружениях; эндпоинты `/api/ide/*` в production отвечают 404.
+- Импорт axe-playwright-python в student_tests/conftest.py стал опциональным:
+  окружения без пакета просто пропускают accessibility-тесты.
 - Детерминированные мишени `/api/practice/*`: HTTP-статусы, варианты схем,
   CRUD, пагинация, идемпотентность, ETag/If-Match, async polling, files,
   cookies, redirects и webhook recorder.

@@ -77,6 +77,8 @@ def _ctx(request: Request, user: User | None, **extra) -> dict:
         "language_options": LANGUAGE_OPTIONS,
         "t": translator(language),
         "js_messages": javascript_messages(language),
+        # Встроенная IDE доступна только в учебных окружениях.
+        "ide_enabled": get_settings().environment in {"development", "test"},
         **extra,
     }
 
@@ -751,3 +753,16 @@ def playground_page(request: Request, user: User | None = Depends(get_optional_u
     if (r := _require_web_user(user)):
         return r
     return templates.TemplateResponse(request, "playground.html", _ctx(request, user))
+
+
+# ---------- Встроенная IDE (development/test) ----------
+@router.get("/ide", response_class=HTMLResponse)
+def ide_page(request: Request, user: User | None = Depends(get_optional_user)):
+    if (r := _require_web_user(user)):
+        return r
+    # Инструмент пишет файлы и исполняет pytest — только для учебных контуров.
+    if get_settings().environment not in {"development", "test"}:
+        return templates.TemplateResponse(
+            request, "forbidden.html", _ctx(request, user), status_code=403,
+        )
+    return templates.TemplateResponse(request, "ide.html", _ctx(request, user))

@@ -20,6 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}QA Training Platform{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/app.css') }}">
+  {% block head %}{% endblock %}
 </head>
 <body data-testid="page-{% block page_id %}base{% endblock %}">
   {% if user %}
@@ -42,6 +43,9 @@
       <a href="/notifications" data-testid="nav-notifications">{{ t('nav_notifications') }}</a>
       <a href="/profile" data-testid="nav-profile">{{ t('nav_profile') }}</a>
       <a href="/playground" data-testid="nav-playground">{{ t('nav_playground') }}</a>
+      {% if ide_enabled %}
+      <a href="/ide" data-testid="nav-ide">IDE</a>
+      {% endif %}
       <a href="/quality" data-testid="nav-quality">{{ t('nav_quality') }}</a>
       {% if user.role.value == 'ADMIN' %}
       <a href="/admin" data-testid="nav-admin">{{ t('nav_admin') }}</a>

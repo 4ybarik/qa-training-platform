@@ -55,6 +55,11 @@ services:
   app:
     ports:
       - "8000:8000"
+    volumes:
+      # Репозиторий внутри контейнера приложения — для встроенной IDE
+      # (/api/ide/*): student_tests читаются и сохраняются напрямую в
+      # рабочую копию на хосте.
+      - ${HOST_PROJECT_DIR:-.}:/app/workspace
   redis:
     ports:
       - "6379:6379"

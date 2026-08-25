@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api import (
-    auth, courses, exams, integrations, misc, playground, practice, quality,
+    auth, courses, exams, ide, integrations, misc, playground, practice, quality,
     test_support, versioned,
 )
 from app.api.errors import register_exception_handlers
@@ -69,6 +69,7 @@ def create_app() -> FastAPI:
     app.include_router(playground.router)
     app.include_router(practice.router)
     app.include_router(test_support.router)
+    app.include_router(ide.router)
     app.include_router(versioned.router)
     app.include_router(integrations.router)
     app.include_router(quality.router)

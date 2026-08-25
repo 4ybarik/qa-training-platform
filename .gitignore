@@ -11,5 +11,6 @@ test-results/
 ci-artifacts/
 allure-results/
 quality-history/
+.idea/
 .DS_Store
-.DS_Store
+

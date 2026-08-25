@@ -38,6 +38,10 @@
   решений в `student_tests/` с каталогом задач и показывает процент покрытия.
 - Каталог из 30 практических задач без уроков и теории: API, контракты,
   безопасность, Playwright UI, БД, файлы, WebSocket, надёжность и CI.
+- Интеграция с локальной IDE: настройки VS Code (тест-эксплорер, задачи,
+  дебаггер, рекомендуемые расширения) в `.vscode/`.
+- Watch-режим `make watch-api` / `make watch-ui`: автоперезапуск учебных
+  тестов при сохранении файла (pytest-watcher + обёртка `tools/ptw_runner.sh`).
 - Детерминированные мишени `/api/practice/*`: HTTP-статусы, варианты схем,
   CRUD, пагинация, идемпотентность, ETag/If-Match, async polling, files,
   cookies, redirects и webhook recorder.

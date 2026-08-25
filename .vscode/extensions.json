@@ -1,0 +1,11 @@
+{
+    // Рекомендуемый набор для работы с платформой: VS Code предложит установить
+    // их при открытии проекта (Cmd/Ctrl+Shift+P -> "Extensions: Show Recommended").
+    "recommendations": [
+        "ms-python.python",
+        "ms-python.debugpy",
+        "charliermarsh.ruff",
+        "ms-playwright.playwright",
+        "tamasfe.even-better-toml"
+    ]
+}

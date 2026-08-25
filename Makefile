@@ -1,5 +1,6 @@
 .PHONY: up down logs seed test test-quality e2e e2e-cross-browser student-api student-ui \
-	student-ui-cross-browser student-all mutation-score performance quality-summary progress fmt version
+	student-ui-cross-browser student-all mutation-score performance quality-summary progress \
+	watch-api watch-ui fmt version
 
 up:            ## поднять стек (app + postgres), версия подставляется из Git-тега
 	APP_VERSION=$$(git describe --tags --always --dirty 2>/dev/null || echo 0.0.0-dev) docker compose up -d --build
@@ -50,6 +51,16 @@ quality-summary: ## собрать сводку текущих CI-артефак
 
 progress:      ## показать, какие задачи каталога уже начаты
 	python tools/check_progress.py
+
+watch-api:     ## автоперезапуск API/contract-тестов при каждом сохранении файла
+	BASE_URL=$${BASE_URL:-http://localhost:8000} \
+	STUDENT_TEST_PATHS="student_tests/api student_tests/contract" \
+	python -m pytest_watcher student_tests --now --runner tools/ptw_runner.sh
+
+watch-ui:      ## автоперезапуск UI-тестов при каждом сохранении файла
+	BASE_URL=$${BASE_URL:-http://localhost:8000} \
+	STUDENT_TEST_PATHS="student_tests/ui" \
+	python -m pytest_watcher student_tests --now --runner tools/ptw_runner.sh
 
 version:       ## показать версию, которая будет подставлена при следующей сборке
 	@git describe --tags --always --dirty 2>/dev/null || echo "0.0.0-dev (нет тегов в репозитории)"

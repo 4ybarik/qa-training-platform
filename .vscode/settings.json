@@ -1,0 +1,32 @@
+{
+    // Тест-эксплорер VS Code видит учебные тесты из коробки.
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.cwd": "${workspaceFolder}",
+    // Основной фокус — решения ученика; бэкенд-тесты запускаются задачей
+    // "backend: unit tests" или заменой аргументов на ["backend"].
+    "python.testing.pytestArgs": [
+        "student_tests"
+    ],
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv-student/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "editor.formatOnSave": false,
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports.ruff": "explicit"
+        }
+    },
+    // Не шумим артефактами тестов в дереве файлов.
+    "files.watcherExclude": {
+        "**/.pytest_cache/**": true,
+        "**/__pycache__/**": true,
+        "**/allure-results/**": true,
+        "**/ci-artifacts/**": true
+    },
+    "python.analysis.exclude": [
+        "allure-results",
+        "ci-artifacts",
+        "backend/.venv"
+    ]
+}

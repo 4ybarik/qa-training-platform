@@ -11,5 +11,6 @@ hypothesis>=6.120,<7.0
 pytest-xdist>=3.6,<4.0
 pytest-timeout>=2.3,<3.0
 pytest-repeat>=0.9,<1.0
+pytest-watcher>=0.6,<1.0
 ruff>=0.9,<1.0
 axe-playwright-python==0.1.7

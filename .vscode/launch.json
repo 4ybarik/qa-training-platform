@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug: текущий student-тест",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "${relativeFile}",
+                "-v",
+                "--no-header"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "BASE_URL": "http://localhost:8000",
+                "PYTHONDONTWRITEBYTECODE": "1"
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug: backend-тесты",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["${relativeFile}", "-v"],
+            "cwd": "${workspaceFolder}/backend",
+            "console": "integratedTerminal"
+        }
+    ]
+}

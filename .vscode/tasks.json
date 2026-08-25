@@ -1,0 +1,56 @@
+{
+    // См. https://code.visualstudio.com/docs/editor/tasks-appendix
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "student: API/contract/integration tests",
+            "type": "shell",
+            "command": "python -m pytest student_tests/api student_tests/contract student_tests/integration -v",
+            "options": {
+                "env": { "BASE_URL": "http://localhost:8000" }
+            },
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "problemMatcher": []
+        },
+        {
+            "label": "student: UI tests (Playwright)",
+            "type": "shell",
+            "command": "python -m pytest student_tests/ui -v",
+            "options": {
+                "env": { "BASE_URL": "http://localhost:8000" }
+            },
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "student: watch API tests",
+            "type": "shell",
+            "command": "make watch-api",
+            "options": { "cwd": "${workspaceFolder}" },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "student: watch UI tests",
+            "type": "shell",
+            "command": "make watch-ui",
+            "options": { "cwd": "${workspaceFolder}" },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "backend: unit tests",
+            "type": "shell",
+            "command": "python -m pytest",
+            "options": { "cwd": "${workspaceFolder}/backend" },
+            "problemMatcher": []
+        },
+        {
+            "label": "platform: progress tracker",
+            "type": "shell",
+            "command": "python tools/check_progress.py",
+            "problemMatcher": []
+        }
+    ]
+}

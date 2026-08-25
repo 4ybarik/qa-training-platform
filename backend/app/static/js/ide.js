@@ -104,6 +104,49 @@
       .catch(function () { toast("Ошибка сохранения", true); });
   }
 
+  /* ---------- Создание нового файла ---------- */
+  var NEW_FILE_RE = /^(?:(api|contract|integration|ui)\/)?(test_[A-Za-z0-9_.-]+\.py)$/;
+
+  function createFile() {
+    var raw = document.getElementById("ide-new-file").value.trim();
+    if (!raw) { toast("Введите имя файла, напр. api/test_my_task.py", true); return; }
+    var match = NEW_FILE_RE.exec(raw);
+    if (!match) {
+      toast("Имя вида [api|contract|integration|ui]/test_<название>.py", true);
+      return;
+    }
+    var path = (match[1] || "api") + "/" + match[2];
+    var skeleton = [
+      '"""Решение задачи. Опишите в имени и тестах проверяемое поведение."""',
+      "import pytest",
+      "",
+      "",
+      "@pytest.mark.api",
+      "def test_" + match[2].replace(/^test_/, "").replace(/\.py$/, "") +
+        "(api_client, run_headers):",
+      '    response = api_client.get("/health")',
+      "",
+      "    assert response.status_code == 200",
+      "",
+    ].join("\n");
+    fetch("/api/ide/files", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: path, content: value() ? value() : skeleton }),
+    })
+      .then(function (r) {
+        if (!r.ok) { return r.json().then(function (e) { throw new Error(e.detail || r.status); }); }
+        return r.json();
+      })
+      .then(function () {
+        document.getElementById("ide-new-file").value = "";
+        loadFiles();
+        openFile(path);
+        toast("Создан файл: " + path);
+      })
+      .catch(function (err) { toast("Не создано: " + err.message, true); });
+  }
+
   function runTests() {
     if (!currentFile) { toast("Сначала выберите файл", true); return; }
     saveFile();
@@ -167,6 +210,10 @@
 
   document.getElementById("ide-save-btn").addEventListener("click", saveFile);
   document.getElementById("ide-run-btn").addEventListener("click", runTests);
+  document.getElementById("ide-create-btn").addEventListener("click", createFile);
+  document.getElementById("ide-new-file").addEventListener("keydown", function (event) {
+    if (event.key === "Enter") { event.preventDefault(); createFile(); }
+  });
   document.getElementById("ide-locator-form").addEventListener("submit", searchLocators);
 
   loadFiles();

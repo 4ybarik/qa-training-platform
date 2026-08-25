@@ -17,6 +17,11 @@
   <section class="ide-panel ide-center">
     <div class="ide-toolbar">
       <span id="ide-current-file" class="ide-current-file" data-testid="ide-current-file">файл не выбран</span>
+      <input type="text" id="ide-new-file" class="ide-new-file"
+             placeholder="имя нового файла, напр. api/test_my_task.py"
+             autocomplete="off" data-testid="ide-new-file-input">
+      <button type="button" class="btn" id="ide-create-btn"
+              data-testid="ide-create">＋ Создать</button>
       <button type="button" class="btn btn-primary" id="ide-save-btn"
               data-testid="ide-save" disabled>Сохранить (Ctrl+S)</button>
       <button type="button" class="btn" id="ide-run-btn"

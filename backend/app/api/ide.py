@@ -46,8 +46,13 @@ def _require_dev() -> None:
         raise HTTPException(status_code=404, detail="Not found")
 
 
-def _safe_path(relative: str) -> Path:
-    """Путь внутри student_tests; защита от traversal за пределы каталога."""
+def _safe_path(relative: str, *, allow_create: bool = False) -> Path:
+    """Путь внутри student_tests; защита от traversal за пределы каталога.
+
+    Новые файлы (allow_create=True) можно создавать только в известных
+    каталогах решений — api/contract/integration/ui — чтобы дерево оставалось
+    предсказуемым для pytest и Jenkins.
+    """
     root = _student_tests_dir()
     candidate = (root / relative).resolve()
     if root.resolve() not in candidate.parents:
@@ -57,7 +62,32 @@ def _safe_path(relative: str) -> Path:
             status_code=400,
             detail="Разрешены только файлы вида test_*.py внутри student_tests",
         )
+    if allow_create:
+        parent = candidate.parent.relative_to(root.resolve()).as_posix()
+        if parent not in {"api", "contract", "integration", "ui"}:
+            raise HTTPException(
+                status_code=400,
+                detail="Новый файл создаётся в api/, contract/, integration/ или ui/",
+            )
+        if candidate.exists():
+            raise HTTPException(status_code=409, detail="Файл уже существует")
     return candidate
+
+
+class FileCreate(BaseModel):
+    path: str = Field(min_length=1, max_length=256)
+    content: str = Field(default="", max_length=512 * 1024)
+
+
+@router.post("/files")
+def create_file(payload: FileCreate) -> dict:
+    """Создаёт новый файл решения из встроенной IDE."""
+    _require_dev()
+    target = _safe_path(payload.path, allow_create=True)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(payload.content, encoding="utf-8")
+    return {"path": payload.path, "bytes": len(payload.content.encode("utf-8"))}
+
 
 
 class FileSave(BaseModel):

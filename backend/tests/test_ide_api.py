@@ -63,6 +63,46 @@ def test_run_executes_solution(client, tmp_solution):
     assert "passed" in body["output"]
 
 
+def test_create_new_file_and_run(client, tmp_solution):
+    created = client.post(
+        "/api/ide/files",
+        json={"path": "ui/test_tmp_ide_created.py", "content": "def test_ok():\n    assert True\n"},
+    )
+
+    assert created.status_code == 200
+    assert (STUDENT_DIR / "ui/test_tmp_ide_created.py").is_file()
+
+
+def test_create_duplicate_conflicts(client):
+    first = client.post(
+        "/api/ide/files",
+        json={"path": "api/test_tmp_ide_dup.py", "content": "x = 1\n"},
+    )
+    second = client.post(
+        "/api/ide/files",
+        json={"path": "api/test_tmp_ide_dup.py", "content": "x = 2\n"},
+    )
+
+    assert first.status_code == 200
+    assert second.status_code == 409
+
+
+@pytest.fixture(autouse=True)
+def _cleanup_tmp_files():
+    yield
+    for name in ("ui/test_tmp_ide_created.py", "api/test_tmp_ide_dup.py"):
+        (STUDENT_DIR / name).unlink(missing_ok=True)
+
+
+def test_create_rejects_unknown_dir(client):
+    response = client.post(
+        "/api/ide/files",
+        json={"path": "hacks/test_evil.py", "content": ""},
+    )
+
+    assert response.status_code == 400
+
+
 def test_locators_on_login_page(client):
     response = client.get("/api/ide/locators", params={"url": "/login"})
 

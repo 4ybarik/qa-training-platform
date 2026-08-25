@@ -26,6 +26,16 @@
 - Резервный GitHub Actions workflow `.github/workflows/backend-ci.yml`
   (ruff + pytest с coverage gate 70%) — быстрый фидбек на push/PR параллельно
   с локальным Jenkins.
+- Маршрут обучения в `student_tests/README.md`: порядок освоения задач от
+  basic к advanced с указанием образцов.
+- Page Object каркас для UI-задач: `student_tests/ui/pages/`
+  (`BasePage`, `LoginPage`) с готовыми локаторами страницы входа.
+- Работающие обучающие примеры: `api/test_example_api_patterns.py`
+  (параметризация, изоляция данных, CRUD, ETag) и
+  `ui/test_example_page_object.py` (Page Object, позитивный и негативный
+  сценарий входа).
+- Трекер прогресса `make progress` (`tools/check_progress.py`) — сверяет файлы
+  решений в `student_tests/` с каталогом задач и показывает процент покрытия.
 - Каталог из 30 практических задач без уроков и теории: API, контракты,
   безопасность, Playwright UI, БД, файлы, WebSocket, надёжность и CI.
 - Детерминированные мишени `/api/practice/*`: HTTP-статусы, варианты схем,

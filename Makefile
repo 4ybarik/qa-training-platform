@@ -1,5 +1,5 @@
 .PHONY: up down logs seed test test-quality e2e e2e-cross-browser student-api student-ui \
-	student-ui-cross-browser student-all mutation-score performance quality-summary fmt version
+	student-ui-cross-browser student-all mutation-score performance quality-summary progress fmt version
 
 up:            ## поднять стек (app + postgres), версия подставляется из Git-тега
 	APP_VERSION=$$(git describe --tags --always --dirty 2>/dev/null || echo 0.0.0-dev) docker compose up -d --build
@@ -47,6 +47,9 @@ performance: ## короткий Locust smoke с p95-gate
 
 quality-summary: ## собрать сводку текущих CI-артефактов
 	python tools/build_quality_summary.py --artifacts ci-artifacts
+
+progress:      ## показать, какие задачи каталога уже начаты
+	python tools/check_progress.py
 
 version:       ## показать версию, которая будет подставлена при следующей сборке
 	@git describe --tags --always --dirty 2>/dev/null || echo "0.0.0-dev (нет тегов в репозитории)"

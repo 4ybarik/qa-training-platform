@@ -31,6 +31,8 @@ docker compose up -d --build
 - Документация API (Swagger): <http://localhost:8000/docs>
 - Альтернативная документация (ReDoc): <http://localhost:8000/redoc>
 - Проверка состояния: <http://localhost:8000/health>
+- Встроенная веб-IDE: <http://localhost:8443> — писать тесты прямо в браузере
+  (пароль по умолчанию `qatp-ide`, меняется через `IDE_PASSWORD` в `.env`)
 - Jenkins (CI): <http://localhost:8080> — первичная настройка описана в разделе «CI/CD: Jenkins + Allure»
 - Allure-отчёты: <http://localhost:5050> — появятся после первого прогона тестов
 
@@ -50,6 +52,37 @@ docker compose up -d --build
 | USER    | user@test.com      | `Password123!` |
 
 Также созданы `user1@test.com` … `user30@test.com` с тем же паролем.
+
+---
+
+## Встроенная веб-IDE
+
+После `make up` платформа включает полноценный VS Code в браузере
+(code-server) с уже готовым окружением: Python 3.13, зависимости
+`student_tests`, Playwright Chromium, расширения Python и Ruff. Ничего
+устанавливать на хост не нужно.
+
+```bash
+make up
+# открыть http://localhost:8443, пароль: значение IDE_PASSWORD из .env
+# (по умолчанию qatp-ide; для локального учебного стенда это допустимо)
+```
+
+Внутри IDE:
+
+- **Testing-панель** — ваши тесты из `student_tests/`, запуск и дебаг кликом;
+- **терминал** — `make watch-api` / `make watch-ui`: тесты перезапускаются при
+  каждом сохранении файла (`BASE_URL=http://app.test:8000` уже настроен);
+- **F5** — отладка открытого теста с брейкпоинтами;
+- сохранённые файлы сразу видны Jenkins'у (общий монтируемый каталог) —
+  после `git push` решение уезжает в CI и Allure без дополнительных действий.
+
+Сервис объявлен в `docker-compose.override.yml`, поэтому существует только
+в локальном стеке: Jenkins-сборки его не поднимают.
+
+Автодополнение работает через Jedi (Pylance недоступен вне Marketplace
+Microsoft). Если file watching «не видит» изменения файлов на macOS,
+перезапустите контейнер с `WATCHDOG_FORCE_POLLING=true`.
 
 ---
 

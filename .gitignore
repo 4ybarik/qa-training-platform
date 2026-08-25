@@ -13,4 +13,5 @@ allure-results/
 quality-history/
 .idea/
 .DS_Store
+.venv-student
 

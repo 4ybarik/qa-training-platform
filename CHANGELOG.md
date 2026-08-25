@@ -42,6 +42,11 @@
   дебаггер, рекомендуемые расширения) в `.vscode/`.
 - Watch-режим `make watch-api` / `make watch-ui`: автоперезапуск учебных
   тестов при сохранении файла (pytest-watcher + обёртка `tools/ptw_runner.sh`).
+- Встроенная веб-IDE (code-server, http://localhost:8443): VS Code в браузере
+  с готовым окружением ученика — Python 3.13, зависимости student_tests,
+  Chromium для UI-тестов, Testing-панель, дебаггер и watch-режим. Сервис
+  объявлен в docker-compose.override.yml и поднимается только локально;
+  Jenkins-сборки его не затрагивает.
 - Детерминированные мишени `/api/practice/*`: HTTP-статусы, варианты схем,
   CRUD, пагинация, идемпотентность, ETag/If-Match, async polling, files,
   cookies, redirects и webhook recorder.

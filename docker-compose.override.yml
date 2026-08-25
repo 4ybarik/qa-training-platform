@@ -10,6 +10,44 @@
 # стека поднимается без портов на хост и не конфликтует с уже запущенным
 # локально основным стеком (который и использует порты из этого файла).
 services:
+  # Встроенная веб-IDE (VS Code в браузере). Объявлена в override намеренно:
+  # локальный `make up` поднимает её автоматически, а Jenkins, запускающий
+  # стек с явным `-f docker-compose.yml`, этот файл не подключает — CI не
+  # собирает тяжёлый образ (~2 ГБ с Chromium) и не тратит на него время.
+  ide:
+    build:
+      context: .
+      dockerfile: ide/Dockerfile
+    environment:
+      # Пароль входа в IDE; переопределяется в локальном .env (IDE_PASSWORD).
+      PASSWORD: ${IDE_PASSWORD:-qatp-ide}
+      DEFAULT_WORKSPACE_DIR: /home/coder/workspace
+      # Тесты из IDE бьют прямо в приложение внутри Docker-сети.
+      BASE_URL: http://app.test:8000
+      # Интерпретатор для make watch-api/watch-ui (см. tools/ptw_runner.sh).
+      STUDENT_PYTHON: /home/coder/.venv-student/bin/python
+    volumes:
+      # Репозиторий в RW: сохранённые в IDE тесты немедленно видны Jenkins
+      # (он монтирует тот же каталог как /workspace) и git'у на хосте.
+      - ${HOST_PROJECT_DIR:-.}:/home/coder/workspace
+    ports:
+      - "127.0.0.1:8443:8080"   # веб-IDE, только локальный доступ
+    # Без явного bind-addr code-server слушает 127.0.0.1 ВНУТРИ контейнера,
+    # и проброшенный порт хоста не достаётся до процесса.
+    command:
+      - --bind-addr=0.0.0.0:8080
+      - --auth=password
+      - /home/coder/workspace
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+
   db:
     ports:
       - "5432:5432"

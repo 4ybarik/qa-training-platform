@@ -18,6 +18,14 @@
 
 ### Добавлено
 
+- Fail-fast проверка конфигурации: приложение отказывается стартовать в
+  `ENVIRONMENT=production` с заведомо небезопасным `SECRET_KEY`-заглушкой.
+- HEALTHCHECK для сервиса `app` в Dockerfile и docker-compose.yml — статус
+  контейнера отражает реальную готовность `/health` (`docker compose ps`,
+  `docker compose up --wait`).
+- Резервный GitHub Actions workflow `.github/workflows/backend-ci.yml`
+  (ruff + pytest с coverage gate 70%) — быстрый фидбек на push/PR параллельно
+  с локальным Jenkins.
 - Каталог из 30 практических задач без уроков и теории: API, контракты,
   безопасность, Playwright UI, БД, файлы, WebSocket, надёжность и CI.
 - Детерминированные мишени `/api/practice/*`: HTTP-статусы, варианты схем,
@@ -33,6 +41,11 @@
 
 ### Изменено
 
+- Образ приложения собирается с непривилегированным пользователем `appuser`
+  вместо root; директории под именованные volumes (аватары, история качества)
+  предварительно созданы с нужным владельцем.
+- Убраны из репозитория файлы IDE (`.idea/`), `.gitignore` дополнен; удалена
+  слитая ветка `codex/ui`.
 - Jenkins разделяет эталонные и пользовательские API/UI-тесты, автоматически
   собирает новые `student_tests/**/test_*.py` и сохраняет результаты в Allure.
 - `ADDING_TESTS.md` описывает реальный процесс IDE → Git → Jenkins → Allure.

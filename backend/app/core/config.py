@@ -5,7 +5,12 @@
 """
 from functools import lru_cache
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Значения, которые заведомо небезопасны для production (встречаются в дефолтах
+# этого модуля и docker-compose.yml).
+INSECURE_SECRET_KEYS = frozenset({"change-me-in-production", "dev-secret-change-me"})
 
 
 class Settings(BaseSettings):
@@ -52,6 +57,22 @@ class Settings(BaseSettings):
     redis_url: str = "redis://redis:6379/0"
     external_service_url: str = "http://wiremock:8080"
     quality_history_dir: str = "/app/quality-history"
+
+    @model_validator(mode="after")
+    def _guard_production_secrets(self) -> "Settings":
+        """Fail-fast: не даём стартовать production с заведомо слабым ключом.
+
+        Дефолтные значения SECRET_KEY удобны для локальной разработки, но в
+        production с ними JWT можно подделать. Лучше упасть на старте, чем
+        обнаружить проблему по инциденту.
+        """
+        if self.environment == "production" and self.secret_key in INSECURE_SECRET_KEYS:
+            raise ValueError(
+                "SECRET_KEY содержит известное небезопасное значение-заглушку. "
+                "Задайте длинный случайный секрет через переменную окружения "
+                "SECRET_KEY перед запуском в production."
+            )
+        return self
 
 
 @lru_cache

@@ -21,5 +21,19 @@ COPY . .
 
 EXPOSE 8000
 
+# Непривилегированный пользователь: процесс приложения не должен работать
+# от root. Директории под именованные volumes (аватары, история качества)
+# заранее созданы и принадлежат appuser, иначе первый mount от root сделал бы
+# их недоступными для записи.
+RUN useradd --create-home --uid 1000 appuser \
+    && mkdir -p /app/app/static/uploads/avatars /app/quality-history \
+    && chown -R appuser:appuser /app/app/static/uploads /app/quality-history
+USER appuser
+
+# Контейнер считается живым только если приложение реально отвечает на /health
+# (curl в slim-образе нет, используем стандартную библиотеку Python).
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
+    CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+
 # В проде seed не запускается автоматически (ENVIRONMENT=production).
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

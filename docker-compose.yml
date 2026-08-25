@@ -71,6 +71,14 @@ services:
       # Аватары не теряются при пересоздании контейнера приложения.
       - avatar_uploads:/app/app/static/uploads/avatars
       - quality_history:/app/quality-history
+    # Приложение отвечает на /health — используем это как признак готовности
+    # контейнера (docker compose ps / docker compose up --wait).
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       default:
         # Dotted host is accepted consistently by Firefox/WebKit for

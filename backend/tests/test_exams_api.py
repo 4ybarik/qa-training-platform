@@ -33,21 +33,51 @@ def test_submit_exam_all_correct(client, user_token):
     assert isinstance(result["passed"], bool)
 
 
-def _all_correct_seed_answers(exam: dict) -> list[dict]:
-    answers = []
-    for question in exam["questions"]:
-        ids: list[int] = []
-        text = None
-        if question["type"] == "SINGLE":
-            ids = [question["answers"][0]["id"]]
-        elif question["type"] == "MULTI":
-            ids = [answer["id"] for answer in question["answers"][:2]]
-        elif question["type"] == "DND":
-            ids = [answer["id"] for answer in question["answers"]]
-        elif question["type"] == "TEXT":
-            text = "data-testid"
-        answers.append({"question_id": question["id"], "answer_ids": ids, "text": text})
-    return answers
+def _all_correct_seed_answers(exam_id: int) -> list[dict]:
+    """Правильные ответы экзамена читаются из БД — тест не зависит от того,
+    какие именно вопросы сгенерировал seed."""
+    from sqlalchemy import select
+
+    from app.core.database import SessionLocal
+    from app.domain.enums import QuestionType
+    from app.domain.models import Question
+
+    payload: list[dict] = []
+    with SessionLocal() as db:
+        questions = db.scalars(
+            select(Question).where(Question.exam_id == exam_id).order_by(Question.id)
+        ).all()
+        for question in questions:
+            correct = [a for a in question.answers if a.is_correct]
+            ids: list[int] = []
+            text = None
+            if question.type == QuestionType.SINGLE:
+                ids = [correct[0].id]
+            elif question.type == QuestionType.MULTI:
+                ids = sorted(a.id for a in correct)
+            elif question.type == QuestionType.DND:
+                # Порядок вставки ответов = правильная последовательность.
+                ids = [a.id for a in correct]
+            elif question.type == QuestionType.TEXT:
+                text = correct[0].answer
+            payload.append({"question_id": question.id, "answer_ids": ids, "text": text})
+    return payload
+
+
+def _exam_with_question_of_type(q_type: str) -> int:
+    from sqlalchemy import select
+
+    from app.core.database import SessionLocal
+    from app.domain.enums import QuestionType
+    from app.domain.models import Question
+
+    enum_type = QuestionType(q_type)
+    with SessionLocal() as db:
+        question = db.scalars(
+            select(Question).where(Question.type == enum_type).order_by(Question.id)
+        ).first()
+        assert question is not None, f"seed не создал вопросов типа {q_type}"
+        return question.exam_id
 
 
 def test_passed_exam_updates_progress_and_creates_certificate(client, user_token):
@@ -58,7 +88,7 @@ def test_passed_exam_updates_progress_and_creates_certificate(client, user_token
     result = client.post(
         "/api/exams/1/submit",
         headers=headers,
-        json={"answers": _all_correct_seed_answers(exam)},
+        json={"answers": _all_correct_seed_answers(exam["id"])},
     )
 
     assert result.status_code == 200
@@ -73,19 +103,20 @@ def test_passed_exam_updates_progress_and_creates_certificate(client, user_token
 
 
 def test_dnd_answer_requires_correct_order(client, user_token):
-    exam = client.get("/api/exams/1").json()
+    exam_id = _exam_with_question_of_type("DND")
+    exam = client.get(f"/api/exams/{exam_id}").json()
     dnd = next(question for question in exam["questions"] if question["type"] == "DND")
     correct_order = [answer["id"] for answer in dnd["answers"]]
 
     wrong = client.post(
-        "/api/exams/1/submit",
+        f"/api/exams/{exam_id}/submit",
         headers=auth(user_token),
         json={"answers": [{
             "question_id": dnd["id"], "answer_ids": list(reversed(correct_order)), "text": None,
         }]},
     )
     right = client.post(
-        "/api/exams/1/submit",
+        f"/api/exams/{exam_id}/submit",
         headers=auth(user_token),
         json={"answers": [{
             "question_id": dnd["id"], "answer_ids": correct_order, "text": None,

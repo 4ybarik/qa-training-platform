@@ -1,9 +1,14 @@
 """Загрузка начальных (демонстрационных) данных.
 
 Создаёт демонстрационные учётные записи (admin/manager/user), пользователей,
-курсы, экзамены с вопросами всех типов и уведомления. Идемпотентна: при наличии
-данных повторно ничего не создаёт.
+учебные курсы с экзаменами и вопросами (см. app/seed_content.py), уведомления.
+Идемпотентна: при наличии данных повторно ничего не создаёт.
+
+Для обновления учебного контента на существующей базе:
+    python -m app.seed --reset-content
+(пользователи сохраняются; курсы/экзамены/вопросы/уведомления пересоздаются).
 """
+import argparse
 import random
 
 from sqlalchemy import select
@@ -12,17 +17,15 @@ from sqlalchemy.orm import Session
 from app.core.config import get_settings
 from app.core.database import SessionLocal, init_db
 from app.core.security import hash_password
-from app.domain.enums import CourseStatus, QuestionType, Role
+from app.domain.enums import CourseStatus, Role
 from app.domain.models import (
-    Answer, Course, Exam, Notification, Profile, Question, User,
+    Answer, Course, Enrollment, Exam, ExamAttempt, Notification, Profile,
+    Question, User,
 )
+from app.seed_content import build_courses, build_exams_for
 
 settings = get_settings()
 random.seed(42)
-
-CATEGORIES = ["UI", "API", "Database", "Kafka", "Redis", "Performance", "Security"]
-TOPICS = ["Playwright", "Selenium", "Pytest", "REST API", "GraphQL", "SQL",
-          "Kafka", "Redis", "Locust", "OWASP", "Contract Testing", "CI/CD"]
 
 
 def _named_users(pwd: str) -> list[User]:
@@ -33,77 +36,70 @@ def _named_users(pwd: str) -> list[User]:
     ]
 
 
-def _build_exam(course_id: int, idx: int) -> Exam:
-    exam = Exam(course_id=course_id, title=f"Экзамен {idx}", duration_minutes=15)
-    # Вопрос одиночного выбора
-    q1 = Question(question="Что проверяет UI-тест?", type=QuestionType.SINGLE)
-    q1.answers = [
-        Answer(answer="Поведение интерфейса", is_correct=True),
-        Answer(answer="Скорость диска", is_correct=False),
-        Answer(answer="Версию ОС", is_correct=False),
-    ]
-    # Множественный выбор
-    q2 = Question(question="Какие инструменты автоматизируют UI?", type=QuestionType.MULTI)
-    q2.answers = [
-        Answer(answer="Playwright", is_correct=True),
-        Answer(answer="Selenium", is_correct=True),
-        Answer(answer="PostgreSQL", is_correct=False),
-    ]
-    # Текстовый ответ
-    q3 = Question(question="Каким атрибутом помечают элементы для тестов?", type=QuestionType.TEXT)
-    q3.answers = [Answer(answer="data-testid", is_correct=True)]
-    # Drag and drop (моделируется как упорядоченный набор)
-    q4 = Question(question="Перетащите в зону ответа уровни пирамиды тестирования", type=QuestionType.DND)
-    q4.answers = [
-        Answer(answer="Unit", is_correct=True),
-        Answer(answer="Integration", is_correct=True),
-        Answer(answer="E2E", is_correct=True),
-    ]
-    q5 = Question(question="HTTP-код успешного ответа?", type=QuestionType.SINGLE)
-    q5.answers = [
-        Answer(answer="200", is_correct=True),
-        Answer(answer="500", is_correct=False),
-        Answer(answer="404", is_correct=False),
-    ]
-    exam.questions = [q1, q2, q3, q4, q5]
+def _build_exam(course_id: int, exam_spec: dict) -> Exam:
+    """Экзамен из спецификации курса: вопросы всех четырёх типов."""
+    exam = Exam(course_id=course_id, title=exam_spec["title"],
+                duration_minutes=exam_spec["duration"])
+    questions = []
+    for q_type, text, answers in exam_spec["questions"]:
+        question = Question(question=text, type=q_type)
+        question.answers = [Answer(answer=a, is_correct=ok) for a, ok in answers]
+        questions.append(question)
+    exam.questions = questions
     return exam
 
 
-def seed(db: Session) -> None:
-    if db.scalar(select(User).limit(1)):
+def _reset_content(db: Session) -> None:
+    """Удаляет учебный контент вместе с прогрессом по нему, сохраняя пользователей.
+
+    Порядок важен: сначала зависимые таблицы, потом родительские
+    (bulk-delete не задействует ORM-каскады).
+    """
+    for model in (Notification, ExamAttempt, Enrollment, Answer, Question, Exam, Course):
+        db.query(model).delete()
+    db.commit()
+
+
+def seed(db: Session, reset_content: bool = False) -> None:
+    if reset_content:
+        _reset_content(db)
+    elif db.scalar(select(User).limit(1)):
         return  # уже засеяно
 
     pwd = hash_password(settings.seed_password)
 
-    users = _named_users(pwd)
-    for i in range(1, 31):
-        users.append(User(
-            email=f"user{i}@test.com", password_hash=pwd,
-            first_name=f"Имя{i}", last_name=f"Фамилия{i}", role=Role.USER,
-        ))
-    db.add_all(users)
-    db.flush()
-    for u in users:
-        db.add(Profile(user_id=u.id))
+    users = db.scalars(select(User)).all() or []
+    if not users:
+        users = _named_users(pwd)
+        for i in range(1, 31):
+            users.append(User(
+                email=f"user{i}@test.com", password_hash=pwd,
+                first_name=f"Имя{i}", last_name=f"Фамилия{i}", role=Role.USER,
+            ))
+        db.add_all(users)
+        db.flush()
+        for u in users:
+            db.add(Profile(user_id=u.id))
 
-    # 50 курсов
+    # 50 учебных курсов из seed_content (описания с примерами кода).
     courses: list[Course] = []
-    for i in range(1, 51):
-        topic = TOPICS[i % len(TOPICS)]
+    courses_spec = build_courses()
+    for spec in courses_spec:
         courses.append(Course(
-            title=f"{topic}: курс {i}",
-            description=f"Учебный курс №{i} по теме «{topic}» для практики автоматизации тестирования.",
-            price=float(random.choice([0, 1990, 2990, 4990])),
-            category=CATEGORIES[i % len(CATEGORIES)],
+            title=spec["title"],
+            description=spec["description"],
+            price=spec["price"],
+            category=spec["category"],
             status=CourseStatus.PUBLISHED,
         ))
     db.add_all(courses)
     db.flush()
 
-    # ~100 экзаменов (по 2 на курс) с 5 вопросами => ~500 вопросов
-    for course in courses:
-        for k in (1, 2):
-            db.add(_build_exam(course.id, k))
+    # ~100 экзаменов (по 2 на курс) с 5 вопросами => ~500 вопросов.
+    for position, course in enumerate(courses):
+        track = courses_spec[position]["track"]
+        for exam_spec in build_exams_for(track, position):
+            db.add(_build_exam(course.id, exam_spec))
 
     # уведомления
     user_ids = [u.id for u in users]
@@ -116,12 +112,16 @@ def seed(db: Session) -> None:
     db.commit()
 
 
-def run() -> None:
+def run(reset_content: bool = False) -> None:
     init_db()
     with SessionLocal() as db:
-        seed(db)
-    print("Seed выполнен.")
+        seed(db, reset_content=reset_content)
+    print("Seed выполнен." if not reset_content else "Учебный контент пересоздан.")
 
 
 if __name__ == "__main__":
-    run()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--reset-content", action="store_true",
+                        help="пересоздать курсы/экзамены/вопросы, сохранив пользователей")
+    args = parser.parse_args()
+    run(reset_content=args.reset_content)

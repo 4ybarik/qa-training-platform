@@ -14,6 +14,9 @@ logs:          ## логи приложения
 seed:          ## загрузить демо-данные вручную
 	docker compose exec app python -m app.seed
 
+seed-reset:    ## пересоздать учебный контент (курсы/экзамены/вопросы), пользователи сохраняются
+	docker compose exec app python -m app.seed --reset-content
+
 test:          ## юнит/API-тесты (SQLite, без Docker)
 	cd backend && python -m pytest
 

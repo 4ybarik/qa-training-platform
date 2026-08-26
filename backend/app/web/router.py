@@ -765,4 +765,12 @@ def ide_page(request: Request, user: User | None = Depends(get_optional_user)):
         return templates.TemplateResponse(
             request, "forbidden.html", _ctx(request, user), status_code=403,
         )
-    return templates.TemplateResponse(request, "ide.html", _ctx(request, user))
+    # Версия статики по mtime: браузер не держит устаревший ide.js/css в кэше.
+    static_dir = TEMPLATES_DIR.parent / "static"
+    version = int(max(
+        (static_dir / "js" / "ide.js").stat().st_mtime,
+        (static_dir / "css" / "ide.css").stat().st_mtime,
+    ))
+    return templates.TemplateResponse(
+        request, "ide.html", _ctx(request, user, ide_static_version=version),
+    )

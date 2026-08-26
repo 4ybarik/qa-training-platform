@@ -6,6 +6,14 @@
   var currentFile = null;
   var editor = null;          // CodeMirror instance
   var textarea = document.getElementById("ide-editor");
+  var MESSAGES = window.QATP_MESSAGES || {};
+
+  function msg(key, values) {
+    var template = MESSAGES[key] || key;
+    return template.replace(/\{(\w+)\}/g, function (_, name) {
+      return values && values[name] !== undefined ? String(values[name]) : "";
+    });
+  }
 
   function value() { return editor ? editor.getValue() : textarea.value; }
   function setValue(text) {
@@ -46,7 +54,7 @@
   function showOutput(text, ok) {
     var out = document.getElementById("ide-output");
     out.hidden = false;
-    out.textContent = text || "(пустой вывод)";
+    out.textContent = text || msg("ide_empty_output");
     out.classList.toggle("ide-ok", Boolean(ok));
     out.classList.toggle("ide-fail", ok === false);
   }
@@ -75,7 +83,7 @@
           del.type = "button";
           del.className = "ide-file-del";
           del.textContent = "✕";
-          del.title = "Удалить файл";
+          del.title = msg("ide_delete_title");
           del.setAttribute("data-testid", "ide-delete-" + path);
           del.addEventListener("click", function () { deleteFile(path); });
 
@@ -84,28 +92,27 @@
           list.appendChild(row);
         });
       })
-      .catch(function () { toast("Не удалось загрузить список файлов", true); });
+      .catch(function () { toast(msg("ide_files_error"), true); });
   }
 
   function deleteFile(path) {
-    if (!window.confirm("Удалить файл " + path + "? "
-        + "Файлы, закоммиченные в git, можно восстановить через git checkout.")) {
+    if (!window.confirm(msg("ide_delete_confirm", { path: path }))) {
       return;
     }
     fetch("/api/ide/file?path=" + encodeURIComponent(path), { method: "DELETE" })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function () {
-        toast("Удалено: " + path);
+        toast(msg("ide_deleted", { path: path }));
         if (currentFile === path) {
           currentFile = null;
           setValue("");
-          document.getElementById("ide-current-file").textContent = "файл не выбран";
+          document.getElementById("ide-current-file").textContent = msg("ide_no_file");
           document.getElementById("ide-output").hidden = true;
           setButtons(false);
         }
         loadFiles();
       })
-      .catch(function () { toast("Не удалось удалить: " + path, true); });
+      .catch(function () { toast(msg("ide_delete_error", { path: path }), true); });
   }
 
   function markActive(path) {
@@ -125,19 +132,19 @@
         setButtons(true);
         markActive(path);
       })
-      .catch(function () { toast("Файл недоступен: " + path, true); });
+      .catch(function () { toast(msg("ide_open_error", { path: path }), true); });
   }
 
   function saveFile() {
-    if (!currentFile) { toast("Сначала выберите файл", true); return; }
+    if (!currentFile) { toast(msg("ide_pick_file"), true); return; }
     fetch("/api/ide/file", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ path: currentFile, content: value() }),
     })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(function () { toast("Сохранено: " + currentFile); })
-      .catch(function () { toast("Ошибка сохранения", true); });
+      .then(function () { toast(msg("ide_saved", { path: currentFile })); })
+      .catch(function () { toast(msg("ide_save_error"), true); });
   }
 
   /* ---------- Создание нового файла ---------- */
@@ -145,15 +152,15 @@
 
   function createFile() {
     var raw = document.getElementById("ide-new-file").value.trim();
-    if (!raw) { toast("Введите имя файла, напр. api/test_my_task.py", true); return; }
+    if (!raw) { toast(msg("ide_create_name_hint"), true); return; }
     var match = NEW_FILE_RE.exec(raw);
     if (!match) {
-      toast("Имя вида [api|contract|integration|ui]/test_<название>.py", true);
+      toast(msg("ide_create_bad_name"), true);
       return;
     }
     var path = (match[1] || "api") + "/" + match[2];
     var skeleton = [
-      '"""Решение задачи. Опишите в имени и тестах проверяемое поведение."""',
+      '"""' + msg("ide_skeleton_docstring") + '"""',
       "import pytest",
       "",
       "",
@@ -178,15 +185,15 @@
         document.getElementById("ide-new-file").value = "";
         loadFiles();
         openFile(path);
-        toast("Создан файл: " + path);
+        toast(msg("ide_created", { path: path }));
       })
-      .catch(function (err) { toast("Не создано: " + err.message, true); });
+      .catch(function (err) { toast(msg("ide_create_error", { message: err.message }), true); });
   }
 
   function runTests() {
-    if (!currentFile) { toast("Сначала выберите файл", true); return; }
+    if (!currentFile) { toast(msg("ide_pick_file"), true); return; }
     saveFile();
-    showOutput("Запуск…");
+    showOutput(msg("ide_running"));
     fetch("/api/ide/run", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -194,7 +201,7 @@
     })
       .then(function (r) { return r.json(); })
       .then(function (data) { showOutput(data.output, data.exit_code === 0); })
-      .catch(function () { showOutput("Ошибка запуска", false); });
+      .catch(function () { showOutput(msg("ide_run_error"), false); });
   }
 
   /* ---------- Локаторы ---------- */
@@ -204,14 +211,14 @@
     var status = document.getElementById("ide-locator-status");
     var results = document.getElementById("ide-locator-results");
     var preview = document.getElementById("ide-preview");
-    status.textContent = "Загрузка…";
+    status.textContent = msg("ide_locators_loading");
     results.textContent = "";
     preview.src = url;
 
     fetch("/api/ide/locators?url=" + encodeURIComponent(url))
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function (data) {
-        status.textContent = "Найдено локаторов: " + data.count + " (" + data.final_url + ")";
+        status.textContent = msg("ide_locators_found", { count: data.count, path: data.final_url });
         data.locators.forEach(function (item) {
           var li = document.createElement("li");
           li.className = "ide-locator-item";
@@ -220,11 +227,11 @@
           var copy = document.createElement("button");
           copy.type = "button";
           copy.className = "btn ide-copy-btn";
-          copy.textContent = "копировать";
+          copy.textContent = msg("ide_copy_btn");
           copy.addEventListener("click", function () {
             navigator.clipboard.writeText(item.selector).then(
-              function () { toast("Скопировано: " + item.selector); },
-              function () { toast("Буфер обмена недоступен", true); },
+              function () { toast(msg("ide_copied", { selector: item.selector })); },
+              function () { toast(msg("ide_clipboard_error"), true); },
             );
           });
 
@@ -239,9 +246,9 @@
           li.appendChild(hint);
           results.appendChild(li);
         });
-        if (!data.locators.length) { status.textContent = "data-testid не найдены."; }
+        if (!data.locators.length) { status.textContent = msg("ide_locators_none"); }
       })
-      .catch(function () { status.textContent = "Ошибка запроса страницы"; });
+      .catch(function () { status.textContent = msg("ide_locators_error"); });
   }
 
   document.getElementById("ide-save-btn").addEventListener("click", saveFile);

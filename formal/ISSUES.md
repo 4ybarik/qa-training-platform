@@ -1,20 +1,25 @@
 # Formal spec alignment — P0/P1 issues
 
-Tracking issues for discrepancies found during TLA+ / python-statemachine analysis.
+Issue templates live in [`.github/ISSUES/`](../.github/ISSUES/). Create on GitHub manually or with `gh issue create -F .github/ISSUES/<file>.md`.
 
-## P0 — must fix before relying on invariants
+PR description: [`formal/PR.md`](PR.md)
 
-| ID | Title | Scope |
-|----|-------|-------|
-| #1 | Block enroll on ARCHIVED courses | `CourseService.enroll`, API 409, formal oracle |
-| #2 | Surface web enroll errors to user | `web/router.py`, `course_detail.html`, web test |
+**Branch pushed:** `fix/formal-spec-alignment-p0-p1`  
+**Open PR:** https://github.com/maximusmakarov/qa-training-platform/pull/new/fix/formal-spec-alignment-p0-p1
 
-## P1 — document or narrow spec scope
+## P0 — must fix
 
-| ID | Title | Scope |
-|----|-------|-------|
-| #3 | Document course delete cascade | `ARCHITECTURE.md` §3.1, `LIMITATIONS.md` |
-| #4 | Exclude practice/integration from ApiAdapters | `ApiAdapters.tla`, `PracticeTargets.tla`, inventory |
+| Template | Title |
+|----------|-------|
+| `p0-block-enroll-archived.md` | Block enroll on ARCHIVED courses |
+| `p0-web-enroll-errors.md` | Surface web enroll DomainError to user |
+
+## P1 — document / narrow spec
+
+| Template | Title |
+|----------|-------|
+| `p1-document-delete-cascade.md` | Document course delete cascade |
+| `p1-exclude-practice-from-apiadapters.md` | Exclude practice/integration from ApiAdapters |
 
 ## Verification
 
@@ -22,5 +27,3 @@ Tracking issues for discrepancies found during TLA+ / python-statemachine analys
 cd backend && python -m pytest tests/test_courses_api.py tests/test_courses_web.py tests/formal -q
 make formal
 ```
-
-Replace `#N` with actual GitHub issue numbers after `gh issue create`.

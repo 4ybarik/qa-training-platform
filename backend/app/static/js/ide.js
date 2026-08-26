@@ -59,17 +59,53 @@
         var list = document.getElementById("ide-file-list");
         list.textContent = "";
         data.files.forEach(function (path) {
+          var row = document.createElement("div");
+          row.className = "ide-file-row";
+
           var button = document.createElement("button");
           button.type = "button";
           button.className = "ide-file-item";
           button.dataset.path = path;
           button.setAttribute("data-testid", "ide-file-" + path);
           button.textContent = path;
+          button.title = path;
           button.addEventListener("click", function () { openFile(path); });
-          list.appendChild(button);
+
+          var del = document.createElement("button");
+          del.type = "button";
+          del.className = "ide-file-del";
+          del.textContent = "✕";
+          del.title = "Удалить файл";
+          del.setAttribute("data-testid", "ide-delete-" + path);
+          del.addEventListener("click", function () { deleteFile(path); });
+
+          row.appendChild(button);
+          row.appendChild(del);
+          list.appendChild(row);
         });
       })
       .catch(function () { toast("Не удалось загрузить список файлов", true); });
+  }
+
+  function deleteFile(path) {
+    if (!window.confirm("Удалить файл " + path + "? "
+        + "Файлы, закоммиченные в git, можно восстановить через git checkout.")) {
+      return;
+    }
+    fetch("/api/ide/file?path=" + encodeURIComponent(path), { method: "DELETE" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function () {
+        toast("Удалено: " + path);
+        if (currentFile === path) {
+          currentFile = null;
+          setValue("");
+          document.getElementById("ide-current-file").textContent = "файл не выбран";
+          document.getElementById("ide-output").hidden = true;
+          setButtons(false);
+        }
+        loadFiles();
+      })
+      .catch(function () { toast("Не удалось удалить: " + path, true); });
   }
 
   function markActive(path) {

@@ -132,6 +132,18 @@ def save_file(payload: FileSave) -> dict:
     return {"path": payload.path, "bytes": len(payload.content.encode("utf-8"))}
 
 
+@router.delete("/file")
+def delete_file(path: str) -> dict:
+    """Удаляет файл решения. Файлы под git'ом восстановимы через git checkout."""
+    _require_dev()
+    target = _safe_path(path)
+    if not target.is_file():
+        raise HTTPException(status_code=404, detail="Файл не найден")
+    target.unlink()
+    return {"deleted": path}
+
+
+
 @router.post("/run")
 def run_tests(payload: FileRun) -> dict:
     """Прогон одного файла решений. Вывод обрезается до последних строк."""

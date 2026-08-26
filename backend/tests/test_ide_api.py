@@ -103,6 +103,28 @@ def test_create_rejects_unknown_dir(client):
     assert response.status_code == 400
 
 
+def test_delete_file(client, tmp_solution):
+    deleted = client.delete("/api/ide/file", params={"path": tmp_solution})
+    still_there = client.get("/api/ide/file", params={"path": tmp_solution})
+
+    assert deleted.status_code == 200
+    assert deleted.json()["deleted"] == tmp_solution
+    assert still_there.status_code == 404
+    assert not (STUDENT_DIR / tmp_solution).exists()
+
+
+def test_delete_missing_returns_404(client):
+    response = client.delete("/api/ide/file", params={"path": "api/test_never_created.py"})
+
+    assert response.status_code == 404
+
+
+def test_delete_rejects_bad_paths(client):
+    for evil in ("../backend/app/main.py", "api/helper.py"):
+        response = client.delete("/api/ide/file", params={"path": evil})
+        assert response.status_code == 400, evil
+
+
 def test_locators_on_login_page(client):
     response = client.get("/api/ide/locators", params={"url": "/login"})
 

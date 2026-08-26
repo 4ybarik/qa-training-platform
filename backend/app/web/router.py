@@ -7,7 +7,7 @@
 from datetime import date
 from pathlib import Path
 import secrets
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 
 from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -67,7 +67,7 @@ def _require_admin(request: Request, user: User | None):
 
 def _ctx(request: Request, user: User | None, **extra) -> dict:
     language = get_request_language(request)
-    for error_key in ("error", "notif_error", "profile_error"):
+    for error_key in ("error", "notif_error", "profile_error", "enroll_error"):
         if extra.get(error_key):
             extra[error_key] = localize_error(language, extra[error_key])
     return {
@@ -348,7 +348,8 @@ def courses_page(request: Request, user: User | None = Depends(get_optional_user
 
 @router.get("/courses/{course_id}", response_class=HTMLResponse)
 def course_detail(course_id: int, request: Request,
-                  user: User | None = Depends(get_optional_user), db: Session = Depends(get_db)):
+                  user: User | None = Depends(get_optional_user), db: Session = Depends(get_db),
+                  enroll_error: str | None = Query(default=None)):
     if (r := _require_web_user(user)):
         return r
     svc = CourseService(db)
@@ -358,7 +359,8 @@ def course_detail(course_id: int, request: Request,
     exams = ExamService(db).list_for_course(course_id)
     return templates.TemplateResponse(request, "course_detail.html", _ctx(
         request, user, course=course, enrolled=enrolled,
-        enrollment_progress=enrollment.progress if enrollment else 0, exams=exams
+        enrollment_progress=enrollment.progress if enrollment else 0, exams=exams,
+        enroll_error=enroll_error,
     ))
 
 
@@ -367,11 +369,12 @@ def course_enroll(course_id: int, user: User | None = Depends(get_optional_user)
                   db: Session = Depends(get_db)):
     if (r := _require_web_user(user)):
         return r
+    error_param = ""
     try:
         CourseService(db).enroll(user.id, course_id)
-    except DomainError:
-        pass
-    return RedirectResponse(f"/courses/{course_id}", status_code=303)
+    except DomainError as exc:
+        error_param = f"?enroll_error={quote(str(exc))}"
+    return RedirectResponse(f"/courses/{course_id}{error_param}", status_code=303)
 
 
 @router.get("/courses/{course_id}/edit", response_class=HTMLResponse)

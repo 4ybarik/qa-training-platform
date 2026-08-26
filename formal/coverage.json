@@ -1,0 +1,2992 @@
+{
+  "summary": {
+    "C": 268,
+    "A": 9,
+    "B": 17,
+    "schema": 31,
+    "skip": 6,
+    "total": 331,
+    "unmapped": 0
+  },
+  "symbols": [
+    {
+      "kind": "function",
+      "name": "register",
+      "module": "api.auth",
+      "file": "api/auth.py",
+      "line": 19,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "login",
+      "module": "api.auth",
+      "file": "api/auth.py",
+      "line": 27,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "refresh",
+      "module": "api.auth",
+      "file": "api/auth.py",
+      "line": 40,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "logout",
+      "module": "api.auth",
+      "file": "api/auth.py",
+      "line": 46,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "me",
+      "module": "api.auth",
+      "file": "api/auth.py",
+      "line": 52,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_courses",
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 19,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "categories",
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 35,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_course",
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 44,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_course",
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 49,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "update_course",
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 57,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_course",
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 65,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "enroll",
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 74,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_current_user",
+      "module": "api.deps",
+      "file": "api/deps.py",
+      "line": 32,
+      "tier": "C",
+      "spec": "modules/Deps.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_optional_user",
+      "module": "api.deps",
+      "file": "api/deps.py",
+      "line": 52,
+      "tier": "C",
+      "spec": "modules/Deps.tla"
+    },
+    {
+      "kind": "function",
+      "name": "require_roles",
+      "module": "api.deps",
+      "file": "api/deps.py",
+      "line": 60,
+      "tier": "C",
+      "spec": "modules/Deps.tla"
+    },
+    {
+      "kind": "function",
+      "name": "checker",
+      "module": "api.deps",
+      "file": "api/deps.py",
+      "line": 64,
+      "tier": "C",
+      "spec": "modules/Deps.tla"
+    },
+    {
+      "kind": "function",
+      "name": "register_exception_handlers",
+      "module": "api.errors",
+      "file": "api/errors.py",
+      "line": 18,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "function",
+      "name": "handler",
+      "module": "api.errors",
+      "file": "api/errors.py",
+      "line": 24,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_exams",
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 20,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_exam",
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 26,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_exam_admin",
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 32,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_exam",
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 41,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "update_exam",
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 49,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_exam",
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 57,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "submit_exam",
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 66,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "FileCreate",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 77,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_file",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 83,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "FileSave",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 93,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "FileRun",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 98,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_files",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 103,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "read_file",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 118,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "save_file",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 127,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_file",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 136,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "run_tests",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 148,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "_LocatorParser",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 176,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 181,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "handle_starttag",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 187,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "handle_startendtag",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 205,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "handle_data",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 210,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "handle_endtag",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 214,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "find_locators",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 228,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CacheValue",
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 25,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "QueueJobCreate",
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 30,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "put_cache",
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 52,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_cache",
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 66,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_cache",
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 78,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_queue_job",
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 88,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_queue_job",
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 114,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "clear_integration_state",
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 135,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "external_profile",
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 148,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_profile",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 23,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "update_profile",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 31,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_notifications",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 44,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "mark_read",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 54,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_notification",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 61,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_users",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 72,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_role",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 78,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_active",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 86,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_notification",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 94,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "audit",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 102,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "health",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 112,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "liveness",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 118,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "readiness",
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 123,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PlaygroundConfig",
+      "module": "api.playground",
+      "file": "api/playground.py",
+      "line": 18,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_config",
+      "module": "api.playground",
+      "file": "api/playground.py",
+      "line": 25,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_config",
+      "module": "api.playground",
+      "file": "api/playground.py",
+      "line": 30,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "notifications_ws",
+      "module": "api.playground",
+      "file": "api/playground.py",
+      "line": 46,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "EchoBody",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 46,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ResourceCreate",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 51,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ResourceUpdate",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 59,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "JobCreate",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 67,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_catalog",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 73,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_challenge",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 78,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_mutations",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 86,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "echo_get",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 93,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "echo_post",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 103,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "status_response",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 114,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "rate_limit_target",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 124,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "schema_variant",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 151,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_resource",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 175,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_resources",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 215,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_resource",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 261,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "update_resource",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 269,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_resource",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 292,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "clear_resources",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 309,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "clear_practice_state",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 318,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_job",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 332,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_job",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 349,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "upload_file",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 369,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "download_file",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 392,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "redirect_chain",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 414,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_practice_cookie",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 423,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "read_practice_cookie",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 429,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_practice_cookie",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 434,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "record_webhook",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 440,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_webhooks",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 461,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "clear_webhooks",
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 468,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "history",
+      "module": "api.quality",
+      "file": "api/quality.py",
+      "line": 10,
+      "tier": "C",
+      "spec": "modules/Quality.tla"
+    },
+    {
+      "kind": "function",
+      "name": "latest",
+      "module": "api.quality",
+      "file": "api/quality.py",
+      "line": 16,
+      "tier": "C",
+      "spec": "modules/Quality.tla"
+    },
+    {
+      "kind": "class",
+      "name": "TestUserCreate",
+      "module": "api.test_support",
+      "file": "api/test_support.py",
+      "line": 20,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "TestCourseCreate",
+      "module": "api.test_support",
+      "file": "api/test_support.py",
+      "line": 28,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_test_user",
+      "module": "api.test_support",
+      "file": "api/test_support.py",
+      "line": 51,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_test_course",
+      "module": "api.test_support",
+      "file": "api/test_support.py",
+      "line": 77,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "cleanup_test_state",
+      "module": "api.test_support",
+      "file": "api/test_support.py",
+      "line": 99,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseV1",
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 16,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CoursePageV1",
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 23,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "MoneyV2",
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 31,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseV2",
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 36,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PaginationV2",
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 43,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CoursePageV2",
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 49,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_courses_v1",
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 62,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_courses_v2",
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 87,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Settings",
+      "module": "core.config",
+      "file": "core/config.py",
+      "line": 16,
+      "tier": "C",
+      "spec": "modules/Config.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_settings",
+      "module": "core.config",
+      "file": "core/config.py",
+      "line": 79,
+      "tier": "C",
+      "spec": "modules/Config.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Base",
+      "module": "core.database",
+      "file": "core/database.py",
+      "line": 30,
+      "tier": "C",
+      "spec": "modules/Database.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_db",
+      "module": "core.database",
+      "file": "core/database.py",
+      "line": 34,
+      "tier": "C",
+      "spec": "modules/Database.tla"
+    },
+    {
+      "kind": "function",
+      "name": "init_db",
+      "module": "core.database",
+      "file": "core/database.py",
+      "line": 43,
+      "tier": "C",
+      "spec": "modules/Database.tla"
+    },
+    {
+      "kind": "class",
+      "name": "RateLimiter",
+      "module": "core.rate_limit",
+      "file": "core/rate_limit.py",
+      "line": 11,
+      "tier": "A",
+      "spec": "core/RateLimiter.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "core.rate_limit",
+      "file": "core/rate_limit.py",
+      "line": 12,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "hit",
+      "module": "core.rate_limit",
+      "file": "core/rate_limit.py",
+      "line": 18,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "reset",
+      "module": "core.rate_limit",
+      "file": "core/rate_limit.py",
+      "line": 30,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "hash_password",
+      "module": "core.security",
+      "file": "core/security.py",
+      "line": 22,
+      "tier": "C",
+      "spec": "modules/Security.tla"
+    },
+    {
+      "kind": "function",
+      "name": "verify_password",
+      "module": "core.security",
+      "file": "core/security.py",
+      "line": 26,
+      "tier": "C",
+      "spec": "modules/Security.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_access_token",
+      "module": "core.security",
+      "file": "core/security.py",
+      "line": 43,
+      "tier": "C",
+      "spec": "modules/Security.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_refresh_token",
+      "module": "core.security",
+      "file": "core/security.py",
+      "line": 52,
+      "tier": "C",
+      "spec": "modules/Security.tla"
+    },
+    {
+      "kind": "function",
+      "name": "decode_token",
+      "module": "core.security",
+      "file": "core/security.py",
+      "line": 60,
+      "tier": "C",
+      "spec": "modules/Security.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Role",
+      "module": "domain.enums",
+      "file": "domain/enums.py",
+      "line": 5,
+      "tier": "C",
+      "spec": "modules/Enums.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseStatus",
+      "module": "domain.enums",
+      "file": "domain/enums.py",
+      "line": 11,
+      "tier": "C",
+      "spec": "modules/Enums.tla"
+    },
+    {
+      "kind": "class",
+      "name": "QuestionType",
+      "module": "domain.enums",
+      "file": "domain/enums.py",
+      "line": 17,
+      "tier": "C",
+      "spec": "modules/Enums.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotificationStatus",
+      "module": "domain.enums",
+      "file": "domain/enums.py",
+      "line": 24,
+      "tier": "C",
+      "spec": "modules/Enums.tla"
+    },
+    {
+      "kind": "class",
+      "name": "DomainError",
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 4,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotFoundError",
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 8,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ConflictError",
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 12,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AuthError",
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 16,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PermissionError_",
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 20,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "RateLimitError",
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 24,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "User",
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 24,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Profile",
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 44,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Course",
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 58,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Enrollment",
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 73,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Exam",
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 89,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Question",
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 104,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Answer",
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 116,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Notification",
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 127,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AuditLog",
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 139,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamAttempt",
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 149,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "TestRunEntity",
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 165,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "RegisterRequest",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 13,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "LoginRequest",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 20,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "TokenPair",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 25,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "RefreshRequest",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 31,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "MessageResponse",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 35,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ErrorResponse",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 39,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "UserOut",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 44,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ProfileOut",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 55,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ProfileUpdate",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 64,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "RoleUpdate",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 71,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "UserActiveUpdate",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 75,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseOut",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 80,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CoursePage",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 90,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseCreate",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 97,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseUpdate",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 105,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AnswerOut",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 114,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AnswerAdminOut",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 120,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "QuestionOut",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 128,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "QuestionAdminOut",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 136,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamOut",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 144,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamAdminOut",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 153,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AnswerCreate",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 162,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "QuestionCreate",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 167,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamCreate",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 173,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamUpdate",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 179,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "SubmittedAnswer",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 184,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamSubmission",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 190,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamResult",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 194,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotificationOut",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 204,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotificationCreate",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 212,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AuditLogOut",
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 218,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "function",
+      "name": "process_payload",
+      "module": "integrations.tasks",
+      "file": "integrations/tasks.py",
+      "line": 7,
+      "tier": "C",
+      "spec": "modules/Tasks.tla"
+    },
+    {
+      "kind": "function",
+      "name": "lifespan",
+      "module": "main",
+      "file": "main.py",
+      "line": 29,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "function",
+      "name": "create_app",
+      "module": "main",
+      "file": "main.py",
+      "line": 37,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "class",
+      "name": "PlaygroundState",
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 19,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PlaygroundMiddleware",
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 25,
+      "tier": "A",
+      "spec": "middleware/Playground.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 26,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "dispatch",
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 39,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Text",
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 10,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "function",
+      "name": "in_language",
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 14,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Challenge",
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 19,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Track",
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 32,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "function",
+      "name": "serialize_challenge",
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 658,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "function",
+      "name": "serialize_catalog",
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 667,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Mutation",
+      "module": "practice.mutations",
+      "file": "practice/mutations.py",
+      "line": 12,
+      "tier": "C",
+      "spec": "modules/Mutations.tla"
+    },
+    {
+      "kind": "function",
+      "name": "is_active",
+      "module": "practice.mutations",
+      "file": "practice/mutations.py",
+      "line": 72,
+      "tier": "C",
+      "spec": "modules/Mutations.tla"
+    },
+    {
+      "kind": "function",
+      "name": "serialize_mutations",
+      "module": "practice.mutations",
+      "file": "practice/mutations.py",
+      "line": 82,
+      "tier": "C",
+      "spec": "modules/Mutations.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 10,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 11,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 14,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "search",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 17,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "categories",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 49,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "add",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 52,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 57,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "EnrollmentRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 61,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 62,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 65,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_for_user",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 72,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "add",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 77,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 11,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 12,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_for_course",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 15,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_with_questions",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 24,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "add",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 31,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 36,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotificationRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 40,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 41,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 44,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_for_user",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 47,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "add",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 57,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 62,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AuditRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 66,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 67,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "add",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 70,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_recent",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 75,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "UserRepository",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 8,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 9,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 12,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_by_email",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 15,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_all",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 18,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "add",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 21,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "save",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 26,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ProfileRepository",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 30,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 31,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_by_user",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 34,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "add",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 37,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "seed",
+      "module": "seed",
+      "file": "seed.py",
+      "line": 63,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "function",
+      "name": "run",
+      "module": "seed",
+      "file": "seed.py",
+      "line": 115,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "function",
+      "name": "build_courses",
+      "module": "seed_content",
+      "file": "seed_content.py",
+      "line": 31,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "function",
+      "name": "build_exams_for",
+      "module": "seed_content",
+      "file": "seed_content.py",
+      "line": 219,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "class",
+      "name": "ProfileService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 12,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 13,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 17,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "update",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 24,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_avatar_url",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 38,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "skills_list",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 46,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotificationService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 50,
+      "tier": "A",
+      "spec": "services/Notification.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 51,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_for_user",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 56,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "mark_read",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 59,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 68,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_for_admin",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 75,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AdminService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 95,
+      "tier": "A",
+      "spec": "services/AdminUser.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 96,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_users",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 101,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_role",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 104,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_active",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 116,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "audit_logs",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 131,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AuthService",
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 23,
+      "tier": "A",
+      "spec": "services/AuthAccount.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 24,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "register",
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 28,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "authenticate",
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 47,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "reset_password",
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 60,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "refresh",
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 90,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseService",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 12,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 13,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "search",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 18,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "categories",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 21,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 24,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 30,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "update",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 41,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 51,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "enroll",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 57,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_enrollments",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 78,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamService",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 17,
+      "tier": "A",
+      "spec": "services/ExamAttempt.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 18,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_for_course",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 23,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 26,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 32,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "update",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 48,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 58,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "submit",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 64,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "latest_passed_attempt",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 115,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "quality_history",
+      "module": "services.quality",
+      "file": "services/quality.py",
+      "line": 10,
+      "tier": "C",
+      "spec": "modules/Quality.tla"
+    },
+    {
+      "kind": "class",
+      "name": "TestSupportService",
+      "module": "services.test_support",
+      "file": "services/test_support.py",
+      "line": 14,
+      "tier": "A",
+      "spec": "services/TestRun.tla"
+    },
+    {
+      "kind": "function",
+      "name": "__init__",
+      "module": "services.test_support",
+      "file": "services/test_support.py",
+      "line": 17,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_user",
+      "module": "services.test_support",
+      "file": "services/test_support.py",
+      "line": 20,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_course",
+      "module": "services.test_support",
+      "file": "services/test_support.py",
+      "line": 53,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "cleanup",
+      "module": "services.test_support",
+      "file": "services/test_support.py",
+      "line": 77,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "normalize_language",
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 564,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_request_language",
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 569,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "translate",
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 574,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "translator",
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 581,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "javascript_messages",
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 586,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "localize_error",
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 591,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "root",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 119,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_language",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 124,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "login_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 140,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "login_submit",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 156,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "forgot_password_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 181,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "forgot_password_submit",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 193,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "register_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 232,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "register_submit",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 237,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "logout_submit",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 276,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "dashboard",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 284,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_new_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 304,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_new_submit",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 313,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "courses_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 332,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_detail",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 350,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_enroll",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 368,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_edit_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 381,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_edit_submit",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 392,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_delete_submit",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 412,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_new_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 424,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_new_submit",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 436,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_delete_submit",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 482,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 496,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_submit",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 505,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_certificate",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 526,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "profile_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 544,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "profile_update",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 556,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "notifications_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 602,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "admin_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 616,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "admin_set_active",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 628,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "admin_send_notification",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 642,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "legacy_learning_redirect",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 662,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "quality_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 668,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 679,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_challenge_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 712,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_components_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 730,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_iframe_content",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 737,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_new_tab",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 746,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "playground_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 755,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    },
+    {
+      "kind": "function",
+      "name": "ide_page",
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 763,
+      "tier": "C",
+      "spec": "modules/Misc.tla"
+    }
+  ]
+}

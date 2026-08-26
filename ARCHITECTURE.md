@@ -281,6 +281,25 @@ def test_add_and_list_review(client, user_token):
 
 ---
 
+## 3.1. Удаление курса и каскадные связи
+
+`CourseService.delete` (API и web) **не проверяет** наличие записей на курс.
+Удаление курса каскадно убирает связанные `enrollments` и `exams` через ORM
+(`cascade="all, delete-orphan"` в `domain/models.py`). Это сознательное
+упрощение учебного полигона: администратор может полностью убрать курс вместе
+с зависимостями одной операцией.
+
+Если понадобится production-подобное поведение («нельзя удалить курс с
+записями»), добавьте проверку в `CourseService.delete` до `courses.delete()` и
+верните `ConflictError` — формальная модель `CourseLifecycle.tla` тогда
+получит action `DeleteCourseGuarded`.
+
+Запись на курс (`CourseService.enroll`) **запрещена** для статуса `ARCHIVED`
+(`ConflictError`, HTTP 409). Web-слой передаёт ошибку на страницу курса через
+query-параметр `enroll_error`.
+
+---
+
 ## 4. Рецепт: ограничить эндпоинт ролью (RBAC)
 
 Вся ролевая модель опирается на одну фабрику зависимостей —

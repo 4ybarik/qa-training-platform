@@ -14,6 +14,9 @@ email-validator>=2.1,<3.0
 redis>=5.2,<6.0
 rq>=2.1,<3.0
 
+# --- Formal models ---
+python-statemachine>=2.3,<3.0
+
 # --- Tests ---
 pytest>=8.0,<9.0
 httpx>=0.27,<0.29

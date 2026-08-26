@@ -6,6 +6,10 @@
 <h1 data-testid="course-detail-title">{{ course.title }}</h1>
 <p class="muted">{{ course.category }} · {{ course.price }} {{ t('currency') }} · {{ t('course_status') }}: {{ course.status.value }}</p>
 
+{% if enroll_error %}
+<p class="error" data-testid="enroll-error">{{ enroll_error }}</p>
+{% endif %}
+
 {% if user.role.value == 'ADMIN' %}
 <div class="card" data-testid="course-admin-controls">
   <a href="/courses/{{ course.id }}/edit" class="btn" data-testid="edit-course-button">{{ t('edit_course') }}</a>

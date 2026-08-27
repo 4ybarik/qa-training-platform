@@ -2,7 +2,18 @@
 
 Шаблоны issues на **английском и русском** лежат в [`.github/ISSUES/`](../.github/ISSUES/).
 
-## Создать issues на GitHub
+## Созданные issues (GitHub)
+
+| # | EN / RU | URL |
+|---|---------|-----|
+| **#1** | Block ARCHIVED enroll · Запрет ARCHIVED | https://github.com/maximusmakarov/qa-training-platform/issues/1 |
+| **#2** | Web enroll errors · Ошибки web-enroll | https://github.com/maximusmakarov/qa-training-platform/issues/2 |
+| **#3** | Delete cascade docs · Каскад delete | https://github.com/maximusmakarov/qa-training-platform/issues/3 |
+| **#4** | Practice ApiAdapters · Practice в ApiAdapters | https://github.com/maximusmakarov/qa-training-platform/issues/4 |
+
+> Issues были отключены в репозитории — включены через API (`has_issues: true`).
+
+## Создать issues повторно (если нужно)
 
 **Способ A — Python + токен** (без `gh`):
 

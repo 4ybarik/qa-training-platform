@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-"""Create GitHub PR for formal spec alignment branch."""
+"""Create GitHub PR for formal spec alignment branch on the project owner repo.
+
+Target: 4ybarik/qa-training-platform (upstream)
+Head:   maximusmakarov:fix/formal-spec-alignment-p0-p1 (fork)
+"""
 from __future__ import annotations
 
 import json
 import os
 import subprocess
-import sys
 import urllib.request
 
 
-REPO = "maximusmakarov/qa-training-platform"
-HEAD = "fix/formal-spec-alignment-p0-p1"
+UPSTREAM = "4ybarik/qa-training-platform"
+FORK_OWNER = "maximusmakarov"
+HEAD_BRANCH = "fix/formal-spec-alignment-p0-p1"
+HEAD = f"{FORK_OWNER}:{HEAD_BRANCH}"
 BASE = "main"
 
 PR_BODY = """## Summary
@@ -34,10 +39,10 @@ PR_BODY = """## Summary
 - [x] `make formal`
 - [ ] `make tla` — requires Java or Docker `tlaplus/tlc`
 
-Closes #1
-Closes #2
-Closes #3
 Closes #4
+Closes #5
+Closes #6
+Closes #7
 """
 
 
@@ -58,11 +63,12 @@ def get_token() -> str:
     raise SystemExit("No GitHub token found")
 
 
-def api_post(token: str, path: str, payload: dict) -> dict:
+def api(token: str, method: str, path: str, payload: dict | None = None) -> dict | list:
+    data = json.dumps(payload).encode("utf-8") if payload is not None else None
     req = urllib.request.Request(
         f"https://api.github.com{path}",
-        data=json.dumps(payload).encode("utf-8"),
-        method="POST",
+        data=data,
+        method=method,
         headers={
             "Authorization": f"Bearer {token}",
             "Accept": "application/vnd.github+json",
@@ -70,25 +76,25 @@ def api_post(token: str, path: str, payload: dict) -> dict:
         },
     )
     with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+        raw = resp.read().decode("utf-8")
+        return json.loads(raw) if raw else {}
 
 
 def main() -> int:
     token = get_token()
-    # Avoid duplicate PR
-    list_req = urllib.request.Request(
-        f"https://api.github.com/repos/{REPO}/pulls?head={REPO.split('/')[0]}:{HEAD}&state=open",
-        headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
+    existing = api(
+        token,
+        "GET",
+        f"/repos/{UPSTREAM}/pulls?head={HEAD}&state=open",
     )
-    with urllib.request.urlopen(list_req) as resp:
-        existing = json.loads(resp.read().decode("utf-8"))
     if existing:
         print(f"PR already open: {existing[0]['html_url']}")
         return 0
 
-    result = api_post(
+    result = api(
         token,
-        f"/repos/{REPO}/pulls",
+        "POST",
+        f"/repos/{UPSTREAM}/pulls",
         {
             "title": "fix(formal): align runtime with TLA specs (P0-P1)",
             "head": HEAD,

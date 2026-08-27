@@ -19,7 +19,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-REPO = "maximusmakarov/qa-training-platform"
+REPO = "4ybarik/qa-training-platform"
 ROOT = Path(__file__).resolve().parents[1]
 ISSUES_DIR = ROOT / ".github" / "ISSUES"
 BODIES_DIR = ISSUES_DIR / "bodies"

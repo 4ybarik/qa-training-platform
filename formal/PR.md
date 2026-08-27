@@ -1,8 +1,8 @@
 # Pull Request: Formal spec alignment (P0–P1)
 
-**Branch:** `fix/formal-spec-alignment-p0-p1`  
-**Base:** `main`  
-**Create:** https://github.com/maximusmakarov/qa-training-platform/pull/new/fix/formal-spec-alignment-p0-p1
+**Upstream (project owner):** [`4ybarik/qa-training-platform`](https://github.com/4ybarik/qa-training-platform)  
+**PR:** https://github.com/4ybarik/qa-training-platform/pull/3  
+**Head:** `maximusmakarov:fix/formal-spec-alignment-p0-p1` → `main`
 
 ## Summary
 
@@ -11,7 +11,7 @@
 
 ## Changes by issue
 
-### [P0] Block enroll on ARCHIVED courses
+### [P0] Block enroll on ARCHIVED courses — [#4](https://github.com/4ybarik/qa-training-platform/issues/4)
 
 | File | Change |
 |------|--------|
@@ -19,7 +19,7 @@
 | `backend/app/formal/machines/course_lifecycle.py` | Oracle guard on `course_status` |
 | `backend/tests/test_courses_api.py` | `test_enroll_archived_course_conflict` |
 
-### [P0] Surface web enroll errors
+### [P0] Surface web enroll errors — [#5](https://github.com/4ybarik/qa-training-platform/issues/5)
 
 | File | Change |
 |------|--------|
@@ -27,14 +27,14 @@
 | `backend/app/templates/course_detail.html` | `data-testid="enroll-error"` |
 | `backend/tests/test_courses_web.py` | Web duplicate enroll test |
 
-### [P1] Document delete cascade
+### [P1] Document delete cascade — [#6](https://github.com/4ybarik/qa-training-platform/issues/6)
 
 | File | Change |
 |------|--------|
 | `ARCHITECTURE.md` | §3.1 cascade delete documented |
 | `formal/LIMITATIONS.md` | Accepted limitation recorded |
 
-### [P1] ApiAdapters scope
+### [P1] ApiAdapters scope — [#7](https://github.com/4ybarik/qa-training-platform/issues/7)
 
 | File | Change |
 |------|--------|
@@ -48,19 +48,11 @@
 - [x] `make formal` — inventory + formal tests
 - [ ] `make tla` — requires Java or Docker `tlaplus/tlc` (optional CI stage)
 
-## Reviewer notes
-
-- Machines in `backend/app/formal/machines/` are **oracles**, not wired into production services
-- Course delete behavior unchanged (cascade) — only documented
-- Create GitHub issues from `.github/ISSUES/p0-*.md` and `p1-*.md` if not using `gh cli`
-
-## Suggested commit to link issues (after creating issues on GitHub)
-
-Replace `#NN` with issue numbers (already created):
+## Closes
 
 ```
-Closes #1  P0 archived enroll
-Closes #2  P0 web enroll errors
-Closes #3  P1 delete cascade docs
-Closes #4  P1 ApiAdapters scope
+Closes #4  P0 archived enroll
+Closes #5  P0 web enroll errors
+Closes #6  P1 delete cascade docs
+Closes #7  P1 ApiAdapters scope
 ```

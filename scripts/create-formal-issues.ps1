@@ -6,7 +6,7 @@
 #   pwsh scripts/create-formal-issues.ps1 -DryRun
 
 param(
-    [string]$Repo = "maximusmakarov/qa-training-platform",
+    [string]$Repo = "4ybarik/qa-training-platform",
     [switch]$DryRun
 )
 

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ t('learning_title') }} — QA Training Platform{% endblock %}
+{% block page_id %}learning{% endblock %}
+{% block content %}
+<section class="practice-hero learning-hero" data-testid="learning-hero">
+  <div>
+    <p class="eyebrow">5% THEORY · 95% PRACTICE</p>
+    <h1>{{ t('learning_title') }}</h1>
+    <p>{{ t('learning_intro') }}</p>
+  </div>
+  <div class="practice-summary" data-testid="learning-summary">
+    <strong>{{ summary.completed }}/{{ summary.total }} {{ t('learning_completed') }}</strong>
+    <div class="progress"><div class="progress-fill" style="width: {{ summary.completion_percent }}%"></div></div>
+    <span>{{ summary.completion_percent }}%</span>
+  </div>
+</section>
+
+{% for track_slug, items in tracks.items() %}
+<section class="practice-track" data-testid="learning-track-{{ track_slug }}">
+  <header><h2>{{ items[0].lesson.track }}</h2></header>
+  <div class="practice-grid">
+    {% for item in items %}
+    <article class="challenge-card lesson-card" data-testid="learning-lesson-{{ item.lesson.slug }}">
+      <div class="challenge-meta">
+        <span class="badge">{{ item.lesson.difficulty }}</span>
+        <span class="badge">{{ item.lesson.theory_minutes }}m / {{ item.lesson.practice_minutes }}m</span>
+        {% if item.progress.completed %}<span class="badge badge-ok">{{ t('learning_done') }}</span>{% endif %}
+      </div>
+      <h3>{{ item.lesson.title }}</h3>
+      <p>{{ item.lesson.task }}</p>
+      <div class="lesson-score">{{ t('learning_best_score') }}: {{ item.progress.best_score }}%</div>
+      <a class="btn" href="/learning/{{ item.lesson.slug }}" data-testid="open-learning-{{ item.lesson.slug }}">{{ t('learning_open_lesson') }}</a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endfor %}
+{% endblock %}

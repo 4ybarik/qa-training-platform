@@ -85,43 +85,14 @@ class Course(Base):
     reviews: Mapped[list["Review"]] = relationship(back_populates="course", cascade="all, delete-orphan")
 ```
 
-**Как таблица реально появляется в БД.** В этом проекте нет отдельного
-механизма миграций (Alembic и т.п.) — это сознательное упрощение для учебного
-полигона. Таблицы создаются функцией `init_db()` (`app/core/database.py`),
-которая вызывает `Base.metadata.create_all(bind=engine)` при старте
-приложения (см. `lifespan` в `app/main.py`). `create_all` создаёт **только
-отсутствующие** таблицы — она не трогает существующие и не делает ALTER TABLE.
+**Как таблица реально появляется в БД.** Схема версионируется Alembic в
+`backend/migrations/`. Создайте новую ревизию, проверьте её на пустой и legacy-БД,
+затем выполните `make migration-check`. `app.db_upgrade` автоматически отличает
+существующую legacy-схему от пустой базы и сохраняет данные при обновлении.
 
-Значит, чтобы новая таблица `reviews` появилась:
-
-- **Если у вас ещё нет данных, которыми дорожите** — самый простой путь:
-  ```bash
-  docker compose down -v   # удаляет volume с данными Postgres
-  docker compose up -d --build
-  ```
-  При следующем старте `create_all` создаст все таблицы с нуля, включая новую.
-
-- **Если нужно сохранить существующие данные** — добавьте таблицу вручную
-  через SQL (выполнить один раз):
-  ```bash
-  docker compose exec db psql -U qatp -d qatp -c "
-    CREATE TABLE reviews (
-      id SERIAL PRIMARY KEY,
-      course_id INTEGER NOT NULL REFERENCES courses(id),
-      user_id INTEGER NOT NULL REFERENCES users(id),
-      rating INTEGER NOT NULL,
-      comment TEXT DEFAULT '',
-      created_at TIMESTAMPTZ DEFAULT now()
-    );
-  "
-  ```
-  Колонки и типы должны соответствовать тому, что вы описали в `models.py`
-  (`Integer` -> `INTEGER`, `String(N)` -> `VARCHAR(N)`, `Text` -> `TEXT`,
-  `DateTime(timezone=True)` -> `TIMESTAMPTZ`, `Boolean` -> `BOOLEAN`).
-
-- **Если проект вырастет за пределы учебного** — стоит подключить Alembic
-  (`pip install alembic`, `alembic init migrations`) для версионируемых
-  миграций. Это осознанно не сделано здесь, чтобы не усложнять старт.
+Для `reviews` создайте новую ревизию, в функции `upgrade()` опишите
+`op.create_table(...)`, а в `downgrade()` — обратную операцию. Ручной SQL и
+удаление Docker volume не являются штатным способом обновления.
 
 ### Шаг 2 — схема (контракт API)
 
@@ -261,13 +232,10 @@ def test_add_and_list_review(client, user_token):
 
 1. **Модель** (`domain/models.py`): добавить
    `duration_hours: Mapped[int] = mapped_column(Integer, default=0)` в класс `Course`.
-2. **БД**: т.к. таблица уже существует, `create_all()` новую колонку не
-   добавит (он не делает ALTER TABLE). Нужно либо пересоздать БД
-   (`docker compose down -v && docker compose up -d --build` — теряются данные),
-   либо выполнить вручную:
-   ```bash
-   docker compose exec db psql -U qatp -d qatp -c "ALTER TABLE courses ADD COLUMN duration_hours INTEGER DEFAULT 0;"
-   ```
+2. **БД**: создать Alembic-ревизию с `op.add_column("courses", ...)` в
+   `upgrade()` и `op.drop_column("courses", "duration_hours")` в `downgrade()`.
+   Затем выполнить `make migration-check` и проверить обновление
+   на копии базы с данными.
 3. **Схема** (`domain/schemas.py`): добавить поле в `CourseOut`, `CourseCreate`,
    `CourseUpdate` — три места, по аналогии с уже существующими полями (`price`,
    `category`).

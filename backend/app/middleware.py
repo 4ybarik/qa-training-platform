@@ -10,10 +10,44 @@
 """
 import asyncio
 import random
+from urllib.parse import urlsplit
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
+
+
+class CookieCSRFMiddleware(BaseHTTPMiddleware):
+    """Блокирует межсайтовые изменения, когда JWT передан браузерной cookie."""
+
+    _UNSAFE = frozenset({"POST", "PUT", "PATCH", "DELETE"})
+
+    async def dispatch(self, request: Request, call_next):
+        bearer = request.headers.get("Authorization", "").lower().startswith("bearer ")
+        cookie_authenticated = bool(request.cookies.get("access_token")) and not bearer
+        if request.method in self._UNSAFE and cookie_authenticated:
+            if request.headers.get("Sec-Fetch-Site", "").lower() == "cross-site":
+                return JSONResponse(status_code=403, content={"detail": "Cross-site request blocked"})
+            if origin := request.headers.get("Origin"):
+                parts = urlsplit(origin)
+                if parts.scheme not in {"http", "https"} or parts.netloc != request.url.netloc:
+                    return JSONResponse(
+                        status_code=403,
+                        content={"detail": "Origin does not match application host"},
+                    )
+        return await call_next(request)
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Базовые защитные заголовки без нарушения учебных iframe и CDN IDE."""
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        return response
 
 
 class PlaygroundState:

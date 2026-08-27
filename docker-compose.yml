@@ -101,6 +101,12 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "rq", "info", "--url", "redis://redis:6379/0"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   # ---------- CI/CD: Jenkins + Allure ----------
   # Jenkins оркестрирует пайплайн (см. Jenkinsfile в корне репозитория):

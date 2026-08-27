@@ -168,6 +168,17 @@ form input[type=date], form input[type=number], form select, form textarea {
 .challenge-page header h1 { font-size: clamp(28px, 4vw, 40px); }
 .challenge-page li { margin: 8px 0; }
 .challenge-page pre { overflow-x: auto; padding: 12px; background: var(--bg); border-radius: 8px; }
+.learning-hero .progress { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.35); }
+.learning-hero .progress-fill { background: #fff; }
+.lesson-layout { max-width: 980px; margin: 0 auto; }
+.lesson-header h1 { font-size: clamp(28px, 4vw, 42px); }
+.lesson-markdown pre {
+  overflow-x: auto; padding: 14px; border-radius: 10px; background: #17233c; color: #f5f7fb;
+}
+.lesson-markdown code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.lesson-start { margin: 8px 0 18px; font-size: 16px; padding: 11px 18px; }
+.lesson-score { color: var(--muted); font-size: 13px; }
+.run-history > li { margin-bottom: 14px; }
 .practice-item { min-width: 180px; }
 #practice-form-result, #selected-account { display: block; margin-top: 12px; overflow-wrap: anywhere; }
 #dynamic-area { min-height: 32px; margin-top: 12px; }

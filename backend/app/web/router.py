@@ -20,6 +20,8 @@ from app.core.database import get_db
 from app.domain.enums import Role
 from app.domain.errors import AuthError, ConflictError, DomainError, NotFoundError, RateLimitError
 from app.domain.models import User
+from app.learning.catalog import lesson_for, lessons, render_micro_markdown
+from app.learning.workspace import ensure_starter
 from app.practice.catalog import CHALLENGES_BY_SLUG, serialize_catalog, serialize_challenge
 from app.practice.mutations import is_active
 from app.services.admin import AdminService, NotificationService, ProfileService
@@ -27,6 +29,7 @@ from app.services.auth import AuthService
 from app.services.courses import CourseService
 from app.services.exams import ExamService
 from app.services.quality import quality_history
+from app.services.learning import LearningService, serialize_progress, serialize_run
 from app.web.i18n import (
     LANGUAGE_COOKIE,
     LANGUAGE_OPTIONS,
@@ -61,6 +64,15 @@ def _require_admin(request: Request, user: User | None):
     if denied:
         return denied
     if user.role != Role.ADMIN:
+        return templates.TemplateResponse(request, "forbidden.html", _ctx(request, user), status_code=403)
+    return None
+
+
+def _require_instructor(request: Request, user: User | None):
+    denied = _require_web_user(user)
+    if denied:
+        return denied
+    if user.role not in {Role.MANAGER, Role.ADMIN}:
         return templates.TemplateResponse(request, "forbidden.html", _ctx(request, user), status_code=403)
     return None
 
@@ -654,11 +666,99 @@ def admin_send_notification(request: Request, message: str = Form(...),
     ))
 
 
-# ---------- Каталог практических проверок ----------
-@router.get("/learning", include_in_schema=False)
-def legacy_learning_redirect():
-    """Старые закладки не ломаются, но учебного маршрута больше нет."""
-    return RedirectResponse("/practice", status_code=308)
+# ---------- Учебный маршрут: 5% теории / 95% практики ----------
+@router.get("/learning", response_class=HTMLResponse)
+def learning_page(
+    request: Request,
+    user: User | None = Depends(get_optional_user),
+    db: Session = Depends(get_db),
+):
+    if (r := _require_web_user(user)):
+        return r
+    language = get_request_language(request)
+    service = LearningService(db)
+    progress = service.progress_map(user.id)
+    grouped: dict[str, list[dict]] = {}
+    for lesson in lessons(language):
+        grouped.setdefault(lesson.track, []).append({
+            "lesson": lesson,
+            "progress": serialize_progress(progress.get(lesson.slug)),
+        })
+    return templates.TemplateResponse(
+        request,
+        "learning.html",
+        _ctx(
+            request,
+            user,
+            tracks=grouped,
+            summary=service.summary(user.id),
+        ),
+    )
+
+
+@router.get("/learning/manage", response_class=HTMLResponse)
+def learning_manage_page(
+    request: Request,
+    user: User | None = Depends(get_optional_user),
+    db: Session = Depends(get_db),
+):
+    if (r := _require_instructor(request, user)):
+        return r
+    return templates.TemplateResponse(
+        request,
+        "learning_manage.html",
+        _ctx(request, user, learners=LearningService(db).learner_overview()),
+    )
+
+
+@router.get("/learning/{slug}", response_class=HTMLResponse)
+def learning_lesson_page(
+    slug: str,
+    request: Request,
+    user: User | None = Depends(get_optional_user),
+    db: Session = Depends(get_db),
+):
+    if (r := _require_web_user(user)):
+        return r
+    challenge = CHALLENGES_BY_SLUG.get(slug)
+    if challenge is None:
+        raise NotFoundError("Практическая задача не найдена")
+    lesson = lesson_for(challenge, get_request_language(request))
+    service = LearningService(db)
+    progress = service.progress_map(user.id).get(slug)
+    recent_runs = [item for item in service.runs(user.id, 50) if item.challenge_slug == slug][:5]
+    return templates.TemplateResponse(
+        request,
+        "learning_lesson.html",
+        _ctx(
+            request,
+            user,
+            lesson=lesson,
+            theory_html=render_micro_markdown(lesson.theory_markdown),
+            progress=serialize_progress(progress),
+            recent_runs=[serialize_run(item) for item in recent_runs],
+        ),
+    )
+
+
+@router.post("/web/learning/{slug}/start")
+def learning_start(
+    slug: str,
+    user: User | None = Depends(get_optional_user),
+):
+    if (r := _require_web_user(user)):
+        return r
+    challenge = CHALLENGES_BY_SLUG.get(slug)
+    if challenge is None:
+        raise NotFoundError("Практическая задача не найдена")
+    lesson = lesson_for(challenge, "ru")
+    if lesson.editable_path is None or lesson.starter_code is None:
+        return RedirectResponse(f"/learning/{slug}?unsupported=1", status_code=303)
+    ensure_starter(lesson.editable_path, lesson.starter_code)
+    return RedirectResponse(
+        f"/ide?file={lesson.editable_path}&challenge={lesson.slug}",
+        status_code=303,
+    )
 
 
 @router.get("/quality", response_class=HTMLResponse)

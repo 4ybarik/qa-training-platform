@@ -1,11 +1,8 @@
 """Веб-профиль: безопасная загрузка и валидация аватара."""
-
 from pathlib import Path
 
 from tests.conftest import auth
-
-
-AVATAR_DIR = Path(__file__).resolve().parents[1] / "app" / "static" / "uploads" / "avatars"
+from app.web.router import AVATAR_DIR
 
 
 def test_png_avatar_is_saved_and_exposed_in_profile(client, user_token):

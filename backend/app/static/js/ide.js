@@ -4,6 +4,9 @@
   "use strict";
 
   var currentFile = null;
+  var query = new URLSearchParams(window.location.search);
+  var requestedFile = query.get("file");
+  var currentChallenge = query.get("challenge");
   var editor = null;          // CodeMirror instance
   var textarea = document.getElementById("ide-editor");
   var MESSAGES = window.QATP_MESSAGES || {};
@@ -61,7 +64,7 @@
 
   /* ---------- Файлы ---------- */
   function loadFiles() {
-    fetch("/api/ide/files")
+    return fetch("/api/ide/files")
       .then(function (r) { return r.json(); })
       .then(function (data) {
         var list = document.getElementById("ide-file-list");
@@ -136,8 +139,8 @@
   }
 
   function saveFile() {
-    if (!currentFile) { toast(msg("ide_pick_file"), true); return; }
-    fetch("/api/ide/file", {
+    if (!currentFile) { toast(msg("ide_pick_file"), true); return Promise.reject(new Error("no file")); }
+    return fetch("/api/ide/file", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ path: currentFile, content: value() }),
@@ -192,15 +195,40 @@
 
   function runTests() {
     if (!currentFile) { toast(msg("ide_pick_file"), true); return; }
-    saveFile();
     showOutput(msg("ide_running"));
-    fetch("/api/ide/run", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path: currentFile }),
-    })
-      .then(function (r) { return r.json(); })
-      .then(function (data) { showOutput(data.output, data.exit_code === 0); })
+    saveFile()
+      .then(function () {
+        var payload = { path: currentFile };
+        if (currentChallenge && currentFile === requestedFile) {
+          payload.challenge_slug = currentChallenge;
+        }
+        return fetch("/api/ide/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      })
+      .then(function (r) {
+        return r.json().then(function (data) {
+          if (!r.ok) { throw new Error(data.detail || r.status); }
+          return data;
+        });
+      })
+      .then(function (data) {
+        var lines = [];
+        if (data.score !== undefined) {
+          lines.push("RESULT: " + data.score + "% · " + (data.passed ? "PASSED" : "NOT PASSED"));
+          lines.push("TESTS: " + (data.tests_passed || 0) + "/" + (data.tests_collected || 0) +
+            " · " + (data.duration_ms || 0) + " ms");
+        }
+        (data.criteria || []).forEach(function (item) {
+          lines.push((item.passed ? "✓ " : "✗ ") + item.title +
+            (item.details ? " — " + item.details : ""));
+        });
+        if (lines.length) { lines.push("", "PYTEST OUTPUT:"); }
+        lines.push(data.output || msg("ide_empty_output"));
+        showOutput(lines.join("\n"), Boolean(data.passed));
+      })
       .catch(function () { showOutput(msg("ide_run_error"), false); });
   }
 
@@ -259,5 +287,13 @@
   });
   document.getElementById("ide-locator-form").addEventListener("submit", searchLocators);
 
-  loadFiles();
+  if (currentChallenge) {
+    var context = document.getElementById("ide-lesson-context");
+    context.hidden = false;
+    document.getElementById("ide-lesson-label").textContent = currentChallenge;
+    document.getElementById("ide-lesson-link").href = "/learning/" + encodeURIComponent(currentChallenge);
+  }
+  loadFiles().then(function () {
+    if (requestedFile) { openFile(requestedFile); }
+  });
 })();

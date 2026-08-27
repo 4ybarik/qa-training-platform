@@ -11,13 +11,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api import (
-    auth, courses, exams, ide, integrations, misc, playground, practice, quality,
+    auth, courses, exams, ide, integrations, learning, misc, playground, practice, quality,
     test_support, versioned,
 )
 from app.api.errors import register_exception_handlers
 from app.core.config import get_settings
 from app.core.database import SessionLocal, init_db
-from app.middleware import PlaygroundMiddleware
+from app.middleware import CookieCSRFMiddleware, PlaygroundMiddleware, SecurityHeadersMiddleware
 from app.seed import seed
 from app.web.router import router as web_router
 
@@ -48,6 +48,8 @@ def create_app() -> FastAPI:
     # последним и успевал проставить CORS-заголовки даже на ответах 500,
     # которые Playground формирует напрямую, минуя остальной стек.
     app.add_middleware(PlaygroundMiddleware, state=playground.state)
+    app.add_middleware(CookieCSRFMiddleware)
+    app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -73,6 +75,7 @@ def create_app() -> FastAPI:
     app.include_router(versioned.router)
     app.include_router(integrations.router)
     app.include_router(quality.router)
+    app.include_router(learning.router)
     app.include_router(playground.ws_router)
 
     # Веб-интерфейс и статика

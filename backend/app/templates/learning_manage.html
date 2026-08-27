@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ t('learning_manage') }} — QA Training Platform{% endblock %}
+{% block page_id %}learning-manage{% endblock %}
+{% block content %}
+<h1 data-testid="learning-manage-title">{{ t('learning_manage') }}</h1>
+<table class="data-grid" data-testid="learning-manage-table">
+  <thead><tr><th>Email</th><th>{{ t('user') }}</th><th>Started</th><th>Completed</th><th>%</th></tr></thead>
+  <tbody>
+    {% for learner in learners %}
+    <tr data-testid="learner-progress-{{ learner.user_id }}">
+      <td>{{ learner.email }}</td>
+      <td>{{ learner.name }}</td>
+      <td>{{ learner.started }}/{{ learner.total }}</td>
+      <td>{{ learner.completed }}/{{ learner.total }}</td>
+      <td>{{ learner.completion_percent }}%</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

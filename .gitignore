@@ -5,6 +5,9 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
 node_modules/
 .playwright/
 test-results/
@@ -14,4 +17,3 @@ quality-history/
 .idea/
 .DS_Store
 .venv-student
-

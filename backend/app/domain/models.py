@@ -39,6 +39,12 @@ class User(Base):
     exam_attempts: Mapped[list["ExamAttempt"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    practice_runs: Mapped[list["PracticeRun"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    practice_progress: Mapped[list["PracticeProgress"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class Profile(Base):
@@ -179,3 +185,70 @@ class TestRunEntity(Base):
     entity_type: Mapped[str] = mapped_column(String(32), nullable=False)
     entity_id: Mapped[int] = mapped_column(Integer, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+class PracticeRun(Base):
+    """Одна проверяемая попытка решения практической задачи."""
+
+    __tablename__ = "practice_runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    challenge_slug: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    file_path: Mapped[str] = mapped_column(String(300), nullable=False)
+    source_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    exit_code: Mapped[int] = mapped_column(Integer, nullable=False)
+    duration_ms: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    tests_collected: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    tests_passed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    tests_failed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    score: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    passed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    output: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+    user: Mapped["User"] = relationship(back_populates="practice_runs")
+    criteria: Mapped[list["PracticeCriterionResult"]] = relationship(
+        back_populates="run", cascade="all, delete-orphan", order_by="PracticeCriterionResult.position"
+    )
+
+
+class PracticeCriterionResult(Base):
+    """Результат одного понятного ученику критерия попытки."""
+
+    __tablename__ = "practice_criterion_results"
+    __table_args__ = (
+        UniqueConstraint("run_id", "position", name="uq_practice_run_criterion"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[int] = mapped_column(ForeignKey("practice_runs.id"), nullable=False, index=True)
+    position: Mapped[int] = mapped_column(Integer, nullable=False)
+    code: Mapped[str] = mapped_column(String(100), nullable=False)
+    title: Mapped[str] = mapped_column(String(300), nullable=False)
+    passed: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    details: Mapped[str] = mapped_column(Text, default="")
+
+    run: Mapped["PracticeRun"] = relationship(back_populates="criteria")
+
+
+class PracticeProgress(Base):
+    """Накопленный прогресс пользователя по задаче, рассчитанный по запускам."""
+
+    __tablename__ = "practice_progress"
+    __table_args__ = (
+        UniqueConstraint("user_id", "challenge_slug", name="uq_practice_progress_user_challenge"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    challenge_slug: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    best_score: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    completed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    last_run_id: Mapped[int | None] = mapped_column(ForeignKey("practice_runs.id"))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    user: Mapped["User"] = relationship(back_populates="practice_progress")
+    last_run: Mapped["PracticeRun | None"] = relationship(foreign_keys=[last_run_id])

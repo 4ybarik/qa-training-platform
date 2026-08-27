@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} — QA Training Platform{% endblock %}
+{% block page_id %}learning-lesson{% endblock %}
+{% block content %}
+<a href="/learning" class="back-link">{{ t('learning_back') }}</a>
+<article class="lesson-layout" data-testid="learning-lesson">
+  <header class="lesson-header">
+    <div class="challenge-meta">
+      <span class="badge">{{ lesson.difficulty }}</span>
+      <span class="badge">{{ lesson.theory_minutes }} {{ t('learning_theory_minutes') }}</span>
+      <span class="badge">{{ lesson.practice_minutes }} {{ t('learning_practice_minutes') }}</span>
+      {% if progress.completed %}<span class="badge badge-ok">{{ t('learning_done') }}</span>{% endif %}
+    </div>
+    <h1 data-testid="learning-lesson-title">{{ lesson.title }}</h1>
+    <p>{{ lesson.task }}</p>
+  </header>
+
+  <section class="card theory-brief" data-testid="learning-theory">
+    <p class="eyebrow">{{ t('learning_theory') }}</p>
+    <h2>{{ lesson.theory_title }}</h2>
+    <div class="lesson-markdown">{{ theory_html }}</div>
+  </section>
+
+  <section class="card" data-testid="learning-practice-contract">
+    <p class="eyebrow">{{ t('learning_practice') }}</p>
+    <h2>{{ t('practice_target') }}</h2>
+    <code>{{ lesson.target }}</code>
+    <h3>{{ t('practice_acceptance') }}</h3>
+    <ul>{% for criterion in lesson.criteria %}<li>{{ criterion }}</li>{% endfor %}</ul>
+    <h3>{{ t('practice_test_location') }}</h3>
+    <code>{{ lesson.test_path }}</code>
+    {% if lesson.mutation_ids %}
+    <p>{{ t('learning_mutations') }}: {% for mutation in lesson.mutation_ids %}<code>{{ mutation }}</code> {% endfor %}</p>
+    {% endif %}
+  </section>
+
+  {% if request.query_params.get('unsupported') %}
+  <div class="alert alert-error">{{ t('learning_external_task') }}</div>
+  {% endif %}
+  {% if lesson.editable_path %}
+  <form method="post" action="/web/learning/{{ lesson.slug }}/start">
+    <button class="btn btn-primary lesson-start" type="submit" data-testid="learning-start">{{ t('learning_start') }}</button>
+  </form>
+  {% else %}
+  <div class="alert">{{ t('learning_external_task') }}</div>
+  {% endif %}
+
+  <section class="card" data-testid="learning-progress">
+    <h2>{{ t('learning_progress') }}</h2>
+    <p>{{ t('learning_attempts') }}: {{ progress.attempts }} · {{ t('learning_best_score') }}: {{ progress.best_score }}%</p>
+    {% if recent_runs %}
+    <ul class="run-history">
+      {% for run in recent_runs %}
+      <li>
+        <span class="badge {{ 'badge-ok' if run.passed else '' }}">{{ run.score }}%</span>
+        {{ run.tests_passed }}/{{ run.tests_collected }} · {{ run.duration_ms }} ms
+        <ul>{% for criterion in run.criteria %}<li>{{ '✓' if criterion.passed else '✗' }} {{ criterion.title }}</li>{% endfor %}</ul>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="muted">{{ t('learning_no_runs') }}</p>{% endif %}
+  </section>
+</article>
+{% endblock %}

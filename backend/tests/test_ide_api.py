@@ -1,10 +1,19 @@
 """Тесты встроенной IDE: файлы решений, запуск тестов, поиск локаторов."""
-from pathlib import Path
-
 import pytest
 
-STUDENT_DIR = Path(__file__).resolve().parents[2] / "student_tests"
+from app.learning.workspace import student_tests_dir
+
+
+STUDENT_DIR = student_tests_dir()
 TMP_REL = "api/test_tmp_ide_demo.py"
+
+
+@pytest.fixture(autouse=True)
+def _authenticated_ide_api(client, user_token):
+    """IDE API требует пользователя, а браузер передаёт тот же токен cookie."""
+    client.headers["Authorization"] = f"Bearer {user_token}"
+    yield
+    client.headers.pop("Authorization", None)
 
 
 @pytest.fixture()
@@ -143,6 +152,8 @@ def test_locators_rejects_external_url(client):
 
 
 def test_ide_page_requires_login(client):
+    client.headers.pop("Authorization", None)
+    client.cookies.clear()
     response = client.get("/ide")
 
     # Неавторизованный запрос уводит на страницу входа (TestClient следует

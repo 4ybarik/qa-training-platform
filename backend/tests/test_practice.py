@@ -283,4 +283,8 @@ def test_practice_web_requires_login_and_renders_catalog(client):
     assert 'data-testid="practice-title"' in catalog.text
     assert "student_tests/api/test_echo_contract.py" in details.text
     assert 'data-testid="practice-shadow"' in components.text
-    assert client.get("/learning", follow_redirects=False).headers["location"] == "/practice"
+    learning = client.get("/learning", follow_redirects=False)
+    lesson = client.get("/learning/echo-contract")
+    assert learning.status_code == lesson.status_code == 200
+    assert 'data-testid="learning-hero"' in learning.text
+    assert 'data-testid="learning-start"' in lesson.text

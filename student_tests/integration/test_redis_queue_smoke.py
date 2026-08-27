@@ -1,4 +1,5 @@
 import time
+from threading import Event
 
 import pytest
 
@@ -33,7 +34,8 @@ def test_real_queue_worker_processes_job(api_client, integration_headers):
         assert state.status_code == 200
         if state.json()["status"] in {"FINISHED", "FAILED"}:
             break
-        time.sleep(0.1)
+        # Ограниченное ожидание не нагружает Redis и завершится по deadline.
+        Event().wait(0.1)
 
     assert state is not None
     assert state.json()["status"] == "FINISHED"

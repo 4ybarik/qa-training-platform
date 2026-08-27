@@ -3,14 +3,18 @@
 Тесты идут против изолированной БД SQLite. Переменные окружения задаются ДО
 импорта приложения, чтобы движок SQLAlchemy создался уже с тестовой БД.
 """
+import atexit
 import os
 import pathlib
+import tempfile
 
 import pytest
 
-_TEST_DB = pathlib.Path(__file__).resolve().parent / "test.db"
+_TEST_DB = pathlib.Path(tempfile.gettempdir()) / f"qatp-backend-tests-{os.getpid()}.db"
 
-os.environ.setdefault("DATABASE_URL", f"sqlite:///{_TEST_DB}")
+# Всегда переопределяем внешнюю DATABASE_URL: тесты, запущенные внутри app-
+# контейнера, не должны случайно работать с основной PostgreSQL-базой.
+os.environ["DATABASE_URL"] = f"sqlite:///{_TEST_DB}"
 os.environ.setdefault("ENVIRONMENT", "development")  # включает seed на старте
 os.environ["SECRET_KEY"] = "test-secret-at-least-32-bytes-long!"
 os.environ["ALLOW_TEST_MUTATIONS"] = "true"
@@ -18,6 +22,7 @@ os.environ["ALLOW_TEST_MUTATIONS"] = "true"
 # Чистим БД до старта сессии тестов.
 if _TEST_DB.exists():
     _TEST_DB.unlink()
+atexit.register(_TEST_DB.unlink, missing_ok=True)
 
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402

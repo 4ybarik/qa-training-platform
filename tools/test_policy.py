@@ -18,6 +18,17 @@ def _call_name(node: ast.Call) -> str:
     return ".".join(reversed(parts))
 
 
+def _decorator_name(node: ast.expr) -> str:
+    value = node.func if isinstance(node, ast.Call) else node
+    parts: list[str] = []
+    while isinstance(value, ast.Attribute):
+        parts.append(value.attr)
+        value = value.value
+    if isinstance(value, ast.Name):
+        parts.append(value.id)
+    return ".".join(reversed(parts))
+
+
 def inspect_file(path: Path) -> tuple[int, list[dict], list[dict]]:
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     errors: list[dict] = []
@@ -28,6 +39,8 @@ def inspect_file(path: Path) -> tuple[int, list[dict], list[dict]]:
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
         and node.name.startswith("test_")
     ]
+    solution_folders = {"api", "contract", "integration", "ui"}
+    expected_marker = next((part for part in reversed(path.parts[:-1]) if part in solution_folders), None)
     for test in tests:
         for node in ast.walk(test):
             if isinstance(node, ast.Assert) and isinstance(node.test, ast.Constant):
@@ -52,10 +65,17 @@ def inspect_file(path: Path) -> tuple[int, list[dict], list[dict]]:
                     "rule": "avoid-fixed-sleep",
                     "message": "Используйте ожидание состояния с конечным deadline",
                 })
-        decorators = [
-            _call_name(item) if isinstance(item, ast.Call) else ""
-            for item in test.decorator_list
-        ]
+        decorators = [_decorator_name(item) for item in test.decorator_list]
+        if expected_marker and f"pytest.mark.{expected_marker}" not in decorators:
+            errors.append({
+                "file": str(path),
+                "line": test.lineno,
+                "rule": "folder-marker-match",
+                "message": (
+                    f"Тест в каталоге {expected_marker}/ должен иметь "
+                    f"@pytest.mark.{expected_marker}"
+                ),
+            })
         if any(name.endswith(("skip", "xfail")) for name in decorators):
             warnings.append({
                 "file": str(path),

@@ -38,6 +38,7 @@
   <div class="app-body">
     <nav class="sidebar" data-testid="sidebar">
       <a href="/dashboard" data-testid="nav-dashboard">{{ t('nav_dashboard') }}</a>
+      <a href="/learning" data-testid="nav-learning">{{ t('nav_learning') }}</a>
       <a href="/practice" data-testid="nav-practice">{{ t('nav_practice') }}</a>
       <a href="/courses" data-testid="nav-courses">{{ t('nav_courses') }}</a>
       <a href="/notifications" data-testid="nav-notifications">{{ t('nav_notifications') }}</a>
@@ -47,6 +48,9 @@
       <a href="/ide" data-testid="nav-ide">IDE</a>
       {% endif %}
       <a href="/quality" data-testid="nav-quality">{{ t('nav_quality') }}</a>
+      {% if user.role.value in ['MANAGER', 'ADMIN'] %}
+      <a href="/learning/manage" data-testid="nav-learning-manage">{{ t('learning_manage') }}</a>
+      {% endif %}
       {% if user.role.value == 'ADMIN' %}
       <a href="/admin" data-testid="nav-admin">{{ t('nav_admin') }}</a>
       {% endif %}

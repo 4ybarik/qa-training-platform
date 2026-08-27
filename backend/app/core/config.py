@@ -57,6 +57,10 @@ class Settings(BaseSettings):
     redis_url: str = "redis://redis:6379/0"
     external_service_url: str = "http://wiremock:8080"
     quality_history_dir: str = "/app/quality-history"
+    # Локальный runner исполняет произвольный Python и допустим только на
+    # персональном учебном стенде. В production всегда должен использоваться
+    # отдельный контейнерный исполнитель.
+    ide_allow_local_runner: bool = True
 
     @model_validator(mode="after")
     def _guard_production_secrets(self) -> "Settings":
@@ -71,6 +75,15 @@ class Settings(BaseSettings):
                 "SECRET_KEY содержит известное небезопасное значение-заглушку. "
                 "Задайте длинный случайный секрет через переменную окружения "
                 "SECRET_KEY перед запуском в production."
+            )
+        if self.environment == "production" and self.debug:
+            raise ValueError("DEBUG должен быть отключён в production.")
+        if self.environment == "production" and "*" in self.cors_origins:
+            raise ValueError("CORS_ORIGINS в production не может содержать '*'.")
+        if self.environment == "production" and self.ide_allow_local_runner:
+            raise ValueError(
+                "IDE_ALLOW_LOCAL_RUNNER должен быть false в production: "
+                "произвольный код запускается только в изолированном runner."
             )
         return self
 

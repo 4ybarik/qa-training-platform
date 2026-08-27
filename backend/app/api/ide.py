@@ -7,71 +7,29 @@
 from __future__ import annotations
 
 import html.parser
-import os
-import subprocess
-import sys
-from pathlib import Path
 
 import httpx
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_user
 from app.core.config import get_settings
+from app.core.database import get_db
+from app.domain.models import User
+from app.learning.catalog import lesson_for
+from app.learning.grading import grade_lesson
+from app.learning.runner import execute_pytest
+from app.learning.workspace import safe_test_path, student_tests_dir
+from app.practice.catalog import CHALLENGES_BY_SLUG
+from app.services.learning import LearningService, serialize_run
 
 router = APIRouter(prefix="/api/ide", tags=["ide"])
 settings = get_settings()
 
-MAX_OUTPUT_CHARS = 8000
-RUN_TIMEOUT_SECONDS = 180
-
-
-def _student_tests_dir() -> Path:
-    """Корень student_tests: в Docker он смонтирован в /app/workspace,
-    при локальном запуске без Docker лежит рядом с каталогом backend/."""
-    candidates = [
-        Path(os.getenv("IDE_WORKSPACE_ROOT", "/app/workspace")) / "student_tests",
-        Path(__file__).resolve().parents[3] / "student_tests",
-    ]
-    for candidate in candidates:
-        if candidate.is_dir():
-            return candidate
-    raise HTTPException(
-        status_code=503,
-        detail="Каталог student_tests не найден. Смонтируйте репозиторий в контейнер.",
-    )
-
-
 def _require_dev() -> None:
     if settings.environment not in {"development", "test"}:
         raise HTTPException(status_code=404, detail="Not found")
-
-
-def _safe_path(relative: str, *, allow_create: bool = False) -> Path:
-    """Путь внутри student_tests; защита от traversal за пределы каталога.
-
-    Новые файлы (allow_create=True) можно создавать только в известных
-    каталогах решений — api/contract/integration/ui — чтобы дерево оставалось
-    предсказуемым для pytest и Jenkins.
-    """
-    root = _student_tests_dir()
-    candidate = (root / relative).resolve()
-    if root.resolve() not in candidate.parents:
-        raise HTTPException(status_code=400, detail="Путь вне student_tests запрещён")
-    if not candidate.name.startswith("test_") or candidate.suffix != ".py":
-        raise HTTPException(
-            status_code=400,
-            detail="Разрешены только файлы вида test_*.py внутри student_tests",
-        )
-    if allow_create:
-        parent = candidate.parent.relative_to(root.resolve()).as_posix()
-        if parent not in {"api", "contract", "integration", "ui"}:
-            raise HTTPException(
-                status_code=400,
-                detail="Новый файл создаётся в api/, contract/, integration/ или ui/",
-            )
-        if candidate.exists():
-            raise HTTPException(status_code=409, detail="Файл уже существует")
-    return candidate
 
 
 class FileCreate(BaseModel):
@@ -80,10 +38,12 @@ class FileCreate(BaseModel):
 
 
 @router.post("/files")
-def create_file(payload: FileCreate) -> dict:
+def create_file(payload: FileCreate, user: User = Depends(get_current_user)) -> dict:
     """Создаёт новый файл решения из встроенной IDE."""
     _require_dev()
-    target = _safe_path(payload.path, allow_create=True)
+    target = safe_test_path(payload.path, allow_create=True)
+    if target.exists():
+        raise HTTPException(status_code=409, detail="Файл уже существует")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(payload.content, encoding="utf-8")
     return {"path": payload.path, "bytes": len(payload.content.encode("utf-8"))}
@@ -97,13 +57,14 @@ class FileSave(BaseModel):
 
 class FileRun(BaseModel):
     path: str = Field(min_length=1, max_length=256)
+    challenge_slug: str | None = Field(default=None, min_length=1, max_length=100)
 
 
 @router.get("/files")
-def list_files() -> dict:
+def list_files(user: User = Depends(get_current_user)) -> dict:
     """Список учебных файлов (test_*.py) относительно student_tests."""
     _require_dev()
-    root = _student_tests_dir()
+    root = student_tests_dir()
     files = sorted(
         str(path.relative_to(root))
         for path in root.rglob("*.py")
@@ -115,28 +76,28 @@ def list_files() -> dict:
 
 
 @router.get("/file")
-def read_file(path: str) -> dict:
+def read_file(path: str, user: User = Depends(get_current_user)) -> dict:
     _require_dev()
-    target = _safe_path(path)
+    target = safe_test_path(path)
     if not target.is_file():
         raise HTTPException(status_code=404, detail="Файл не найден")
     return {"path": path, "content": target.read_text(encoding="utf-8")}
 
 
 @router.put("/file")
-def save_file(payload: FileSave) -> dict:
+def save_file(payload: FileSave, user: User = Depends(get_current_user)) -> dict:
     _require_dev()
-    target = _safe_path(payload.path)
+    target = safe_test_path(payload.path)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(payload.content, encoding="utf-8")
     return {"path": payload.path, "bytes": len(payload.content.encode("utf-8"))}
 
 
 @router.delete("/file")
-def delete_file(path: str) -> dict:
+def delete_file(path: str, user: User = Depends(get_current_user)) -> dict:
     """Удаляет файл решения. Файлы под git'ом восстановимы через git checkout."""
     _require_dev()
-    target = _safe_path(path)
+    target = safe_test_path(path)
     if not target.is_file():
         raise HTTPException(status_code=404, detail="Файл не найден")
     target.unlink()
@@ -145,32 +106,47 @@ def delete_file(path: str) -> dict:
 
 
 @router.post("/run")
-def run_tests(payload: FileRun) -> dict:
-    """Прогон одного файла решений. Вывод обрезается до последних строк."""
+def run_tests(
+    payload: FileRun,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> dict:
+    """Прогон файла; для урока дополнительно оценивает критерии и прогресс."""
     _require_dev()
-    target = _safe_path(payload.path)
-    root = target.parent.parent.parent  # repo root: рядом лежит student_tests/pytest.ini
-    env = os.environ.copy()
-    env.setdefault("BASE_URL", "http://localhost:8000")
-    try:
-        completed = subprocess.run(  # noqa: S603 - аргументы зафиксированы выше
-            [sys.executable, "-m", "pytest", f"student_tests/{payload.path}", "-q"],
-            cwd=root,
-            env=env,
-            capture_output=True,
-            text=True,
-            timeout=RUN_TIMEOUT_SECONDS,
-        )
-        output = (completed.stdout or "") + (completed.stderr or "")
-        exit_code = completed.returncode
-    except subprocess.TimeoutExpired:
-        output = f"Таймаут: тесты не завершились за {RUN_TIMEOUT_SECONDS} секунд."
-        exit_code = -1
-    return {
-        "exit_code": exit_code,
-        "output": output[-MAX_OUTPUT_CHARS:],
-        "truncated": len(output) > MAX_OUTPUT_CHARS,
-    }
+    if not settings.ide_allow_local_runner:
+        raise HTTPException(status_code=503, detail="Локальный исполнитель IDE отключён")
+    target = safe_test_path(payload.path)
+    if not target.is_file():
+        raise HTTPException(status_code=404, detail="Файл не найден")
+    root = student_tests_dir().parent
+    relative_path = f"student_tests/{payload.path}"
+
+    if payload.challenge_slug is None:
+        result = execute_pytest(root, relative_path)
+        return {
+            "exit_code": result.exit_code,
+            "output": result.output,
+            "truncated": result.truncated,
+            "duration_ms": result.duration_ms,
+            "tests_collected": result.tests_collected,
+            "tests_passed": result.tests_passed,
+            "tests_failed": result.tests_failed,
+            "score": 100 if result.exit_code == 0 and result.tests_collected else 0,
+            "passed": result.exit_code == 0 and result.tests_collected > 0,
+            "criteria": [],
+        }
+
+    challenge = CHALLENGES_BY_SLUG.get(payload.challenge_slug)
+    if challenge is None:
+        raise HTTPException(status_code=404, detail="Практическая задача не найдена")
+    lesson = lesson_for(challenge, "ru")
+    if lesson.editable_path != payload.path:
+        raise HTTPException(status_code=400, detail="Файл не соответствует выбранной задаче")
+    grade = grade_lesson(root, relative_path, target, lesson)
+    run = LearningService(db).record_grade(
+        user.id, lesson.slug, payload.path, target, grade,
+    )
+    return serialize_run(run)
 
 
 class _LocatorParser(html.parser.HTMLParser):
@@ -225,7 +201,11 @@ class _LocatorParser(html.parser.HTMLParser):
 
 
 @router.get("/locators")
-async def find_locators(request: Request, url: str) -> dict:
+async def find_locators(
+    request: Request,
+    url: str,
+    user: User = Depends(get_current_user),
+) -> dict:
     """Все data-testid на странице приложения по её пути (например /login).
 
     Страницу получаем через ASGI-транспорт собственного приложения — работает
@@ -247,5 +227,3 @@ async def find_locators(request: Request, url: str) -> dict:
         "count": len(parser.items),
         "locators": parser.items,
     }
-
-

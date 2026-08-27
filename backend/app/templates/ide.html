@@ -14,6 +14,10 @@
   </aside>
 
   <section class="ide-panel ide-center">
+    <div id="ide-lesson-context" class="ide-lesson-context" hidden data-testid="ide-lesson-context">
+      <span id="ide-lesson-label"></span>
+      <a id="ide-lesson-link" href="/learning">{{ t('learning_back') }}</a>
+    </div>
     <div class="ide-toolbar">
       <span id="ide-current-file" class="ide-current-file" data-testid="ide-current-file">{{ t('ide_no_file') }}</span>
       <input type="text" id="ide-new-file" class="ide-new-file"

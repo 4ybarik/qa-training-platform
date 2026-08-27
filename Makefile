@@ -1,4 +1,4 @@
-.PHONY: up down logs seed test test-quality e2e e2e-cross-browser student-api student-ui \
+.PHONY: up down logs seed migrate migration-check test test-quality e2e e2e-cross-browser student-api student-ui \
 	student-ui-cross-browser student-all mutation-score performance quality-summary progress \
 	watch-api watch-ui fmt version
 
@@ -16,6 +16,12 @@ seed:          ## загрузить демо-данные вручную
 
 seed-reset:    ## пересоздать учебный контент (курсы/экзамены/вопросы), пользователи сохраняются
 	docker compose exec app python -m app.seed --reset-content
+
+migrate:       ## применить миграции схемы БД
+	docker compose exec app python -m app.db_upgrade
+
+migration-check: ## проверить, что ORM и последняя миграция не расходятся
+	cd backend && python -m pytest tests/test_migrations.py -q
 
 test:          ## юнит/API-тесты (SQLite, без Docker)
 	cd backend && python -m pytest

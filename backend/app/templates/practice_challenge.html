@@ -22,6 +22,7 @@
     <code data-testid="challenge-test-path">{{ challenge.test_path }}</code>
     <pre><code>python -m pytest {{ challenge.test_path }} -v</code></pre>
   </section>
+  <a class="btn btn-primary" href="/learning/{{ challenge.slug }}" data-testid="challenge-open-lesson">{{ t('learning_open_lesson') }}</a>
   <div class="alert alert-ok" data-testid="challenge-workflow">{{ t('practice_workflow_note') }}</div>
 </article>
 {% endblock %}

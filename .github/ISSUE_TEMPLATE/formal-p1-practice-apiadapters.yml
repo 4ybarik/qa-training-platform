@@ -1,0 +1,32 @@
+name: "P1 · Practice ApiAdapters / Practice в ApiAdapters"
+description: "Exclude practice/integration from ApiAdapters invariant (EN/RU)"
+title: "[P1][formal] Exclude practice/integration from ApiAdapters · Исключить practice из ApiAdapters"
+labels:
+  - P1
+  - formal
+  - practice
+  - documentation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **EN:** Body: [`.github/ISSUES/bodies/p1-exclude-practice-from-apiadapters.md`](https://github.com/maximusmakarov/qa-training-platform/blob/fix/formal-spec-alignment-p0-p1/.github/ISSUES/bodies/p1-exclude-practice-from-apiadapters.md)
+
+        **RU:** Шаблон: `.github/ISSUES/bodies/p1-exclude-practice-from-apiadapters.md`
+
+  - type: textarea
+    id: body
+    attributes:
+      label: "Issue body / Тело issue"
+      placeholder: "Paste from p1-exclude-practice-from-apiadapters.md"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acceptance
+    attributes:
+      label: "Acceptance criteria / Критерии приёмки"
+      options:
+        - label: "PracticeTargets.tla + LIMITATIONS.md document exclusions"
+          required: true
+        - label: "Inventory 0 unmapped symbols"

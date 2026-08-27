@@ -19,6 +19,15 @@ Get-Content .github/labels-formal.json | ConvertFrom-Json | ForEach-Object {
 
 ### One command (all 4 issues)
 
+**Option A — Python + PAT** (no `gh` required):
+
+```powershell
+$env:GITHUB_TOKEN = "ghp_..."   # repo scope, Issues: Read and write
+python scripts/create_formal_issues.py --ensure-labels
+```
+
+**Option B — GitHub CLI:**
+
 ```powershell
 pwsh scripts/create-formal-issues.ps1
 ```

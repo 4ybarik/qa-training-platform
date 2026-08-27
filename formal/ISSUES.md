@@ -4,12 +4,20 @@
 
 ## Создать issues на GitHub
 
+**Способ A — Python + токен** (без `gh`):
+
 ```powershell
-# 1. Установить gh: winget install GitHub.cli
-# 2. Войти: gh auth login
-# 3. Создать все 4 issue:
+$env:GITHUB_TOKEN = "ghp_..."   # Settings → Developer settings → Fine-grained tokens → Issues: Read and write
+python scripts/create_formal_issues.py --ensure-labels
+```
+
+**Способ B — GitHub CLI:**
+
+```powershell
 pwsh scripts/create-formal-issues.ps1
 ```
+
+**Способ C — вручную:** скопировать тело из [`.github/ISSUES/bodies/`](.github/ISSUES/bodies/) в GitHub → New issue.
 
 Подробности: [`.github/ISSUES/README.md`](../.github/ISSUES/README.md)
 

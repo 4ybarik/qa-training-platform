@@ -56,11 +56,11 @@
 
 ## Suggested commit to link issues (after creating issues on GitHub)
 
-Replace `#NN` with issue numbers:
+Replace `#NN` with issue numbers (already created):
 
 ```
-Closes #NN  P0 archived enroll
-Closes #NN  P0 web enroll errors
-Closes #NN  P1 delete cascade docs
-Closes #NN  P1 ApiAdapters scope
+Closes #1  P0 archived enroll
+Closes #2  P0 web enroll errors
+Closes #3  P1 delete cascade docs
+Closes #4  P1 ApiAdapters scope
 ```

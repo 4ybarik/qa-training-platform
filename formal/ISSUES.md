@@ -1,39 +1,29 @@
-# Formal spec alignment — issues (RU/EN)
+# Formal / backlog issues (RU/EN)
 
-Шаблоны issues на **английском и русском** лежат в [`.github/ISSUES/`](../.github/ISSUES/).
+**Upstream:** [`4ybarik/qa-training-platform`](https://github.com/4ybarik/qa-training-platform)
 
-## Целевой репозиторий
+## Open in PR #3 (P0–P1)
 
-**Project owner:** [`4ybarik/qa-training-platform`](https://github.com/4ybarik/qa-training-platform)  
-**Fork (head branch):** `maximusmakarov:fix/formal-spec-alignment-p0-p1`
+| # | Topic |
+|---|--------|
+| [#4](https://github.com/4ybarik/qa-training-platform/issues/4) | Block ARCHIVED enroll |
+| [#5](https://github.com/4ybarik/qa-training-platform/issues/5) | Web enroll errors |
+| [#6](https://github.com/4ybarik/qa-training-platform/issues/6) | Document delete cascade |
+| [#7](https://github.com/4ybarik/qa-training-platform/issues/7) | Practice / ApiAdapters scope |
 
-## Созданные issues (upstream)
+**PR:** https://github.com/4ybarik/qa-training-platform/pull/3
 
-| # | EN / RU | URL |
-|---|---------|-----|
-| **#4** | Block ARCHIVED enroll · Запрет ARCHIVED | https://github.com/4ybarik/qa-training-platform/issues/4 |
-| **#5** | Web enroll errors · Ошибки web-enroll | https://github.com/4ybarik/qa-training-platform/issues/5 |
-| **#6** | Delete cascade docs · Каскад delete | https://github.com/4ybarik/qa-training-platform/issues/6 |
-| **#7** | Practice ApiAdapters · Practice в ApiAdapters | https://github.com/4ybarik/qa-training-platform/issues/7 |
+## Backlog created (P1–P2)
 
-## PR
+| # | Priority | Topic |
+|---|----------|--------|
+| [#8](https://github.com/4ybarik/qa-training-platform/issues/8) | P1 | Web admin `set_active` DomainError |
+| [#9](https://github.com/4ybarik/qa-training-platform/issues/9) | P1 | Enroll policy for `DRAFT` |
+| [#10](https://github.com/4ybarik/qa-training-platform/issues/10) | P2 | Exam submit vs enrollment |
+| [#11](https://github.com/4ybarik/qa-training-platform/issues/11) | P2 | MANAGER RBAC vs promises |
+| [#12](https://github.com/4ybarik/qa-training-platform/issues/12) | P2 | Formal tests in CI |
+| [#13](https://github.com/4ybarik/qa-training-platform/issues/13) | P2 | Exam timer is client-only |
+| [#14](https://github.com/4ybarik/qa-training-platform/issues/14) | P2 | `progress` CheckConstraint 0..100 |
 
-**https://github.com/4ybarik/qa-training-platform/pull/3**
-
-```markdown
-Closes #4
-Closes #5
-Closes #6
-Closes #7
-```
-
-Описание: [`formal/PR.md`](PR.md)
-
-## Создать issues повторно (если нужно)
-
-```powershell
-$env:GITHUB_TOKEN = "ghp_..."
-python scripts/create_formal_issues.py
-```
-
-Или: `pwsh scripts/create-formal-issues.ps1`
+Templates: [`.github/ISSUES/`](../.github/ISSUES/)  
+Create script: `python scripts/create_backlog_issues.py`

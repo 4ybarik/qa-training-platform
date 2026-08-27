@@ -1,4 +1,8 @@
-"""AST inventory of backend/app — source of truth for formal spec coverage."""
+"""AST inventory of backend/app — source of truth for formal spec coverage.
+
+Module names are relative to ``backend/app`` (e.g. ``api.auth``, not ``app.api.auth``).
+Class methods inherit the parent class's Tier-A/B mapping when known.
+"""
 from __future__ import annotations
 
 import ast
@@ -13,69 +17,105 @@ APP_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = APP_ROOT.parents[1]
 FORMAL_TLA = REPO_ROOT / "formal" / "tla"
 
-# Explicit tier-A process specs (state machines with TLC).
-TIER_A_SPECS: dict[str, str] = {
+# Explicit process specs (state machines with TLC / oracles).
+TIER_A_CLASSES: dict[str, str] = {
     "AuthService": "services/AuthAccount.tla",
     "CourseService": "services/CourseLifecycle.tla",
     "Enrollment": "services/CourseLifecycle.tla",
     "ExamService": "services/ExamAttempt.tla",
     "NotificationService": "services/Notification.tla",
     "AdminService": "services/AdminUser.tla",
+    "ProfileService": "services/Profile.tla",
     "TestSupportService": "services/TestRun.tla",
-    "PracticeJob": "practice/Job.tla",
-    "PracticeResource": "practice/Resource.tla",
     "RateLimiter": "core/RateLimiter.tla",
     "PlaygroundMiddleware": "middleware/Playground.tla",
+    "PlaygroundState": "middleware/Playground.tla",
 }
 
-# Tier-B ORM entities and repositories (TypeOK + lifecycle).
-TIER_B_ENTITIES: frozenset[str] = frozenset({
+# ORM entities and repositories (TypeOK + lifecycle).
+TIER_B_CLASSES: frozenset[str] = frozenset({
     "User", "Profile", "Course", "Enrollment", "Exam", "Question", "Answer",
     "Notification", "AuditLog", "ExamAttempt", "TestRunEntity",
     "CourseRepository", "EnrollmentRepository", "UserRepository", "ProfileRepository",
     "ExamRepository", "NotificationRepository", "AuditRepository",
 })
 
-# Tier-C pure/adapter modules (pre/post, no invented states).
-TIER_C_MODULES: frozenset[str] = frozenset({
-    "security", "deps", "database", "i18n", "mutations", "catalog", "quality",
-    "errors", "enums", "config", "tasks", "ApiAdapters",
+# Pure / utility packages → modules/<Name>.tla
+TIER_C_PACKAGES: dict[str, str] = {
+    "core.security": "modules/Security.tla",
+    "core.database": "modules/Database.tla",
+    "core.config": "modules/Config.tla",
+    "core.rate_limit": "core/RateLimiter.tla",
+    "api.deps": "modules/Deps.tla",
+    "api.errors": "modules/Errors.tla",
+    "domain.errors": "modules/Errors.tla",
+    "domain.enums": "modules/Enums.tla",
+    "web.i18n": "modules/I18n.tla",
+    "practice.mutations": "modules/Mutations.tla",
+    "practice.catalog": "modules/Catalog.tla",
+    "services.quality": "modules/Quality.tla",
+    "api.quality": "modules/Quality.tla",
+    "integrations.tasks": "modules/Tasks.tla",
+}
+
+# Packages that own in-memory / external adapter state (not domain services).
+PRACTICE_PACKAGES: frozenset[str] = frozenset({
+    "api.practice",
+    "api.integrations",
+    "integrations",
+    "integrations.tasks",
 })
 
-# Pydantic schemas and API DTOs live in Types.tla / ApiAdapters.tla.
-SCHEMA_MODULE = "domain/schemas.py"
+# Domain HTTP adapters (delegate to services).
+API_ADAPTER_PREFIXES: tuple[str, ...] = (
+    "api.",
+    "web.",
+)
 
-# Practice/integration APIs hold their own in-memory or adapter state.
-PRACTICE_ADAPTER_PREFIXES: frozenset[str] = frozenset({
-    "app.api.practice",
-    "app.api.integrations",
-})
-
-SKIP_MODULES: frozenset[str] = frozenset({
+SKIP_FILES: frozenset[str] = frozenset({
     "seed.py", "seed_content.py", "main.py", "__init__.py",
+})
+
+# Specs that must exist under formal/tla/ after inventory rewrite.
+REQUIRED_MODULE_SPECS: frozenset[str] = frozenset({
+    "modules/Security.tla",
+    "modules/Database.tla",
+    "modules/Config.tla",
+    "modules/Deps.tla",
+    "modules/Errors.tla",
+    "modules/Enums.tla",
+    "modules/I18n.tla",
+    "modules/Mutations.tla",
+    "modules/Catalog.tla",
+    "modules/Quality.tla",
+    "modules/Tasks.tla",
+    "services/Profile.tla",
+    "practice/PracticeModule.tla",
 })
 
 
 @dataclass
 class Symbol:
-    kind: Literal["class", "function"]
+    kind: Literal["class", "function", "method"]
     name: str
     module: str
     file: str
     line: int
     tier: Tier
     spec: str
+    owner: str | None = None  # class name for methods
 
 
 @dataclass
 class Inventory:
     symbols: list[Symbol] = field(default_factory=list)
 
-    def coverage_table(self) -> list[dict[str, str | int]]:
+    def coverage_table(self) -> list[dict[str, str | int | None]]:
         return [
             {
                 "kind": s.kind,
                 "name": s.name,
+                "owner": s.owner,
                 "module": s.module,
                 "file": s.file,
                 "line": s.line,
@@ -88,13 +128,23 @@ class Inventory:
     def uncovered(self) -> list[Symbol]:
         return [s for s in self.symbols if s.spec == "UNMAPPED"]
 
+    def misc(self) -> list[Symbol]:
+        return [s for s in self.symbols if s.spec == "modules/Misc.tla"]
+
     def summary(self) -> dict[str, int]:
         counts: dict[str, int] = {}
         for s in self.symbols:
             counts[s.tier] = counts.get(s.tier, 0) + 1
         counts["total"] = len(self.symbols)
         counts["unmapped"] = len(self.uncovered())
+        counts["misc"] = len(self.misc())
         return counts
+
+    def by_spec(self) -> dict[str, int]:
+        counts: dict[str, int] = {}
+        for s in self.symbols:
+            counts[s.spec] = counts.get(s.spec, 0) + 1
+        return dict(sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])))
 
 
 def _module_name(path: Path) -> str:
@@ -103,56 +153,94 @@ def _module_name(path: Path) -> str:
     return ".".join(parts)
 
 
-def _resolve_tier(name: str, kind: str, module: str, file: str) -> tuple[Tier, str]:
-    if any(file.endswith(s) for s in SKIP_MODULES):
+def _package_of(module: str) -> str:
+    return module.rsplit(".", 1)[0] if "." in module else module
+
+
+def _resolve_for_class(class_name: str, module: str) -> tuple[Tier, str] | None:
+    if class_name in TIER_A_CLASSES:
+        return "A", TIER_A_CLASSES[class_name]
+    if class_name in TIER_B_CLASSES:
+        return "B", "domain/Entities.tla"
+    if module in TIER_C_PACKAGES:
+        return "C", TIER_C_PACKAGES[module]
+    if module.endswith("schemas") or module == "domain.schemas":
+        return "schema", "domain/Types.tla"
+    if module.startswith("domain."):
+        return "schema", "domain/Types.tla"
+    return None
+
+
+def _resolve_module(module: str, file: str) -> tuple[Tier, str]:
+    if any(file.endswith(s) for s in SKIP_FILES) or file.endswith("/__init__.py"):
         return "skip", "N/A"
 
-    if file == SCHEMA_MODULE or module.endswith("schemas"):
+    if file == "domain/schemas.py" or module.endswith("schemas"):
         return "schema", "domain/Types.tla"
 
-    if name in TIER_A_SPECS:
-        return "A", TIER_A_SPECS[name]
+    if module in TIER_C_PACKAGES:
+        return "C", TIER_C_PACKAGES[module]
 
-    if kind == "class" and name in TIER_B_ENTITIES:
-        return "B", "domain/Entities.tla"
-
-    module_stem = module.split(".")[-1]
-    if module_stem in TIER_C_MODULES or any(
-        module.endswith(f".{m}") for m in TIER_C_MODULES
-    ):
-        if module.startswith("app.api") or module.startswith("app.web"):
-            return "adapter", "adapters/ApiAdapters.tla"
-        return "C", f"modules/{module_stem.capitalize()}.tla"
-
-    if module.startswith("app.api") or module.startswith("app.web"):
-        if any(module.startswith(p) for p in PRACTICE_ADAPTER_PREFIXES):
-            return "adapter", "adapters/PracticeTargets.tla"
-        return "adapter", "adapters/ApiAdapters.tla"
-
-    if module.startswith("app.services"):
-        return "A", f"services/{name}.tla"
-
-    if module.startswith("app.domain"):
-        if kind == "class":
-            return "schema", "domain/Types.tla"
-        return "C", "domain/Types.tla"
-
-    if module.startswith("app.repositories"):
-        return "B", "domain/Entities.tla"
-
-    if module.startswith("app.practice"):
-        return "C", "practice/PracticeModule.tla"
-
-    if module.startswith("app.core"):
-        return "C", f"core/{module_stem.capitalize()}.tla"
-
-    if module.startswith("app.integrations"):
+    # Exact package roots
+    if module in PRACTICE_PACKAGES or any(
+        module.startswith(f"{p}.") for p in PRACTICE_PACKAGES if "." in p
+    ) or module.startswith("api.practice") or module.startswith("api.integrations"):
         return "adapter", "adapters/PracticeTargets.tla"
 
-    if module.startswith("app.middleware"):
+    if module.startswith("api.") or module.startswith("web."):
+        # api.deps / api.errors / api.quality already handled via TIER_C_PACKAGES
+        return "adapter", "adapters/ApiAdapters.tla"
+
+    if module.startswith("services."):
+        # Fallback for unknown service helpers — still domain service layer
+        return "A", f"services/{module.split('.', 1)[1].capitalize()}.tla"
+
+    if module.startswith("repositories."):
+        return "B", "domain/Entities.tla"
+
+    if module.startswith("domain."):
+        return "schema", "domain/Types.tla"
+
+    if module.startswith("practice."):
+        return "C", "practice/PracticeModule.tla"
+
+    if module.startswith("core."):
+        stem = module.split(".", 1)[1]
+        return "C", f"core/{stem.capitalize()}.tla"
+
+    if module.startswith("integrations"):
+        return "adapter", "adapters/PracticeTargets.tla"
+
+    if module.startswith("middleware"):
         return "A", "middleware/Playground.tla"
 
     return "C", "modules/Misc.tla"
+
+
+def _resolve_symbol(
+    *,
+    name: str,
+    kind: Literal["class", "function", "method"],
+    module: str,
+    file: str,
+    owner: str | None = None,
+) -> tuple[Tier, str]:
+    if any(file.endswith(s) for s in SKIP_FILES):
+        return "skip", "N/A"
+
+    if kind == "class":
+        mapped = _resolve_for_class(name, module)
+        if mapped:
+            return mapped
+        return _resolve_module(module, file)
+
+    if kind == "method" and owner:
+        mapped = _resolve_for_class(owner, module)
+        if mapped:
+            return mapped
+
+    # Top-level function or unowned method — package rules
+    return _resolve_module(module, file)
 
 
 def scan_app(root: Path | None = None) -> Inventory:
@@ -169,16 +257,44 @@ def scan_app(root: Path | None = None) -> Inventory:
         except SyntaxError:
             continue
 
-        for node in ast.walk(tree):
+        # Top-level only: classes, functions, and methods under classes.
+        for node in tree.body:
             if isinstance(node, ast.ClassDef):
-                tier, spec = _resolve_tier(node.name, "class", module, rel)
+                tier, spec = _resolve_symbol(
+                    name=node.name, kind="class", module=module, file=rel
+                )
                 inventory.symbols.append(
                     Symbol("class", node.name, module, rel, node.lineno, tier, spec)
                 )
-            elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-                if node.name.startswith("_") and node.name not in {"__init__"}:
+                for child in node.body:
+                    if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        if child.name.startswith("_") and child.name != "__init__":
+                            continue
+                        mtier, mspec = _resolve_symbol(
+                            name=child.name,
+                            kind="method",
+                            module=module,
+                            file=rel,
+                            owner=node.name,
+                        )
+                        inventory.symbols.append(
+                            Symbol(
+                                "method",
+                                child.name,
+                                module,
+                                rel,
+                                child.lineno,
+                                mtier,
+                                mspec,
+                                owner=node.name,
+                            )
+                        )
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if node.name.startswith("_") and node.name != "__init__":
                     continue
-                tier, spec = _resolve_tier(node.name, "function", module, rel)
+                tier, spec = _resolve_symbol(
+                    name=node.name, kind="function", module=module, file=rel
+                )
                 inventory.symbols.append(
                     Symbol("function", node.name, module, rel, node.lineno, tier, spec)
                 )
@@ -186,9 +302,23 @@ def scan_app(root: Path | None = None) -> Inventory:
     return inventory
 
 
-def write_coverage_report(path: Path | None = None) -> dict[str, int | list]:
+def missing_spec_files(inv: Inventory | None = None) -> list[str]:
+    inv = inv or scan_app()
+    missing: list[str] = []
+    for spec in sorted({s.spec for s in inv.symbols if s.spec not in {"N/A", "UNMAPPED"}}):
+        if not (FORMAL_TLA / spec).exists():
+            missing.append(spec)
+    return missing
+
+
+def write_coverage_report(path: Path | None = None) -> dict[str, object]:
     inv = scan_app()
-    report = {"summary": inv.summary(), "symbols": inv.coverage_table()}
+    report = {
+        "summary": inv.summary(),
+        "by_spec": inv.by_spec(),
+        "missing_specs": missing_spec_files(inv),
+        "symbols": inv.coverage_table(),
+    }
     if path:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -198,4 +328,5 @@ def write_coverage_report(path: Path | None = None) -> dict[str, int | list]:
 if __name__ == "__main__":
     out = REPO_ROOT / "formal" / "coverage.json"
     report = write_coverage_report(out)
-    print(json.dumps(report["summary"], indent=2))
+    print(json.dumps({"summary": report["summary"], "by_spec": report["by_spec"],
+                      "missing_specs": report["missing_specs"]}, indent=2))

@@ -8,7 +8,7 @@ delete guards.
 
 ## Enroll on archived course
 
-Runtime now rejects `ARCHIVED` courses in `CourseService.enroll` — aligned with
+Runtime rejects `ARCHIVED` courses in `CourseService.enroll` — aligned with
 TLA `Enroll` action (`courseStatus[c] # "ARCHIVED"`).
 
 ## ApiAdapters scope
@@ -16,8 +16,15 @@ TLA `Enroll` action (`courseStatus[c] # "ARCHIVED"`).
 `ApiAdapters.tla` applies to domain API/web endpoints that delegate to
 services. **Excluded** (intentional direct state):
 
-- `/api/practice/*` — in-memory practice targets
-- `/api/integrations/*` — Redis cache/queue adapters
+- `/api/practice/*` — in-memory practice targets → `PracticeTargets.tla`
+- `/api/integrations/*` — Redis cache/queue adapters → `PracticeTargets.tla`
+
+Inventory quality gates (`tests/formal/test_inventory.py`):
+
+- `unmapped == 0`
+- `misc == 0` (no dump into `modules/Misc.tla`)
+- every referenced `.tla` exists under `formal/tla/`
+- `api.*` / `web.*` map to ApiAdapters or PracticeTargets (plus deps/errors/quality)
 
 ## TLC
 

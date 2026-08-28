@@ -33,7 +33,10 @@
 
   <section class="card" data-testid="events-feed">
     <h2>{{ t('events_feed') }}</h2>
-    <ul id="ws-feed" data-testid="ws-feed"><li data-testid="ws-feed-placeholder">{{ t('waiting_events') }}</li></ul>
+    <ul id="ws-feed" data-testid="ws-feed" tabindex="0"
+        aria-label="{{ t('events_feed') }}" aria-live="polite" aria-relevant="additions">
+      <li data-testid="ws-feed-placeholder">{{ t('waiting_events') }}</li>
+    </ul>
   </section>
 </div>
 

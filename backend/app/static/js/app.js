@@ -62,10 +62,13 @@ window.QATP = (function () {
       const ws = new WebSocket(`${proto}://${location.host}/ws/notifications`);
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        const placeholder = feed.querySelector('[data-testid="ws-feed-placeholder"]');
+        if (placeholder) placeholder.remove();
         const li = document.createElement("li");
         li.setAttribute("data-testid", "ws-event");
         li.textContent = data.message;
         feed.prepend(li);
+        feed.scrollTop = 0;
       };
     } catch (e) {
       /* ignore */

@@ -68,6 +68,12 @@ h1 { font-size: 24px; } h2 { font-size: 18px; }
 .stat-value { font-size: 28px; font-weight: 700; }
 .stat-label { color: var(--muted); }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+#ws-feed {
+  height: clamp(180px, 30vh, 280px); margin-bottom: 0; padding-right: 8px;
+  overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable;
+}
+#ws-feed:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+#ws-feed li { overflow-wrap: anywhere; }
 
 .auth-shell { display: flex; justify-content: center; align-items: center; min-height: 100vh; position: relative; }
 .version-tag { position: absolute; bottom: 12px; right: 16px; font-size: 12px; color: var(--muted); }
@@ -206,5 +212,6 @@ form input[type=date], form input[type=number], form select, form textarea {
   .sidebar { width: 100%; flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--border); }
   .sidebar a { white-space: nowrap; }
   .content { padding: 16px; }
+  .grid-2 { grid-template-columns: 1fr; }
   .practice-hero { grid-template-columns: 1fr; padding: 20px; }
 }

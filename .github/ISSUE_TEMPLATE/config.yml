@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Formal models docs (RU/EN index)"
+    url: https://github.com/maximusmakarov/qa-training-platform/blob/main/formal/ISSUES.md
+    about: "P0/P1 issues from TLA+ analysis — create via scripts/create-formal-issues.ps1 or copy from .github/ISSUES/"
+  - name: "Architecture guide"
+    url: https://github.com/maximusmakarov/qa-training-platform/blob/main/ARCHITECTURE.md
+    about: "Layered monolith: api/web → services → repositories → domain"

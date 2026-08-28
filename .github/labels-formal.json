@@ -1,0 +1,9 @@
+[
+  { "name": "P0", "color": "b60205", "description": "Critical: spec/runtime mismatch, must fix before release" },
+  { "name": "P1", "color": "d93f0b", "description": "Important: documentation or spec scope alignment" },
+  { "name": "formal", "color": "1d76db", "description": "Formal models: TLA+, statemachine, invariants" },
+  { "name": "courses", "color": "0e8a16", "description": "Course lifecycle and enrollment" },
+  { "name": "web", "color": "5319e7", "description": "Server-rendered web UI (Jinja)" },
+  { "name": "documentation", "color": "0075ca", "description": "Docs and architecture alignment" },
+  { "name": "practice", "color": "fbca04", "description": "Practice API targets for student tests" }
+]

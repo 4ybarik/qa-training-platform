@@ -1,0 +1,3724 @@
+{
+  "summary": {
+    "adapter": 150,
+    "C": 59,
+    "A": 70,
+    "B": 52,
+    "schema": 31,
+    "skip": 6,
+    "total": 368,
+    "unmapped": 0,
+    "misc": 0
+  },
+  "by_spec": {
+    "adapters/ApiAdapters.tla": 111,
+    "domain/Entities.tla": 52,
+    "adapters/PracticeTargets.tla": 39,
+    "domain/Types.tla": 31,
+    "services/Learning.tla": 24,
+    "services/CourseLifecycle.tla": 11,
+    "services/ExamAttempt.tla": 9,
+    "middleware/Playground.tla": 8,
+    "modules/Errors.tla": 7,
+    "N/A": 6,
+    "modules/Catalog.tla": 6,
+    "modules/I18n.tla": 6,
+    "services/AdminUser.tla": 6,
+    "services/AuthAccount.tla": 6,
+    "services/Notification.tla": 6,
+    "services/Profile.tla": 6,
+    "modules/Security.tla": 5,
+    "services/TestRun.tla": 5,
+    "core/RateLimiter.tla": 4,
+    "modules/Database.tla": 4,
+    "modules/Enums.tla": 4,
+    "modules/Deps.tla": 3,
+    "modules/Mutations.tla": 3,
+    "modules/Quality.tla": 3,
+    "modules/Config.tla": 2,
+    "modules/Tasks.tla": 1
+  },
+  "missing_specs": [],
+  "symbols": [
+    {
+      "kind": "function",
+      "name": "register",
+      "owner": null,
+      "module": "api.auth",
+      "file": "api/auth.py",
+      "line": 19,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "login",
+      "owner": null,
+      "module": "api.auth",
+      "file": "api/auth.py",
+      "line": 27,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "refresh",
+      "owner": null,
+      "module": "api.auth",
+      "file": "api/auth.py",
+      "line": 40,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "logout",
+      "owner": null,
+      "module": "api.auth",
+      "file": "api/auth.py",
+      "line": 46,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "me",
+      "owner": null,
+      "module": "api.auth",
+      "file": "api/auth.py",
+      "line": 52,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_courses",
+      "owner": null,
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 19,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "categories",
+      "owner": null,
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 35,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_course",
+      "owner": null,
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 44,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_course",
+      "owner": null,
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 49,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "update_course",
+      "owner": null,
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 57,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_course",
+      "owner": null,
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 65,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "enroll",
+      "owner": null,
+      "module": "api.courses",
+      "file": "api/courses.py",
+      "line": 74,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_current_user",
+      "owner": null,
+      "module": "api.deps",
+      "file": "api/deps.py",
+      "line": 32,
+      "tier": "C",
+      "spec": "modules/Deps.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_optional_user",
+      "owner": null,
+      "module": "api.deps",
+      "file": "api/deps.py",
+      "line": 52,
+      "tier": "C",
+      "spec": "modules/Deps.tla"
+    },
+    {
+      "kind": "function",
+      "name": "require_roles",
+      "owner": null,
+      "module": "api.deps",
+      "file": "api/deps.py",
+      "line": 60,
+      "tier": "C",
+      "spec": "modules/Deps.tla"
+    },
+    {
+      "kind": "function",
+      "name": "register_exception_handlers",
+      "owner": null,
+      "module": "api.errors",
+      "file": "api/errors.py",
+      "line": 18,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_exams",
+      "owner": null,
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 20,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_exam",
+      "owner": null,
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 26,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_exam_admin",
+      "owner": null,
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 32,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_exam",
+      "owner": null,
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 41,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "update_exam",
+      "owner": null,
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 49,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_exam",
+      "owner": null,
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 57,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "submit_exam",
+      "owner": null,
+      "module": "api.exams",
+      "file": "api/exams.py",
+      "line": 66,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "FileCreate",
+      "owner": null,
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 35,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_file",
+      "owner": null,
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 41,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "FileSave",
+      "owner": null,
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 53,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "FileRun",
+      "owner": null,
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 58,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_files",
+      "owner": null,
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 64,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "read_file",
+      "owner": null,
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 79,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "save_file",
+      "owner": null,
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 88,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_file",
+      "owner": null,
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 97,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "run_tests",
+      "owner": null,
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 109,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "_LocatorParser",
+      "owner": null,
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 152,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "_LocatorParser",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 157,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "method",
+      "name": "handle_starttag",
+      "owner": "_LocatorParser",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 163,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "method",
+      "name": "handle_startendtag",
+      "owner": "_LocatorParser",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 181,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "method",
+      "name": "handle_data",
+      "owner": "_LocatorParser",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 186,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "method",
+      "name": "handle_endtag",
+      "owner": "_LocatorParser",
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 190,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "find_locators",
+      "owner": null,
+      "module": "api.ide",
+      "file": "api/ide.py",
+      "line": 204,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CacheValue",
+      "owner": null,
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 25,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "class",
+      "name": "QueueJobCreate",
+      "owner": null,
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 30,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "put_cache",
+      "owner": null,
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 52,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_cache",
+      "owner": null,
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 66,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_cache",
+      "owner": null,
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 78,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_queue_job",
+      "owner": null,
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 88,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_queue_job",
+      "owner": null,
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 114,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "clear_integration_state",
+      "owner": null,
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 135,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "external_profile",
+      "owner": null,
+      "module": "api.integrations",
+      "file": "api/integrations.py",
+      "line": 148,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "catalog",
+      "owner": null,
+      "module": "api.learning",
+      "file": "api/learning.py",
+      "line": 17,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "progress",
+      "owner": null,
+      "module": "api.learning",
+      "file": "api/learning.py",
+      "line": 32,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "runs",
+      "owner": null,
+      "module": "api.learning",
+      "file": "api/learning.py",
+      "line": 44,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "manage_progress",
+      "owner": null,
+      "module": "api.learning",
+      "file": "api/learning.py",
+      "line": 54,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_profile",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 23,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "update_profile",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 31,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_notifications",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 44,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "mark_read",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 54,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_notification",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 61,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_users",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 72,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_role",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 78,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_active",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 86,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_notification",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 94,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "audit",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 102,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "health",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 112,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "liveness",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 118,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "readiness",
+      "owner": null,
+      "module": "api.misc",
+      "file": "api/misc.py",
+      "line": 123,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PlaygroundConfig",
+      "owner": null,
+      "module": "api.playground",
+      "file": "api/playground.py",
+      "line": 18,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_config",
+      "owner": null,
+      "module": "api.playground",
+      "file": "api/playground.py",
+      "line": 25,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_config",
+      "owner": null,
+      "module": "api.playground",
+      "file": "api/playground.py",
+      "line": 30,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "notifications_ws",
+      "owner": null,
+      "module": "api.playground",
+      "file": "api/playground.py",
+      "line": 46,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "EchoBody",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 46,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ResourceCreate",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 51,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ResourceUpdate",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 59,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "class",
+      "name": "JobCreate",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 67,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_catalog",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 73,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_challenge",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 78,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_mutations",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 86,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "echo_get",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 93,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "echo_post",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 103,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "status_response",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 114,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "rate_limit_target",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 124,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "schema_variant",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 151,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_resource",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 175,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_resources",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 215,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_resource",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 261,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "update_resource",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 269,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_resource",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 292,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "clear_resources",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 309,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "clear_practice_state",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 318,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_job",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 332,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_job",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 349,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "upload_file",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 369,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "download_file",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 392,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "redirect_chain",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 414,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_practice_cookie",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 423,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "read_practice_cookie",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 429,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "delete_practice_cookie",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 434,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "record_webhook",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 440,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_webhooks",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 461,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "clear_webhooks",
+      "owner": null,
+      "module": "api.practice",
+      "file": "api/practice.py",
+      "line": 468,
+      "tier": "adapter",
+      "spec": "adapters/PracticeTargets.tla"
+    },
+    {
+      "kind": "function",
+      "name": "history",
+      "owner": null,
+      "module": "api.quality",
+      "file": "api/quality.py",
+      "line": 10,
+      "tier": "C",
+      "spec": "modules/Quality.tla"
+    },
+    {
+      "kind": "function",
+      "name": "latest",
+      "owner": null,
+      "module": "api.quality",
+      "file": "api/quality.py",
+      "line": 16,
+      "tier": "C",
+      "spec": "modules/Quality.tla"
+    },
+    {
+      "kind": "class",
+      "name": "TestUserCreate",
+      "owner": null,
+      "module": "api.test_support",
+      "file": "api/test_support.py",
+      "line": 20,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "TestCourseCreate",
+      "owner": null,
+      "module": "api.test_support",
+      "file": "api/test_support.py",
+      "line": 28,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_test_user",
+      "owner": null,
+      "module": "api.test_support",
+      "file": "api/test_support.py",
+      "line": 51,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_test_course",
+      "owner": null,
+      "module": "api.test_support",
+      "file": "api/test_support.py",
+      "line": 77,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "cleanup_test_state",
+      "owner": null,
+      "module": "api.test_support",
+      "file": "api/test_support.py",
+      "line": 99,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseV1",
+      "owner": null,
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 16,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CoursePageV1",
+      "owner": null,
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 23,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "MoneyV2",
+      "owner": null,
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 31,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseV2",
+      "owner": null,
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 36,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PaginationV2",
+      "owner": null,
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 43,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CoursePageV2",
+      "owner": null,
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 49,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_courses_v1",
+      "owner": null,
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 62,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "list_courses_v2",
+      "owner": null,
+      "module": "api.versioned",
+      "file": "api/versioned.py",
+      "line": 87,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Settings",
+      "owner": null,
+      "module": "core.config",
+      "file": "core/config.py",
+      "line": 16,
+      "tier": "C",
+      "spec": "modules/Config.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_settings",
+      "owner": null,
+      "module": "core.config",
+      "file": "core/config.py",
+      "line": 92,
+      "tier": "C",
+      "spec": "modules/Config.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Base",
+      "owner": null,
+      "module": "core.database",
+      "file": "core/database.py",
+      "line": 30,
+      "tier": "C",
+      "spec": "modules/Database.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_db",
+      "owner": null,
+      "module": "core.database",
+      "file": "core/database.py",
+      "line": 34,
+      "tier": "C",
+      "spec": "modules/Database.tla"
+    },
+    {
+      "kind": "function",
+      "name": "init_db",
+      "owner": null,
+      "module": "core.database",
+      "file": "core/database.py",
+      "line": 43,
+      "tier": "C",
+      "spec": "modules/Database.tla"
+    },
+    {
+      "kind": "class",
+      "name": "RateLimiter",
+      "owner": null,
+      "module": "core.rate_limit",
+      "file": "core/rate_limit.py",
+      "line": 11,
+      "tier": "A",
+      "spec": "core/RateLimiter.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "RateLimiter",
+      "module": "core.rate_limit",
+      "file": "core/rate_limit.py",
+      "line": 12,
+      "tier": "A",
+      "spec": "core/RateLimiter.tla"
+    },
+    {
+      "kind": "method",
+      "name": "hit",
+      "owner": "RateLimiter",
+      "module": "core.rate_limit",
+      "file": "core/rate_limit.py",
+      "line": 18,
+      "tier": "A",
+      "spec": "core/RateLimiter.tla"
+    },
+    {
+      "kind": "method",
+      "name": "reset",
+      "owner": "RateLimiter",
+      "module": "core.rate_limit",
+      "file": "core/rate_limit.py",
+      "line": 30,
+      "tier": "A",
+      "spec": "core/RateLimiter.tla"
+    },
+    {
+      "kind": "function",
+      "name": "hash_password",
+      "owner": null,
+      "module": "core.security",
+      "file": "core/security.py",
+      "line": 22,
+      "tier": "C",
+      "spec": "modules/Security.tla"
+    },
+    {
+      "kind": "function",
+      "name": "verify_password",
+      "owner": null,
+      "module": "core.security",
+      "file": "core/security.py",
+      "line": 26,
+      "tier": "C",
+      "spec": "modules/Security.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_access_token",
+      "owner": null,
+      "module": "core.security",
+      "file": "core/security.py",
+      "line": 43,
+      "tier": "C",
+      "spec": "modules/Security.tla"
+    },
+    {
+      "kind": "function",
+      "name": "create_refresh_token",
+      "owner": null,
+      "module": "core.security",
+      "file": "core/security.py",
+      "line": 52,
+      "tier": "C",
+      "spec": "modules/Security.tla"
+    },
+    {
+      "kind": "function",
+      "name": "decode_token",
+      "owner": null,
+      "module": "core.security",
+      "file": "core/security.py",
+      "line": 60,
+      "tier": "C",
+      "spec": "modules/Security.tla"
+    },
+    {
+      "kind": "function",
+      "name": "upgrade",
+      "owner": null,
+      "module": "db_upgrade",
+      "file": "db_upgrade.py",
+      "line": 14,
+      "tier": "C",
+      "spec": "modules/Database.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Role",
+      "owner": null,
+      "module": "domain.enums",
+      "file": "domain/enums.py",
+      "line": 5,
+      "tier": "C",
+      "spec": "modules/Enums.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseStatus",
+      "owner": null,
+      "module": "domain.enums",
+      "file": "domain/enums.py",
+      "line": 11,
+      "tier": "C",
+      "spec": "modules/Enums.tla"
+    },
+    {
+      "kind": "class",
+      "name": "QuestionType",
+      "owner": null,
+      "module": "domain.enums",
+      "file": "domain/enums.py",
+      "line": 17,
+      "tier": "C",
+      "spec": "modules/Enums.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotificationStatus",
+      "owner": null,
+      "module": "domain.enums",
+      "file": "domain/enums.py",
+      "line": 24,
+      "tier": "C",
+      "spec": "modules/Enums.tla"
+    },
+    {
+      "kind": "class",
+      "name": "DomainError",
+      "owner": null,
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 4,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotFoundError",
+      "owner": null,
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 8,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ConflictError",
+      "owner": null,
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 12,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AuthError",
+      "owner": null,
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 16,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PermissionError_",
+      "owner": null,
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 20,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "RateLimitError",
+      "owner": null,
+      "module": "domain.errors",
+      "file": "domain/errors.py",
+      "line": 24,
+      "tier": "C",
+      "spec": "modules/Errors.tla"
+    },
+    {
+      "kind": "class",
+      "name": "User",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 24,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Profile",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 50,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Course",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 64,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Enrollment",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 79,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Exam",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 95,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Question",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 110,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Answer",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 122,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Notification",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 133,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AuditLog",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 145,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamAttempt",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 155,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "TestRunEntity",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 171,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PracticeRun",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 190,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PracticeCriterionResult",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 216,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PracticeProgress",
+      "owner": null,
+      "module": "domain.models",
+      "file": "domain/models.py",
+      "line": 235,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "RegisterRequest",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 13,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "LoginRequest",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 20,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "TokenPair",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 25,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "RefreshRequest",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 31,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "MessageResponse",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 35,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ErrorResponse",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 39,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "UserOut",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 44,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ProfileOut",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 55,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ProfileUpdate",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 64,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "RoleUpdate",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 71,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "UserActiveUpdate",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 75,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseOut",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 80,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CoursePage",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 90,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseCreate",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 97,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseUpdate",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 105,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AnswerOut",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 114,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AnswerAdminOut",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 120,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "QuestionOut",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 128,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "QuestionAdminOut",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 136,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamOut",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 144,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamAdminOut",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 153,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AnswerCreate",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 162,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "QuestionCreate",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 167,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamCreate",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 173,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamUpdate",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 179,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "SubmittedAnswer",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 184,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamSubmission",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 190,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamResult",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 194,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotificationOut",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 204,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotificationCreate",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 212,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AuditLogOut",
+      "owner": null,
+      "module": "domain.schemas",
+      "file": "domain/schemas.py",
+      "line": 218,
+      "tier": "schema",
+      "spec": "domain/Types.tla"
+    },
+    {
+      "kind": "function",
+      "name": "process_payload",
+      "owner": null,
+      "module": "integrations.tasks",
+      "file": "integrations/tasks.py",
+      "line": 7,
+      "tier": "C",
+      "spec": "modules/Tasks.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Lesson",
+      "owner": null,
+      "module": "learning.catalog",
+      "file": "learning/catalog.py",
+      "line": 44,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "method",
+      "name": "editable_path",
+      "owner": "Lesson",
+      "module": "learning.catalog",
+      "file": "learning/catalog.py",
+      "line": 62,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "lesson_for",
+      "owner": null,
+      "module": "learning.catalog",
+      "file": "learning/catalog.py",
+      "line": 113,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "lessons",
+      "owner": null,
+      "module": "learning.catalog",
+      "file": "learning/catalog.py",
+      "line": 144,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "render_micro_markdown",
+      "owner": null,
+      "module": "learning.catalog",
+      "file": "learning/catalog.py",
+      "line": 153,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "serialize_lesson",
+      "owner": null,
+      "module": "learning.catalog",
+      "file": "learning/catalog.py",
+      "line": 198,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Criterion",
+      "owner": null,
+      "module": "learning.grading",
+      "file": "learning/grading.py",
+      "line": 13,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Grade",
+      "owner": null,
+      "module": "learning.grading",
+      "file": "learning/grading.py",
+      "line": 21,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "inspect_source",
+      "owner": null,
+      "module": "learning.grading",
+      "file": "learning/grading.py",
+      "line": 39,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "grade_lesson",
+      "owner": null,
+      "module": "learning.grading",
+      "file": "learning/grading.py",
+      "line": 76,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "class",
+      "name": "TestExecution",
+      "owner": null,
+      "module": "learning.runner",
+      "file": "learning/runner.py",
+      "line": 24,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "execute_pytest",
+      "owner": null,
+      "module": "learning.runner",
+      "file": "learning/runner.py",
+      "line": 50,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "student_tests_dir",
+      "owner": null,
+      "module": "learning.workspace",
+      "file": "learning/workspace.py",
+      "line": 13,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "safe_test_path",
+      "owner": null,
+      "module": "learning.workspace",
+      "file": "learning/workspace.py",
+      "line": 27,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "ensure_starter",
+      "owner": null,
+      "module": "learning.workspace",
+      "file": "learning/workspace.py",
+      "line": 47,
+      "tier": "C",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "lifespan",
+      "owner": null,
+      "module": "main",
+      "file": "main.py",
+      "line": 29,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "function",
+      "name": "create_app",
+      "owner": null,
+      "module": "main",
+      "file": "main.py",
+      "line": 37,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "class",
+      "name": "CookieCSRFMiddleware",
+      "owner": null,
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 20,
+      "tier": "A",
+      "spec": "middleware/Playground.tla"
+    },
+    {
+      "kind": "method",
+      "name": "dispatch",
+      "owner": "CookieCSRFMiddleware",
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 25,
+      "tier": "A",
+      "spec": "middleware/Playground.tla"
+    },
+    {
+      "kind": "class",
+      "name": "SecurityHeadersMiddleware",
+      "owner": null,
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 41,
+      "tier": "A",
+      "spec": "middleware/Playground.tla"
+    },
+    {
+      "kind": "method",
+      "name": "dispatch",
+      "owner": "SecurityHeadersMiddleware",
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 44,
+      "tier": "A",
+      "spec": "middleware/Playground.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PlaygroundState",
+      "owner": null,
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 53,
+      "tier": "A",
+      "spec": "middleware/Playground.tla"
+    },
+    {
+      "kind": "class",
+      "name": "PlaygroundMiddleware",
+      "owner": null,
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 59,
+      "tier": "A",
+      "spec": "middleware/Playground.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "PlaygroundMiddleware",
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 60,
+      "tier": "A",
+      "spec": "middleware/Playground.tla"
+    },
+    {
+      "kind": "method",
+      "name": "dispatch",
+      "owner": "PlaygroundMiddleware",
+      "module": "middleware",
+      "file": "middleware.py",
+      "line": 73,
+      "tier": "A",
+      "spec": "middleware/Playground.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Text",
+      "owner": null,
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 10,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "method",
+      "name": "in_language",
+      "owner": "Text",
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 14,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Challenge",
+      "owner": null,
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 19,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Track",
+      "owner": null,
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 32,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "function",
+      "name": "serialize_challenge",
+      "owner": null,
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 658,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "function",
+      "name": "serialize_catalog",
+      "owner": null,
+      "module": "practice.catalog",
+      "file": "practice/catalog.py",
+      "line": 667,
+      "tier": "C",
+      "spec": "modules/Catalog.tla"
+    },
+    {
+      "kind": "class",
+      "name": "Mutation",
+      "owner": null,
+      "module": "practice.mutations",
+      "file": "practice/mutations.py",
+      "line": 12,
+      "tier": "C",
+      "spec": "modules/Mutations.tla"
+    },
+    {
+      "kind": "function",
+      "name": "is_active",
+      "owner": null,
+      "module": "practice.mutations",
+      "file": "practice/mutations.py",
+      "line": 72,
+      "tier": "C",
+      "spec": "modules/Mutations.tla"
+    },
+    {
+      "kind": "function",
+      "name": "serialize_mutations",
+      "owner": null,
+      "module": "practice.mutations",
+      "file": "practice/mutations.py",
+      "line": 82,
+      "tier": "C",
+      "spec": "modules/Mutations.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseRepository",
+      "owner": null,
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 10,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "CourseRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 11,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "get",
+      "owner": "CourseRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 14,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "search",
+      "owner": "CourseRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 17,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "categories",
+      "owner": "CourseRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 49,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "add",
+      "owner": "CourseRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 52,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "delete",
+      "owner": "CourseRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 57,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "EnrollmentRepository",
+      "owner": null,
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 61,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "EnrollmentRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 62,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "get",
+      "owner": "EnrollmentRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 65,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "list_for_user",
+      "owner": "EnrollmentRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 72,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "add",
+      "owner": "EnrollmentRepository",
+      "module": "repositories.courses",
+      "file": "repositories/courses.py",
+      "line": 77,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamRepository",
+      "owner": null,
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 11,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "ExamRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 12,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "list_for_course",
+      "owner": "ExamRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 15,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "get_with_questions",
+      "owner": "ExamRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 24,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "add",
+      "owner": "ExamRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 31,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "delete",
+      "owner": "ExamRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 36,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotificationRepository",
+      "owner": null,
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 40,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "NotificationRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 41,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "get",
+      "owner": "NotificationRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 44,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "list_for_user",
+      "owner": "NotificationRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 47,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "add",
+      "owner": "NotificationRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 57,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "delete",
+      "owner": "NotificationRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 62,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AuditRepository",
+      "owner": null,
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 66,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "AuditRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 67,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "add",
+      "owner": "AuditRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 70,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "list_recent",
+      "owner": "AuditRepository",
+      "module": "repositories.exams",
+      "file": "repositories/exams.py",
+      "line": 75,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "UserRepository",
+      "owner": null,
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 8,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "UserRepository",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 9,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "get",
+      "owner": "UserRepository",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 12,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "get_by_email",
+      "owner": "UserRepository",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 15,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "list_all",
+      "owner": "UserRepository",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 18,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "add",
+      "owner": "UserRepository",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 21,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "save",
+      "owner": "UserRepository",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 26,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ProfileRepository",
+      "owner": null,
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 30,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "ProfileRepository",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 31,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "get_by_user",
+      "owner": "ProfileRepository",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 34,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "method",
+      "name": "add",
+      "owner": "ProfileRepository",
+      "module": "repositories.users",
+      "file": "repositories/users.py",
+      "line": 37,
+      "tier": "B",
+      "spec": "domain/Entities.tla"
+    },
+    {
+      "kind": "function",
+      "name": "seed",
+      "owner": null,
+      "module": "seed",
+      "file": "seed.py",
+      "line": 63,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "function",
+      "name": "run",
+      "owner": null,
+      "module": "seed",
+      "file": "seed.py",
+      "line": 115,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "function",
+      "name": "build_courses",
+      "owner": null,
+      "module": "seed_content",
+      "file": "seed_content.py",
+      "line": 31,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "function",
+      "name": "build_exams_for",
+      "owner": null,
+      "module": "seed_content",
+      "file": "seed_content.py",
+      "line": 219,
+      "tier": "skip",
+      "spec": "N/A"
+    },
+    {
+      "kind": "class",
+      "name": "ProfileService",
+      "owner": null,
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 12,
+      "tier": "A",
+      "spec": "services/Profile.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "ProfileService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 13,
+      "tier": "A",
+      "spec": "services/Profile.tla"
+    },
+    {
+      "kind": "method",
+      "name": "get",
+      "owner": "ProfileService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 17,
+      "tier": "A",
+      "spec": "services/Profile.tla"
+    },
+    {
+      "kind": "method",
+      "name": "update",
+      "owner": "ProfileService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 24,
+      "tier": "A",
+      "spec": "services/Profile.tla"
+    },
+    {
+      "kind": "method",
+      "name": "set_avatar_url",
+      "owner": "ProfileService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 38,
+      "tier": "A",
+      "spec": "services/Profile.tla"
+    },
+    {
+      "kind": "method",
+      "name": "skills_list",
+      "owner": "ProfileService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 46,
+      "tier": "A",
+      "spec": "services/Profile.tla"
+    },
+    {
+      "kind": "class",
+      "name": "NotificationService",
+      "owner": null,
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 50,
+      "tier": "A",
+      "spec": "services/Notification.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "NotificationService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 51,
+      "tier": "A",
+      "spec": "services/Notification.tla"
+    },
+    {
+      "kind": "method",
+      "name": "list_for_user",
+      "owner": "NotificationService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 56,
+      "tier": "A",
+      "spec": "services/Notification.tla"
+    },
+    {
+      "kind": "method",
+      "name": "mark_read",
+      "owner": "NotificationService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 59,
+      "tier": "A",
+      "spec": "services/Notification.tla"
+    },
+    {
+      "kind": "method",
+      "name": "delete",
+      "owner": "NotificationService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 68,
+      "tier": "A",
+      "spec": "services/Notification.tla"
+    },
+    {
+      "kind": "method",
+      "name": "create_for_admin",
+      "owner": "NotificationService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 75,
+      "tier": "A",
+      "spec": "services/Notification.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AdminService",
+      "owner": null,
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 95,
+      "tier": "A",
+      "spec": "services/AdminUser.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "AdminService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 96,
+      "tier": "A",
+      "spec": "services/AdminUser.tla"
+    },
+    {
+      "kind": "method",
+      "name": "list_users",
+      "owner": "AdminService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 101,
+      "tier": "A",
+      "spec": "services/AdminUser.tla"
+    },
+    {
+      "kind": "method",
+      "name": "set_role",
+      "owner": "AdminService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 104,
+      "tier": "A",
+      "spec": "services/AdminUser.tla"
+    },
+    {
+      "kind": "method",
+      "name": "set_active",
+      "owner": "AdminService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 116,
+      "tier": "A",
+      "spec": "services/AdminUser.tla"
+    },
+    {
+      "kind": "method",
+      "name": "audit_logs",
+      "owner": "AdminService",
+      "module": "services.admin",
+      "file": "services/admin.py",
+      "line": 131,
+      "tier": "A",
+      "spec": "services/AdminUser.tla"
+    },
+    {
+      "kind": "class",
+      "name": "AuthService",
+      "owner": null,
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 23,
+      "tier": "A",
+      "spec": "services/AuthAccount.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "AuthService",
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 24,
+      "tier": "A",
+      "spec": "services/AuthAccount.tla"
+    },
+    {
+      "kind": "method",
+      "name": "register",
+      "owner": "AuthService",
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 28,
+      "tier": "A",
+      "spec": "services/AuthAccount.tla"
+    },
+    {
+      "kind": "method",
+      "name": "authenticate",
+      "owner": "AuthService",
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 47,
+      "tier": "A",
+      "spec": "services/AuthAccount.tla"
+    },
+    {
+      "kind": "method",
+      "name": "reset_password",
+      "owner": "AuthService",
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 60,
+      "tier": "A",
+      "spec": "services/AuthAccount.tla"
+    },
+    {
+      "kind": "method",
+      "name": "refresh",
+      "owner": "AuthService",
+      "module": "services.auth",
+      "file": "services/auth.py",
+      "line": 90,
+      "tier": "A",
+      "spec": "services/AuthAccount.tla"
+    },
+    {
+      "kind": "class",
+      "name": "CourseService",
+      "owner": null,
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 12,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "CourseService",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 13,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "method",
+      "name": "search",
+      "owner": "CourseService",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 18,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "method",
+      "name": "categories",
+      "owner": "CourseService",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 21,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "method",
+      "name": "get",
+      "owner": "CourseService",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 24,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "method",
+      "name": "create",
+      "owner": "CourseService",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 30,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "method",
+      "name": "update",
+      "owner": "CourseService",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 41,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "method",
+      "name": "delete",
+      "owner": "CourseService",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 51,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "method",
+      "name": "enroll",
+      "owner": "CourseService",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 57,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "method",
+      "name": "list_enrollments",
+      "owner": "CourseService",
+      "module": "services.courses",
+      "file": "services/courses.py",
+      "line": 78,
+      "tier": "A",
+      "spec": "services/CourseLifecycle.tla"
+    },
+    {
+      "kind": "class",
+      "name": "ExamService",
+      "owner": null,
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 17,
+      "tier": "A",
+      "spec": "services/ExamAttempt.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "ExamService",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 18,
+      "tier": "A",
+      "spec": "services/ExamAttempt.tla"
+    },
+    {
+      "kind": "method",
+      "name": "list_for_course",
+      "owner": "ExamService",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 23,
+      "tier": "A",
+      "spec": "services/ExamAttempt.tla"
+    },
+    {
+      "kind": "method",
+      "name": "get",
+      "owner": "ExamService",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 26,
+      "tier": "A",
+      "spec": "services/ExamAttempt.tla"
+    },
+    {
+      "kind": "method",
+      "name": "create",
+      "owner": "ExamService",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 32,
+      "tier": "A",
+      "spec": "services/ExamAttempt.tla"
+    },
+    {
+      "kind": "method",
+      "name": "update",
+      "owner": "ExamService",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 48,
+      "tier": "A",
+      "spec": "services/ExamAttempt.tla"
+    },
+    {
+      "kind": "method",
+      "name": "delete",
+      "owner": "ExamService",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 58,
+      "tier": "A",
+      "spec": "services/ExamAttempt.tla"
+    },
+    {
+      "kind": "method",
+      "name": "submit",
+      "owner": "ExamService",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 64,
+      "tier": "A",
+      "spec": "services/ExamAttempt.tla"
+    },
+    {
+      "kind": "method",
+      "name": "latest_passed_attempt",
+      "owner": "ExamService",
+      "module": "services.exams",
+      "file": "services/exams.py",
+      "line": 115,
+      "tier": "A",
+      "spec": "services/ExamAttempt.tla"
+    },
+    {
+      "kind": "class",
+      "name": "LearningService",
+      "owner": null,
+      "module": "services.learning",
+      "file": "services/learning.py",
+      "line": 17,
+      "tier": "A",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "LearningService",
+      "module": "services.learning",
+      "file": "services/learning.py",
+      "line": 18,
+      "tier": "A",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "method",
+      "name": "record_grade",
+      "owner": "LearningService",
+      "module": "services.learning",
+      "file": "services/learning.py",
+      "line": 21,
+      "tier": "A",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "method",
+      "name": "progress_map",
+      "owner": "LearningService",
+      "module": "services.learning",
+      "file": "services/learning.py",
+      "line": 75,
+      "tier": "A",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "method",
+      "name": "summary",
+      "owner": "LearningService",
+      "module": "services.learning",
+      "file": "services/learning.py",
+      "line": 81,
+      "tier": "A",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "method",
+      "name": "runs",
+      "owner": "LearningService",
+      "module": "services.learning",
+      "file": "services/learning.py",
+      "line": 93,
+      "tier": "A",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "method",
+      "name": "learner_overview",
+      "owner": "LearningService",
+      "module": "services.learning",
+      "file": "services/learning.py",
+      "line": 102,
+      "tier": "A",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "serialize_progress",
+      "owner": null,
+      "module": "services.learning",
+      "file": "services/learning.py",
+      "line": 127,
+      "tier": "A",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "serialize_run",
+      "owner": null,
+      "module": "services.learning",
+      "file": "services/learning.py",
+      "line": 140,
+      "tier": "A",
+      "spec": "services/Learning.tla"
+    },
+    {
+      "kind": "function",
+      "name": "quality_history",
+      "owner": null,
+      "module": "services.quality",
+      "file": "services/quality.py",
+      "line": 10,
+      "tier": "C",
+      "spec": "modules/Quality.tla"
+    },
+    {
+      "kind": "class",
+      "name": "TestSupportService",
+      "owner": null,
+      "module": "services.test_support",
+      "file": "services/test_support.py",
+      "line": 14,
+      "tier": "A",
+      "spec": "services/TestRun.tla"
+    },
+    {
+      "kind": "method",
+      "name": "__init__",
+      "owner": "TestSupportService",
+      "module": "services.test_support",
+      "file": "services/test_support.py",
+      "line": 17,
+      "tier": "A",
+      "spec": "services/TestRun.tla"
+    },
+    {
+      "kind": "method",
+      "name": "create_user",
+      "owner": "TestSupportService",
+      "module": "services.test_support",
+      "file": "services/test_support.py",
+      "line": 20,
+      "tier": "A",
+      "spec": "services/TestRun.tla"
+    },
+    {
+      "kind": "method",
+      "name": "create_course",
+      "owner": "TestSupportService",
+      "module": "services.test_support",
+      "file": "services/test_support.py",
+      "line": 53,
+      "tier": "A",
+      "spec": "services/TestRun.tla"
+    },
+    {
+      "kind": "method",
+      "name": "cleanup",
+      "owner": "TestSupportService",
+      "module": "services.test_support",
+      "file": "services/test_support.py",
+      "line": 77,
+      "tier": "A",
+      "spec": "services/TestRun.tla"
+    },
+    {
+      "kind": "function",
+      "name": "normalize_language",
+      "owner": null,
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 602,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "get_request_language",
+      "owner": null,
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 607,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "translate",
+      "owner": null,
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 612,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "translator",
+      "owner": null,
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 619,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "javascript_messages",
+      "owner": null,
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 624,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "localize_error",
+      "owner": null,
+      "module": "web.i18n",
+      "file": "web/i18n.py",
+      "line": 629,
+      "tier": "C",
+      "spec": "modules/I18n.tla"
+    },
+    {
+      "kind": "function",
+      "name": "root",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 131,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "set_language",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 136,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "login_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 152,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "login_submit",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 168,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "forgot_password_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 193,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "forgot_password_submit",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 205,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "register_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 244,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "register_submit",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 249,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "logout_submit",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 288,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "dashboard",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 296,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_new_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 316,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_new_submit",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 325,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "courses_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 344,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_detail",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 362,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_enroll",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 380,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_edit_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 393,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_edit_submit",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 404,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "course_delete_submit",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 424,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_new_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 436,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_new_submit",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 448,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_delete_submit",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 494,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 508,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_submit",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 517,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "exam_certificate",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 538,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "profile_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 556,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "profile_update",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 568,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "notifications_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 614,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "admin_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 628,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "admin_set_active",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 640,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "admin_send_notification",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 654,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "learning_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 674,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "learning_manage_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 703,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "learning_lesson_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 718,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "learning_start",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 748,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "quality_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 768,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 779,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_challenge_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 812,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_components_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 830,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_iframe_content",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 837,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "practice_new_tab",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 846,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "playground_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 855,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    },
+    {
+      "kind": "function",
+      "name": "ide_page",
+      "owner": null,
+      "module": "web.router",
+      "file": "web/router.py",
+      "line": 863,
+      "tier": "adapter",
+      "spec": "adapters/ApiAdapters.tla"
+    }
+  ]
+}

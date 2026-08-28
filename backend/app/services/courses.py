@@ -2,6 +2,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
+from app.domain.enums import CourseStatus
 from app.domain.errors import ConflictError, NotFoundError
 from app.domain.models import AuditLog, Course, Enrollment, Notification
 from app.domain.schemas import CourseCreate, CourseUpdate
@@ -55,6 +56,8 @@ class CourseService:
 
     def enroll(self, user_id: int, course_id: int) -> Enrollment:
         course = self.get(course_id)
+        if course.status == CourseStatus.ARCHIVED:
+            raise ConflictError("Нельзя записаться на архивный курс")
         if self.enrollments.get(user_id, course_id):
             raise ConflictError("Вы уже записаны на этот курс")
         enrollment = Enrollment(user_id=user_id, course_id=course_id)

@@ -1,4 +1,4 @@
-.PHONY: up down logs seed migrate migration-check test test-quality e2e e2e-cross-browser student-api student-ui \
+.PHONY: up down logs seed migrate migration-check test test-quality formal tla e2e e2e-cross-browser student-api student-ui \
 	student-ui-cross-browser student-all mutation-score performance quality-summary progress \
 	watch-api watch-ui fmt version
 
@@ -29,6 +29,13 @@ test:          ## юнит/API-тесты (SQLite, без Docker)
 test-quality:  ## статические проверки и coverage gate как в CI
 	cd backend && ruff check app tests
 	cd backend && python -m pytest --cov=app --cov-report=term-missing --cov-fail-under=70
+
+formal:        ## python-statemachine oracles + inventory coverage
+	cd backend && python -m app.formal.inventory
+	cd backend && python -m pytest tests/formal -q
+
+tla:           ## TLC model-check all formal/tla specs (requires Java or docker)
+	python formal/run_tlc.py
 
 e2e:           ## E2E Playwright (требуется запущенный сервер на :8000)
 	cd e2e && python -m pytest

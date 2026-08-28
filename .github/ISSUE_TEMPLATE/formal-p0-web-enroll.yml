@@ -1,0 +1,31 @@
+name: "P0 · Web enroll errors / Ошибки web-enroll"
+description: "Formal spec alignment — surface DomainError on web enroll (EN/RU)"
+title: "[P0][formal] Surface web enroll errors · Показ ошибок web-enroll пользователю"
+labels:
+  - P0
+  - formal
+  - web
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **EN:** Body template: [`.github/ISSUES/bodies/p0-web-enroll-errors.md`](https://github.com/maximusmakarov/qa-training-platform/blob/fix/formal-spec-alignment-p0-p1/.github/ISSUES/bodies/p0-web-enroll-errors.md)
+
+        **RU:** Шаблон: `.github/ISSUES/bodies/p0-web-enroll-errors.md`
+
+  - type: textarea
+    id: body
+    attributes:
+      label: "Issue body / Тело issue"
+      placeholder: "Paste from p0-web-enroll-errors.md"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acceptance
+    attributes:
+      label: "Acceptance criteria / Критерии приёмки"
+      options:
+        - label: "Duplicate web enroll shows data-testid=enroll-error"
+          required: true
+        - label: "API and web share CourseService.enroll"

@@ -54,6 +54,24 @@ def test_enroll_requires_auth(client):
     assert client.post("/api/courses/1/enroll").status_code == 401
 
 
+def test_enroll_archived_course_conflict(client, admin_token, user_token):
+    create = client.post("/api/courses", headers=auth(admin_token), json={
+        "title": "Archived enroll test",
+        "description": "test",
+        "price": 0,
+        "category": "QA",
+        "status": "ARCHIVED",
+    })
+    assert create.status_code == 201, create.text
+    course_id = create.json()["id"]
+
+    r = client.post(f"/api/courses/{course_id}/enroll", headers=auth(user_token))
+    assert r.status_code == 409
+    assert "архив" in r.json()["detail"].lower()
+
+    client.delete(f"/api/courses/{course_id}", headers=auth(admin_token))
+
+
 # ---------- CRUD курсов: только ADMIN ----------
 def test_user_cannot_create_course(client, user_token):
     r = client.post("/api/courses", headers=auth(user_token),

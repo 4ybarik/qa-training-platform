@@ -1,0 +1,32 @@
+name: "P1 · Delete cascade docs / Каскад delete"
+description: "Document intentional course delete cascade (EN/RU)"
+title: "[P1][formal] Document course delete cascade · Документировать каскадное удаление курса"
+labels:
+  - P1
+  - formal
+  - documentation
+  - courses
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **EN:** Body: [`.github/ISSUES/bodies/p1-document-delete-cascade.md`](https://github.com/maximusmakarov/qa-training-platform/blob/fix/formal-spec-alignment-p0-p1/.github/ISSUES/bodies/p1-document-delete-cascade.md)
+
+        **RU:** Шаблон: `.github/ISSUES/bodies/p1-document-delete-cascade.md`
+
+  - type: textarea
+    id: body
+    attributes:
+      label: "Issue body / Тело issue"
+      placeholder: "Paste from p1-document-delete-cascade.md"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acceptance
+    attributes:
+      label: "Acceptance criteria / Критерии приёмки"
+      options:
+        - label: "ARCHITECTURE.md §3.1 describes cascade delete"
+          required: true
+        - label: "formal/LIMITATIONS.md updated"

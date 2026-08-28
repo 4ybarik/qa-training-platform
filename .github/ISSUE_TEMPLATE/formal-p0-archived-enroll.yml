@@ -1,0 +1,34 @@
+name: "P0 · ARCHIVED enroll / Запись на ARCHIVED"
+description: "Formal spec alignment — block enrollment on archived courses (EN/RU body in linked template)"
+title: "[P0][formal] Block enroll on ARCHIVED courses · Запрет записи на ARCHIVED-курс"
+labels:
+  - P0
+  - formal
+  - courses
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **EN:** Copy the full bilingual body from [`.github/ISSUES/bodies/p0-block-enroll-archived.md`](https://github.com/maximusmakarov/qa-training-platform/blob/fix/formal-spec-alignment-p0-p1/.github/ISSUES/bodies/p0-block-enroll-archived.md) into the description below, or run `python scripts/create_formal_issues.py`.
+
+        **RU:** Скопируйте тело issue из `.github/ISSUES/bodies/p0-block-enroll-archived.md` или выполните `python scripts/create_formal_issues.py`.
+
+  - type: textarea
+    id: body
+    attributes:
+      label: "Issue body / Тело issue (paste from bodies/*.md)"
+      description: "Full EN+RU template with acceptance criteria"
+      placeholder: "Paste content from .github/ISSUES/bodies/p0-block-enroll-archived.md"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acceptance
+    attributes:
+      label: "Acceptance criteria / Критерии приёмки"
+      options:
+        - label: "POST enroll on ARCHIVED → 409 / Запись на ARCHIVED → 409"
+          required: true
+        - label: "pytest test_enroll_archived_course_conflict passes"
+          required: true
+        - label: "Formal oracle rejects ARCHIVED enroll"
